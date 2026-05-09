@@ -48,6 +48,12 @@ function isMarketOpen() {
     return { open: true, reason: 'Market Open' };
 }
 
+// ===== API BASE URL =====
+// Auto-detects: localhost uses local server, production uses Render backend
+const BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? ''
+    : 'https://dipzspelll-github-io.onrender.com';
+
 // ===== DATA FETCHING =====
 const CACHE_KEY = 'tradefinder_cache';
 
@@ -80,7 +86,7 @@ async function fetchData() {
     try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 8000);
-        const res = await fetch('/api/indices', { signal: controller.signal });
+        const res = await fetch(`${BASE_URL}/api/indices`, { signal: controller.signal });
         clearTimeout(timeout);
         const json = await res.json();
         if (json.success && json.data && json.data.data) {
@@ -272,7 +278,7 @@ async function loadFnOData() {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 12000);
         // Using "SECURITIES IN F&O" index from NSE
-        const res = await fetch('/api/sector/SECURITIES%20IN%20F%26O', { signal: controller.signal });
+        const res = await fetch(`${BASE_URL}/api/sector/SECURITIES%20IN%20F%26O`, { signal: controller.signal });
         clearTimeout(timeout);
         const json = await res.json();
         
@@ -438,7 +444,7 @@ function openSectorModal(sectorId, sectorName) {
     // Fetch from server
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
-    fetch(`/api/sector/${encodeURIComponent(sectorId)}`, { signal: controller.signal })
+    fetch(`${BASE_URL}/api/sector/${encodeURIComponent(sectorId)}`, { signal: controller.signal })
         .then(r => r.json())
         .then(json => {
             clearTimeout(timeout);
@@ -588,7 +594,7 @@ async function loadOptionsData() {
     loading.classList.add('active'); content.style.display = 'none';
     
     try {
-        const res = await fetch('/api/options/NIFTY');
+        const res = await fetch(`${BASE_URL}/api/options/NIFTY`);
         const json = await res.json();
         if (json.success && json.data && json.data.filtered) {
             const data = json.data.filtered;
@@ -621,7 +627,7 @@ async function loadFiiDiiData() {
     loading.classList.add('active'); content.style.display = 'none';
     
     try {
-        const res = await fetch('/api/fii-dii');
+        const res = await fetch(`${BASE_URL}/api/fii-dii`);
         const json = await res.json();
         if (json.success && json.data && json.data.length > 0) {
             // Usually returns array, first item is FII, second is DII
