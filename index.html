@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TradeFinder — NSE Sectoral Heatmap Dashboard</title>
+    <meta name="description" content="Real-time NSE sectoral heatmap dashboard with live sector ranking, market breadth analysis, and trading insights for Indian stock market traders.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Ambient background effects -->
+    <div class="ambient-bg">
+        <div class="ambient-orb orb-1"></div>
+        <div class="ambient-orb orb-2"></div>
+        <div class="ambient-orb orb-3"></div>
+    </div>
+
+    <!-- Header -->
+    <header id="main-header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 32 32" fill="none">
+                        <path d="M4 24L10 14L16 18L22 8L28 12" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="4" y1="24" x2="28" y2="8">
+                                <stop stop-color="#00f5a0"/>
+                                <stop offset="1" stop-color="#00d9f5"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>TradeFinder</h1>
+                    <span class="logo-subtitle">NSE Sectoral Heatmap</span>
+                </div>
+            </div>
+        </div>
+        <div class="header-center">
+            <div class="market-status" id="market-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Market Closed</span>
+            </div>
+            <div class="nifty-ticker" id="nifty-ticker">
+                <span class="ticker-label">NIFTY 50</span>
+                <span class="ticker-value" id="nifty-value">--</span>
+                <span class="ticker-change" id="nifty-change">--</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="last-updated" id="last-updated">
+                <span class="update-icon">🔄</span>
+                <span id="update-time">--:--:--</span>
+            </div>
+            <button class="refresh-btn" id="refresh-btn" title="Refresh Data">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6M1 20v-6h6"/>
+                    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- LIVE MARKET TICKER TAPE -->
+    <div class="ticker-wrap">
+        <div class="ticker" id="live-ticker">
+            <div class="ticker-item" style="color: var(--text-muted);">Fetching live market momentum...</div>
+        </div>
+    </div>
+
+    <!-- Trading Bias Banner -->
+    <div class="bias-banner" id="bias-banner">
+        <div class="bias-content">
+            <span class="bias-icon" id="bias-icon">📈</span>
+            <span class="bias-label">Trading Bias:</span>
+            <span class="bias-value" id="bias-value">Loading...</span>
+            <span class="bias-separator">|</span>
+            <span class="breadth-label">Market Breadth:</span>
+            <span class="breadth-value" id="breadth-value">--</span>
+        </div>
+    </div>
+
+    <!-- Main Content Layout -->
+    <div class="layout-wrapper">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-target="tab-market-pulse">
+                    <span class="nav-icon">📊</span> Market Pulse
+                </a>
+                <a href="#" class="nav-item" data-target="tab-charts">
+                    <span class="nav-icon">📈</span> Advanced Charts
+                </a>
+                <a href="#" class="nav-item" data-target="tab-options">
+                    <span class="nav-icon">⏱️</span> Option Analyzers
+                </a>
+                <a href="#" class="nav-item" data-target="tab-fiidii">
+                    <span class="nav-icon">🏦</span> Institutional Flow
+                </a>
+                <a href="#" class="nav-item" data-target="tab-ai">
+                    <span class="nav-icon">🤖</span> AI Trading Alpha
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Tab Content -->
+        <main class="main-content" id="main-content">
+            
+            <!-- TAB: MARKET PULSE (Existing Content) -->
+            <div id="tab-market-pulse" class="tab-pane active">
+                <section class="dashboard-section heatmap-section" id="heatmap-section">
+                    <div class="section-header">
+                        <h2>📊 Sectoral Heatmap</h2>
+                        <div class="heatmap-legend">
+                            <div class="legend-item"><span class="legend-color" style="background: #00c853;"></span>Strong +</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #66bb6a;"></span>Mild +</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #546e7a;"></span>Neutral</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #ef5350;"></span>Mild −</div>
+                            <div class="legend-item"><span class="legend-color" style="background: #c62828;"></span>Strong −</div>
+                        </div>
+                    </div>
+                    <div class="heatmap-container" id="heatmap-container">
+                        <!-- Heatmap tiles will be injected here -->
+                    </div>
+                </section>
+
+                <div class="two-col-layout">
+                    <!-- Sector Ranking Table -->
+                    <section class="dashboard-section ranking-section" id="ranking-section">
+                        <div class="section-header">
+                            <h2>📊 Sector Ranking Table</h2>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="ranking-table" id="ranking-table">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Sector</th>
+                                        <th>% Change</th>
+                                        <th>Trend</th>
+                                        <th>Strength</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ranking-tbody">
+                                    <!-- Rows injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- Right Column: Top/Bottom Sectors + Insights -->
+                    <div class="right-col">
+                        <section class="dashboard-section mini-section bullish-section" id="bullish-section">
+                            <div class="section-header"><h2>🔥 Top 3 Bullish</h2></div>
+                            <div class="top-cards" id="bullish-cards"></div>
+                        </section>
+                        <section class="dashboard-section mini-section bearish-section" id="bearish-section">
+                            <div class="section-header"><h2>❄️ Top 3 Bearish</h2></div>
+                            <div class="top-cards" id="bearish-cards"></div>
+                        </section>
+                        <section class="dashboard-section insight-section" id="insight-section">
+                            <div class="section-header"><h2>🧠 Market Insight Summary</h2></div>
+                            <div class="insight-content" id="insight-content"></div>
+                        </section>
+                    </div>
+                </div>
+
+                <!-- F&O Breakout Scanners -->
+                <section class="dashboard-section breakout-section" id="breakout-section">
+                    <div class="section-header">
+                        <h2>🚀 F&O Breakout Scanner</h2>
+                        <div class="header-actions">
+                            <span class="tag tag-cyan" style="font-size: 0.65rem;">Live F&O</span>
+                        </div>
+                    </div>
+                    <div class="breakout-content" id="breakout-content">
+                        <div class="modal-loading active" id="breakout-loading">
+                            <div class="spinner"></div>
+                            <span>Scanning F&O universe...</span>
+                        </div>
+                        <div class="breakout-columns" id="breakout-columns" style="display: none;">
+                            <div class="breakout-col bullish">
+                                <h3 class="breakout-title"><span style="color:var(--strong-green)">▲</span> Bullish Breakouts</h3>
+                                <p class="breakout-desc">Trading near day's high with strong momentum</p>
+                                <div class="breakout-cards" id="bullish-breakouts"></div>
+                            </div>
+                            <div class="breakout-col bearish">
+                                <h3 class="breakout-title"><span style="color:var(--mild-red)">▼</span> Bearish Breakdowns</h3>
+                                <p class="breakout-desc">Trading near day's low with weak momentum</p>
+                                <div class="breakout-cards" id="bearish-breakouts"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-section rotation-section" id="rotation-section">
+                    <div class="section-header"><h2>🔄 Sector Rotation Analysis</h2></div>
+                    <div class="rotation-content" id="rotation-content"></div>
+                </section>
+            </div>
+
+            <!-- TAB: ADVANCED CHARTS -->
+            <div id="tab-charts" class="tab-pane">
+                <section class="dashboard-section" style="padding: 0; overflow: hidden; border-radius: var(--radius-md);">
+                    <!-- TradingView Widget BEGIN -->
+                    <div class="tradingview-widget-container" style="height: 600px; width: 100%;">
+                      <div id="tradingview_chart" style="height: calc(100% - 32px); width: 100%;"></div>
+                      <div class="tradingview-widget-copyright"><a href="https://in.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                    </div>
+                    <!-- TradingView Widget END -->
+                </section>
+            </div>
+
+            <!-- TAB: OPTIONS ANALYZER -->
+            <div id="tab-options" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>⏱️ Option Chain Analyzer (NIFTY)</h2>
+                        <div class="header-actions">
+                            <button class="modal-back-btn" id="load-options-btn" style="padding:4px 12px">Load Live Options</button>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:300px">
+                        <div class="modal-loading" id="options-loading">
+                            <div class="spinner"></div>
+                            <span>Fetching Option Chain...</span>
+                        </div>
+                        <div id="options-content" style="display:none;">
+                            <div style="display:flex;gap:20px;margin-bottom:20px;">
+                                <div class="breakout-col bullish" style="flex:1;">
+                                    <h3 class="breakout-title">Total Put OI (Support)</h3>
+                                    <div id="total-pe-oi" style="font-size:1.5rem;font-weight:bold;font-family:var(--font-mono);color:var(--strong-green)">--</div>
+                                </div>
+                                <div class="breakout-col bearish" style="flex:1;">
+                                    <h3 class="breakout-title">Total Call OI (Resistance)</h3>
+                                    <div id="total-ce-oi" style="font-size:1.5rem;font-weight:bold;font-family:var(--font-mono);color:var(--mild-red)">--</div>
+                                </div>
+                                <div class="breakout-col" style="flex:1;border-color:var(--border-color);">
+                                    <h3 class="breakout-title">PCR (Put Call Ratio)</h3>
+                                    <div id="options-pcr" style="font-size:1.5rem;font-weight:bold;font-family:var(--font-mono);color:var(--accent-cyan)">--</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: FII / DII -->
+            <div id="tab-fiidii" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>🏦 Institutional Flow (FII & DII Cash Market)</h2>
+                        <div class="header-actions">
+                            <button class="modal-back-btn" id="load-fiidii-btn" style="padding:4px 12px">Load FII/DII Data</button>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:300px">
+                        <div class="modal-loading" id="fiidii-loading">
+                            <div class="spinner"></div>
+                            <span>Fetching Institutional Data...</span>
+                        </div>
+                        <div id="fiidii-content" style="display:none;">
+                            <div class="breakout-columns">
+                                <div class="breakout-col">
+                                    <h3 class="breakout-title">FII (Foreign Investors)</h3>
+                                    <p class="breakout-desc" id="fii-date">Latest Data</p>
+                                    <div id="fii-net" style="font-size:1.5rem;font-weight:bold;font-family:var(--font-mono);">--</div>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
+                                        Buy: <span id="fii-buy">--</span> | Sell: <span id="fii-sell">--</span>
+                                    </div>
+                                </div>
+                                <div class="breakout-col">
+                                    <h3 class="breakout-title">DII (Domestic Investors)</h3>
+                                    <p class="breakout-desc" id="dii-date">Latest Data</p>
+                                    <div id="dii-net" style="font-size:1.5rem;font-weight:bold;font-family:var(--font-mono);">--</div>
+                                    <div style="font-size:0.75rem;color:var(--text-muted);margin-top:10px;">
+                                        Buy: <span id="dii-buy">--</span> | Sell: <span id="dii-sell">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: AI TRADING ALPHA -->
+            <div id="tab-ai" class="tab-pane">
+                <section class="dashboard-section breakout-section" style="border: 1px solid rgba(0,217,245,0.3); box-shadow: 0 0 20px rgba(0,217,245,0.05);">
+                    <div class="section-header">
+                        <h2><span style="animation: pulse 2s infinite;">🤖</span> TradeFinder AI Alpha engine</h2>
+                        <div class="header-actions">
+                            <button class="modal-back-btn" id="generate-ai-btn" style="padding:4px 12px; background: rgba(0,217,245,0.1); border-color: rgba(0,217,245,0.4); color: #00d9f5;">Run AI Scan</button>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:400px">
+                        <div class="modal-loading" id="ai-loading">
+                            <div class="spinner" style="border-top-color: #00d9f5;"></div>
+                            <span style="color: #00d9f5;">AI is analyzing charts, F&O momentum, and institutional data...</span>
+                        </div>
+                        <div id="ai-content" style="display:none;">
+                            <p class="breakout-desc" style="color:#00d9f5; margin-bottom: 24px;">Based on real-time market breadth, sector rotation, and F&O breakout structures, here are the highest probability setups for tomorrow morning / intraday.</p>
+                            
+                            <div class="breakout-columns" id="ai-trades-container">
+                                <!-- AI Cards injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <p>TradeFinder — NSE Sectoral Heatmap Dashboard &bull; Data for educational purposes only &bull; Not financial advice</p>
+    </footer>
+
+    <!-- Sector Stocks Modal -->
+    <div class="modal-overlay" id="sector-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title-area">
+                    <button class="modal-back-btn" id="modal-back-btn">← Back</button>
+                    <h2 id="modal-title">NIFTY BANK</h2>
+                    <span class="modal-stock-count" id="modal-stock-count">(0 stocks)</span>
+                </div>
+                <div class="modal-summary" id="modal-summary"></div>
+                <button class="modal-close-btn" id="modal-close-btn">✕</button>
+            </div>
+            <div class="modal-loading" id="modal-loading">
+                <div class="spinner"></div>
+                <span>Loading stocks...</span>
+            </div>
+            <div class="modal-stocks-grid" id="modal-stocks-grid"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
