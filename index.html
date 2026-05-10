@@ -48,20 +48,27 @@
                 <span class="ticker-label">NIFTY 50</span>
                 <span class="ticker-value" id="nifty-value">--</span>
                 <span class="ticker-change" id="nifty-change">--</span>
+                <svg id="nifty-sparkline" width="60" height="20" style="margin-left: 8px;"></svg>
+            </div>
+            <div class="expiry-timer" id="expiry-timer" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600; padding:6px 16px; background:rgba(255,255,255,0.04); border-radius:20px; border:1px solid var(--border-color); color:var(--text-light);">
+                Expiry in: --
             </div>
         </div>
         <div class="header-right">
+            <button class="theme-toggle-btn" id="theme-toggle-btn" title="Toggle Theme" aria-label="Toggle Theme" style="background:transparent; border:none; font-size:1.2rem; cursor:pointer; color:var(--text-light);">
+                ☀️
+            </button>
             <div class="last-updated" id="last-updated">
                 <span class="update-icon">🔄</span>
                 <span id="update-time">--:--:--</span>
             </div>
-            <button class="refresh-btn" id="refresh-btn" title="Refresh Data">
+            <button class="refresh-btn" id="refresh-btn" title="Refresh Data" aria-label="Refresh Data">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M23 4v6h-6M1 20v-6h6"/>
                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
                 </svg>
             </button>
-            <button class="sidebar-toggle" id="sidebar-toggle" title="Open Menu">☰</button>
+            <button class="sidebar-toggle" id="sidebar-toggle" title="Open Menu" aria-label="Open Menu">☰</button>
         </div>
     </header>
 
@@ -95,6 +102,9 @@
                 <div class="nav-section-title" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; padding: 10px 15px 5px; letter-spacing: 1px; font-weight: 600;">Dashboard</div>
                 <a href="#" class="nav-item active" data-target="tab-market-pulse">
                     <span class="nav-icon">📊</span> Market Pulse
+                </a>
+                <a href="#" class="nav-item" data-target="tab-watchlist">
+                    <span class="nav-icon">⭐</span> Watchlist
                 </a>
                 <a href="#" class="nav-item" data-target="tab-charts">
                     <span class="nav-icon">📈</span> Advanced Charts
@@ -232,6 +242,20 @@
                 <section class="dashboard-section rotation-section" id="rotation-section">
                     <div class="section-header"><h2>🔄 Sector Rotation Analysis</h2></div>
                     <div class="rotation-content" id="rotation-content"></div>
+                </section>
+            </div>
+
+            <!-- TAB: WATCHLIST -->
+            <div id="tab-watchlist" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>⭐ Watchlist</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:400px">
+                        <div id="watchlist-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                            <!-- Watchlist cards -->
+                        </div>
+                    </div>
                 </section>
             </div>
 
@@ -612,23 +636,7 @@
         </p>
     </footer>
 
-    <!-- Stock Chart Modal -->
-    <div class="modal-overlay" id="stock-chart-modal" style="z-index: 300;">
-        <div class="modal-content" style="max-width: 1100px; height: 85vh; display: flex; flex-direction: column;">
-            <div class="modal-header" style="flex-shrink: 0;">
-                <div class="modal-title-area">
-                    <button class="modal-back-btn" onclick="closeStockChart()">← Back</button>
-                    <h2 id="chart-modal-title">Stock Chart</h2>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                    <span class="tag tag-cyan" style="font-size:0.68rem;">NSE • 15m</span>
-                    <span class="tag tag-green" style="font-size:0.68rem;">Live TradingView</span>
-                </div>
-                <button class="modal-close-btn" onclick="closeStockChart()">✕</button>
-            </div>
-            <div id="stock-chart-container" style="flex: 1; width: 100%; background: rgba(7,11,20,1);"></div>
-        </div>
-    </div>
+    </footer>
 
     <!-- Sector Stocks Modal -->
     <div class="modal-overlay" id="sector-modal">
@@ -640,7 +648,7 @@
                     <span class="modal-stock-count" id="modal-stock-count">(0 stocks)</span>
                 </div>
                 <div class="modal-summary" id="modal-summary"></div>
-                <button class="modal-close-btn" id="modal-close-btn">✕</button>
+                <button class="modal-close-btn" id="modal-close-btn" aria-label="Close Modal">✕</button>
             </div>
             <div class="modal-loading" id="modal-loading">
                 <div class="spinner"></div>

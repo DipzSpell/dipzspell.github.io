@@ -513,6 +513,14 @@ footer {
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
 }
+.skeleton {
+    background: linear-gradient(90deg, rgba(255,255,255,0.03) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    height: 20px;
+    width: 100%;
+}
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 /* ===== ANIMATIONS ===== */
@@ -635,7 +643,8 @@ footer {
     .heatmap-container { grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 10px; }
     .heatmap-legend { display: none; }
     .heatmap-tile { padding: 12px 8px; min-height: 80px; }
-    .tile-name { font-size: 0.62rem; }
+    .tile-name { display: none; }
+    .tile-icon { display: block !important; }
     .tile-change { font-size: 1rem; }
     .tile-trend { display: none; }
 
@@ -695,4 +704,19 @@ footer {
     .header-center { gap: 8px; }
     .market-status { padding: 5px 10px; }
 }
+
+/* LIGHT THEME */
+body.light-theme {
+  --bg-primary: #f0f2f5;
+  --bg-surface: #ffffff;
+  --bg-elevated: #e8eaed;
+  --text-light: #1a1a2e;
+  --text-muted: #555577;
+  --border-color: rgba(0,0,0,0.1);
+  --text-primary: #1a1a2e;
+  --text-secondary: #333344;
+  --bg-card: rgba(255, 255, 255, 0.94);
+  --bg-card-hover: rgba(245, 245, 255, 0.98);
+}
+body.light-theme .ambient-orb { opacity: 0.08; }
 

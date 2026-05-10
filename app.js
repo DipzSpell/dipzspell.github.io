@@ -82,6 +82,24 @@ async function fetchData() {
         console.log('Market closed, using cached data from', new Date(cached.timestamp).toLocaleString());
         return cached.data;
     }
+
+    const hc = document.getElementById('heatmap-container');
+    if (hc && hc.innerHTML.trim() === '') {
+        hc.innerHTML = `
+          <div style="grid-column:1/-1; text-align:center; padding:60px 20px;">
+            <div style="font-size:2rem; margin-bottom:12px;">⏳</div>
+            <p style="font-size:1.1rem; color:var(--text-light); margin-bottom:8px;">
+              Waking up data server...
+            </p>
+            <p style="font-size:0.85rem; color:var(--text-muted);">
+              Free server takes ~30-50 seconds to start. Please wait.
+            </p>
+            <div style="margin-top:20px; width:200px; height:4px; background:var(--bg-surface); border-radius:2px; overflow:hidden; margin-inline:auto;">
+              <div style="height:100%; width:40%; background:var(--accent-green); border-radius:2px; animation: shimmer 1.5s infinite;"></div>
+            </div>
+          </div>`;
+    }
+
     // Try fetching from server with timeout
     try {
         const controller = new AbortController();
@@ -180,7 +198,7 @@ function renderHeatmap(a) {
         t.dataset.sectorId = s.id;
         t.dataset.sectorName = s.name;
         const ar=s.change>0.1?'▲':s.change<-0.1?'▼':'●';
-        t.innerHTML=`<div class="tile-name">${s.icon} ${s.name.replace('NIFTY ','')}</div><div class="tile-change">${fmt(s.change)}</div><div class="tile-trend">${ar} ${s.trend}</div>`;
+        t.innerHTML=`<div class="tile-icon" style="font-size:1.2rem; margin-bottom:4px; display:none;">${s.icon}</div><div class="tile-name">${s.icon} ${s.name.replace('NIFTY ','')}</div><div class="tile-change">${fmt(s.change)}</div><div class="tile-trend">${ar} ${s.trend}</div>`;
         c.appendChild(t);
     });
 }
@@ -236,6 +254,30 @@ function updateHeader(a) {
         const ce=document.getElementById('nifty-change');
         ce.textContent=fmt(window._nifty50.change);
         ce.className=`ticker-change ${window._nifty50.change>=0?'up':'down'}`;
+        
+        let history = JSON.parse(localStorage.getItem('tf_nifty_history') || '[]');
+        const currentVal = Number(window._nifty50.val);
+        if (history.length === 0 || history[history.length - 1] !== currentVal) {
+            history.push(currentVal);
+            if (history.length > 10) history = history.slice(-10);
+            localStorage.setItem('tf_nifty_history', JSON.stringify(history));
+        }
+        
+        const sparkline = document.getElementById('nifty-sparkline');
+        if (history.length > 1 && sparkline) {
+            const min = Math.min(...history);
+            const max = Math.max(...history);
+            const range = max - min || 1;
+            const w = 60, h = 20;
+            const points = history.map((val, i) => {
+                const x = (i / (history.length - 1)) * w;
+                const y = h - ((val - min) / range) * h;
+                return `${x},${y}`;
+            }).join(' ');
+            const isUp = history[history.length - 1] >= history[0];
+            const color = isUp ? 'var(--strong-green)' : 'var(--mild-red)';
+            sparkline.innerHTML = `<polyline points="${points}" fill="none" stroke="${color}" stroke-width="2" />`;
+        }
     } else {
         document.getElementById('nifty-value').textContent='--';
         document.getElementById('nifty-change').textContent='--';
@@ -463,6 +505,48 @@ function openSectorModal(sectorId, sectorName) {
         });
 }
 
+// Check local storage for watchlist
+let watchlist = JSON.parse(localStorage.getItem('tf_watchlist') || '[]');
+
+window.toggleWatchlist = function(symbol, event) {
+    event.stopPropagation();
+    const idx = watchlist.indexOf(symbol);
+    if (idx > -1) {
+        watchlist.splice(idx, 1);
+        event.target.style.opacity = '0.3';
+    } else {
+        watchlist.push(symbol);
+        event.target.style.opacity = '1';
+    }
+    localStorage.setItem('tf_watchlist', JSON.stringify(watchlist));
+    if (document.getElementById('tab-watchlist') && document.getElementById('tab-watchlist').classList.contains('active')) {
+        renderWatchlist();
+    }
+};
+
+function renderWatchlist() {
+    const grid = document.getElementById('watchlist-grid');
+    if (!grid) return;
+    if (watchlist.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:40px;">No stocks saved yet. Click ⭐ on any stock to add.</div>';
+        return;
+    }
+    grid.innerHTML = '';
+    watchlist.forEach(sym => {
+        grid.innerHTML += `
+            <div class="brk-card">
+                <div class="brk-info">
+                    <div class="brk-sym">${sym}</div>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <button class="modal-back-btn" style="padding:4px 8px;" onclick="openStockChart('${sym}')">View Chart</button>
+                    <button class="modal-close-btn" style="width:28px; height:28px; font-size:0.8rem; display:flex; align-items:center; justify-content:center;" onclick="toggleWatchlist('${sym}', event)">✕</button>
+                </div>
+            </div>
+        `;
+    });
+}
+
 function renderStockModal(stocks, sectorName) {
     const loading = document.getElementById('modal-loading');
     const grid = document.getElementById('modal-stocks-grid');
@@ -498,7 +582,9 @@ function renderStockModal(stocks, sectorName) {
         tile.dataset.symbol = s.symbol;
         tile.title = `Click to view ${s.symbol} chart`;
         const price = s.lastPrice ? Number(s.lastPrice).toLocaleString('en-IN', { maximumFractionDigits: 2 }) : '--';
+        const isWatched = watchlist.includes(s.symbol);
         tile.innerHTML = `
+            <div style="position:absolute; top:4px; right:4px; font-size:0.8rem; cursor:pointer; opacity:${isWatched ? '1' : '0.3'}; transition:opacity 0.2s; z-index:5;" onclick="toggleWatchlist('${s.symbol}', event)">⭐</div>
             <div class="stock-symbol">${s.symbol}</div>
             <div class="stock-price">₹${price}</div>
             <div class="stock-change">${fmt(pChange)}</div>
@@ -521,62 +607,8 @@ function closeSectorModal() {
 }
 
 // ===== STOCK CHART MODAL =====
-function openStockChart(symbol) {
-    const modal = document.getElementById('stock-chart-modal');
-    const title = document.getElementById('chart-modal-title');
-    const container = document.getElementById('stock-chart-container');
-
-    // NSE:SYMBOL use karo — TradingView pe NSE stocks daily timeframe pe work karte hain
-    const tvSymbol = `NSE:${symbol}`;
-    
-    title.innerHTML = `${symbol} &mdash; Daily Chart 
-        <a href="https://in.tradingview.com/chart/?symbol=NSE:${symbol}" target="_blank" 
-           style="font-size:0.65rem; padding:4px 8px; margin-left:12px; background:rgba(0,229,160,0.15); color:var(--accent-green); border-radius:4px; text-decoration:none; border:1px solid rgba(0,229,160,0.3); vertical-align:middle;">
-           ↗ Open Full Chart
-        </a>`;
-        
-    container.innerHTML = '';
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-
-    const script = document.createElement('script');
-    script.src = 'https://s3.tradingview.com/tv.js';
-    script.async = true;
-    script.onload = () => {
-        if (typeof TradingView !== 'undefined') {
-            new TradingView.widget({
-                width: '100%',
-                height: '100%',
-                symbol: tvSymbol,      // ✅ NSE use karo
-                interval: 'D',
-                timezone: 'Asia/Kolkata',
-                theme: 'dark',
-                style: '1',
-                locale: 'in',
-                enable_publishing: false,
-                backgroundColor: 'rgba(7, 11, 20, 1)',
-                gridColor: 'rgba(255, 255, 255, 0.05)',
-                hide_top_toolbar: false,
-                save_image: true,
-                allow_symbol_change: true,
-                container_id: 'stock-chart-container'
-            });
-        }
-    };
-    
-    // ✅ Script duplicate load mat hone do
-    if (!document.querySelector('script[src="https://s3.tradingview.com/tv.js"]')) {
-        document.body.appendChild(script);
-    } else {
-        script.onload();
-    }
-}
-
-function closeStockChart() {
-    const modal = document.getElementById('stock-chart-modal');
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    document.getElementById('stock-chart-container').innerHTML = '';
+window.openStockChart = function(symbol) {
+    window.open(`https://in.tradingview.com/chart/?symbol=NSE:${symbol}`, '_blank');
 }
 
 // ===== EVENT WIRING =====
@@ -599,6 +631,74 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     tickClock(); // set immediately on load
     setInterval(tickClock, 1000);
+
+    // ===== EXPIRY COUNTDOWN TIMER =====
+    function tickExpiry() {
+        const el = document.getElementById('expiry-timer');
+        if (!el) return;
+
+        const now = new Date();
+        let nextThu = new Date(now.getTime());
+        let daysToThu = (4 - now.getDay() + 7) % 7;
+        if (daysToThu === 0 && (now.getHours() > 15 || (now.getHours() === 15 && now.getMinutes() >= 30))) {
+            daysToThu = 7;
+        }
+        nextThu.setDate(now.getDate() + daysToThu);
+        nextThu.setHours(15, 30, 0, 0);
+
+        const diff = nextThu.getTime() - now.getTime();
+        
+        if (daysToThu === 0 && now.getHours() >= 9 && (now.getHours() < 15 || (now.getHours() === 15 && now.getMinutes() < 30))) {
+            el.textContent = "Expiry Today! ⚡";
+            el.style.color = "var(--strong-green)";
+            return;
+        }
+
+        const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((diff / 1000 / 60) % 60);
+        const s = Math.floor((diff / 1000) % 60);
+
+        el.textContent = `Expiry in: ${d}d ${h}h ${m}m ${s}s`;
+
+        if (d > 0) {
+            el.style.color = "var(--gold)";
+            el.style.animation = "none";
+            el.style.opacity = "1";
+        } else if (h > 0) {
+            el.style.color = "orange";
+            el.style.animation = "none";
+            el.style.opacity = "1";
+        } else {
+            el.style.color = "var(--mild-red)";
+            if (s % 2 === 0) el.style.opacity = "1";
+            else el.style.opacity = "0.3";
+        }
+    }
+    tickExpiry();
+    setInterval(tickExpiry, 1000);
+
+    // ===== THEME TOGGLE =====
+    const themeBtn = document.getElementById('theme-toggle-btn');
+    if (themeBtn) {
+        let isLight = localStorage.getItem('tf_theme') === 'light';
+        if (isLight) {
+            document.body.classList.add('light-theme');
+            themeBtn.textContent = '🌙';
+        }
+        themeBtn.addEventListener('click', () => {
+            isLight = !isLight;
+            if (isLight) {
+                document.body.classList.add('light-theme');
+                themeBtn.textContent = '🌙';
+                localStorage.setItem('tf_theme', 'light');
+            } else {
+                document.body.classList.remove('light-theme');
+                themeBtn.textContent = '☀️';
+                localStorage.setItem('tf_theme', 'dark');
+            }
+        });
+    }
 
     // Auto-fill current year in footer
     const fyEl = document.getElementById('footer-year');
@@ -627,13 +727,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === e.currentTarget) closeSectorModal();
     });
 
-    // Stock chart modal — close on backdrop click or ESC
-    document.getElementById('stock-chart-modal').addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeStockChart();
-    });
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-            closeStockChart();
             closeSectorModal();
         }
     });
@@ -680,6 +775,7 @@ document.querySelectorAll('.nav-item').forEach(nav => {
         const targetTab = document.getElementById(targetId);
         if (targetTab) {
             targetTab.classList.add('active');
+            if (targetId === 'tab-watchlist') renderWatchlist();
             if (targetId === 'tab-options' && !optionsLoaded) loadOptionsData();
             if (targetId === 'tab-fiidii' && !fiidiiLoaded) loadFiiDiiData();
             if (targetId === 'tab-charts' && !chartsLoaded) loadCharts();
@@ -734,7 +830,7 @@ function loadCharts() {
     };
     
     // ✅ Script duplicate load mat hone do
-    if (!document.querySelector('script[src="https://s3.tradingview.com/tv.js"]')) {
+    if (!document.querySelector('script[src*="tradingview"]')) {
         document.body.appendChild(script);
     } else {
         script.onload();
@@ -925,48 +1021,61 @@ if(document.getElementById('load-global-btn')) {
 }
 
 // ===== GLOBAL MARKETS =====
-function loadGlobalMarkets() {
+async function loadGlobalMarkets() {
     const loading = document.getElementById('global-loading');
     const content = document.getElementById('global-content');
     const grid = document.getElementById('global-grid');
     
     loading.classList.add('active'); content.style.display = 'none';
-    
-    // Mock Data for Global Markets
-    setTimeout(() => {
-        const globals = [
-            { name: 'DOW JONES', val: 39500.12, chg: 0.85, region: 'US' },
-            { name: 'S&P 500', val: 5200.45, chg: 1.12, region: 'US' },
-            { name: 'NASDAQ', val: 16400.33, chg: 1.45, region: 'US' },
-            { name: 'FTSE 100', val: 7900.22, chg: -0.25, region: 'EU' },
-            { name: 'DAX', val: 18200.11, chg: 0.40, region: 'EU' },
-            { name: 'NIKKEI 225', val: 40100.50, chg: 2.10, region: 'ASIA' },
-            { name: 'HANG SENG', val: 16800.75, chg: -1.20, region: 'ASIA' }
-        ];
-        
+
+    const symbols = [
+        { symbol: '^GSPC', name: 'S&P 500', region: 'US' },
+        { symbol: '^DJI', name: 'DOW JONES', region: 'US' },
+        { symbol: '^IXIC', name: 'NASDAQ', region: 'US' },
+        { symbol: '^FTSE', name: 'FTSE 100', region: 'EU' },
+        { symbol: '^GDAXI', name: 'DAX', region: 'EU' },
+        { symbol: '^N225', name: 'NIKKEI 225', region: 'ASIA' },
+        { symbol: '^HSI', name: 'HANG SENG', region: 'ASIA' },
+        { symbol: 'GC=F', name: 'GOLD', region: 'COMMODITY' },
+        { symbol: 'CL=F', name: 'CRUDE OIL', region: 'COMMODITY' },
+    ];
+
+    try {
         grid.innerHTML = '';
-        globals.forEach(g => {
-            const isUp = g.chg >= 0;
+        for (const s of symbols) {
+            let val = '--', chg = 0;
+            try {
+                const res = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${s.symbol}?interval=1d&range=2d`);
+                const json = await res.json();
+                const meta = json.chart.result[0].meta;
+                val = meta.regularMarketPrice;
+                chg = meta.regularMarketChangePercent || ((meta.regularMarketPrice - meta.chartPreviousClose) / meta.chartPreviousClose * 100);
+            } catch(e) {
+                // Ignore error, show --
+            }
+
+            const isUp = chg >= 0;
             const color = isUp ? 'var(--strong-green)' : 'var(--mild-red)';
             const icon = isUp ? '▲' : '▼';
             
             grid.innerHTML += `
                 <div class="brk-card" style="border-left: 4px solid ${color};">
                     <div class="brk-info">
-                        <div class="brk-sym">${g.name} <span class="tag tag-cyan" style="font-size:0.6rem;">${g.region}</span></div>
+                        <div class="brk-sym">${s.name} <span class="tag tag-cyan" style="font-size:0.6rem;">${s.region}</span></div>
                     </div>
                     <div class="brk-price-col">
-                        <div class="brk-price">${g.val.toLocaleString('en-US')}</div>
-                        <div class="brk-chg" style="color:${color}">${icon} ${Math.abs(g.chg).toFixed(2)}%</div>
+                        <div class="brk-price">${typeof val === 'number' ? val.toLocaleString('en-US', {maximumFractionDigits:2}) : val}</div>
+                        <div class="brk-chg" style="color:${color}">${icon} ${Math.abs(chg).toFixed(2)}%</div>
                     </div>
                 </div>
             `;
-        });
-        
+        }
         loading.classList.remove('active');
         content.style.display = 'block';
         globalLoaded = true;
-    }, 800);
+    } catch(e) {
+        loading.innerHTML = '<span>❌ Could not load global markets data.</span>';
+    }
 }
 
 // ===== NEWS & SENTIMENT =====
