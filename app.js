@@ -84,7 +84,7 @@ async function fetchData() {
     }
 
     const hc = document.getElementById('heatmap-container');
-    if (hc && hc.innerHTML.trim() === '') {
+    if (hc && !hc.querySelector('.heatmap-tile')) {
         hc.innerHTML = `
           <div style="grid-column:1/-1; text-align:center; padding:60px 20px;">
             <div style="font-size:2rem; margin-bottom:12px;">⏳</div>
