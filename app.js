@@ -494,13 +494,24 @@ function renderStockModal(stocks, sectorName) {
         const tile = document.createElement('div');
         tile.className = `stock-tile ${tileClass(pChange)} animate-in`;
         tile.style.animationDelay = `${i * 25}ms`;
+        tile.style.cursor = 'pointer';
+        tile.dataset.symbol = s.symbol;
+        tile.title = `Click to view ${s.symbol} chart`;
         const price = s.lastPrice ? Number(s.lastPrice).toLocaleString('en-IN', { maximumFractionDigits: 2 }) : '--';
         tile.innerHTML = `
             <div class="stock-symbol">${s.symbol}</div>
             <div class="stock-price">₹${price}</div>
             <div class="stock-change">${fmt(pChange)}</div>
+            <div style="font-size:0.55rem;opacity:0.6;margin-top:3px;">📈 Chart</div>
         `;
         grid.appendChild(tile);
+    });
+
+    // Click stock → open chart
+    grid.querySelectorAll('.stock-tile').forEach(tile => {
+        tile.addEventListener('click', () => {
+            openStockChart(tile.dataset.symbol);
+        });
     });
 }
 
@@ -509,11 +520,89 @@ function closeSectorModal() {
     document.body.style.overflow = '';
 }
 
+// ===== STOCK CHART MODAL =====
+function openStockChart(symbol) {
+    const modal = document.getElementById('stock-chart-modal');
+    const title = document.getElementById('chart-modal-title');
+    const container = document.getElementById('stock-chart-container');
+
+    // NSE:SYMBOL use karo — TradingView pe NSE stocks daily timeframe pe work karte hain
+    const tvSymbol = `NSE:${symbol}`;
+    
+    title.innerHTML = `${symbol} &mdash; Daily Chart 
+        <a href="https://in.tradingview.com/chart/?symbol=NSE:${symbol}" target="_blank" 
+           style="font-size:0.65rem; padding:4px 8px; margin-left:12px; background:rgba(0,229,160,0.15); color:var(--accent-green); border-radius:4px; text-decoration:none; border:1px solid rgba(0,229,160,0.3); vertical-align:middle;">
+           ↗ Open Full Chart
+        </a>`;
+        
+    container.innerHTML = '';
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+
+    const script = document.createElement('script');
+    script.src = 'https://s3.tradingview.com/tv.js';
+    script.async = true;
+    script.onload = () => {
+        if (typeof TradingView !== 'undefined') {
+            new TradingView.widget({
+                width: '100%',
+                height: '100%',
+                symbol: tvSymbol,      // ✅ NSE use karo
+                interval: 'D',
+                timezone: 'Asia/Kolkata',
+                theme: 'dark',
+                style: '1',
+                locale: 'in',
+                enable_publishing: false,
+                backgroundColor: 'rgba(7, 11, 20, 1)',
+                gridColor: 'rgba(255, 255, 255, 0.05)',
+                hide_top_toolbar: false,
+                save_image: true,
+                allow_symbol_change: true,
+                container_id: 'stock-chart-container'
+            });
+        }
+    };
+    
+    // ✅ Script duplicate load mat hone do
+    if (!document.querySelector('script[src="https://s3.tradingview.com/tv.js"]')) {
+        document.body.appendChild(script);
+    } else {
+        script.onload();
+    }
+}
+
+function closeStockChart() {
+    const modal = document.getElementById('stock-chart-modal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    document.getElementById('stock-chart-container').innerHTML = '';
+}
+
 // ===== EVENT WIRING =====
 document.addEventListener('DOMContentLoaded', () => {
     loadDashboard();
     document.getElementById('refresh-btn').addEventListener('click', loadDashboard);
     setInterval(loadDashboard, 60000);
+
+    // ===== LIVE CLOCK — ticks every second =====
+    function tickClock() {
+        const el = document.getElementById('update-time');
+        if (el) {
+            el.textContent = new Date().toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: false
+            });
+        }
+    }
+    tickClock(); // set immediately on load
+    setInterval(tickClock, 1000);
+
+    // Auto-fill current year in footer
+    const fyEl = document.getElementById('footer-year');
+    if (fyEl) fyEl.textContent = new Date().getFullYear();
 
     // Heatmap tile click → open sector modal
     document.getElementById('heatmap-container').addEventListener('click', (e) => {
@@ -537,6 +626,47 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('sector-modal').addEventListener('click', (e) => {
         if (e.target === e.currentTarget) closeSectorModal();
     });
+
+    // Stock chart modal — close on backdrop click or ESC
+    document.getElementById('stock-chart-modal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeStockChart();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeStockChart();
+            closeSectorModal();
+        }
+    });
+
+    // ===== MOBILE SIDEBAR TOGGLE =====
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        sidebarToggle.textContent = '✕';
+    }
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+        sidebarToggle.textContent = '☰';
+    }
+
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+    overlay.addEventListener('click', closeSidebar);
+
+    // Close sidebar when a nav item is tapped on mobile
+    document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.addEventListener('click', () => {
+            if (window.innerWidth <= 900) closeSidebar();
+        });
+    });
 // ===== TABS WIRING =====
 document.querySelectorAll('.nav-item').forEach(nav => {
     nav.addEventListener('click', (e) => {
@@ -553,6 +683,9 @@ document.querySelectorAll('.nav-item').forEach(nav => {
             if (targetId === 'tab-options' && !optionsLoaded) loadOptionsData();
             if (targetId === 'tab-fiidii' && !fiidiiLoaded) loadFiiDiiData();
             if (targetId === 'tab-charts' && !chartsLoaded) loadCharts();
+            if (targetId === 'tab-global' && !globalLoaded) loadGlobalMarkets();
+            if (targetId === 'tab-news' && !newsLoaded) loadNews();
+            if (targetId === 'tab-strategies' && !strategiesLoaded) loadStrategies();
         }
     });
 });
@@ -560,31 +693,52 @@ document.querySelectorAll('.nav-item').forEach(nav => {
 let optionsLoaded = false;
 let fiidiiLoaded = false;
 let chartsLoaded = false;
+let globalLoaded = false;
+let newsLoaded = false;
+let strategiesLoaded = false;
 
 function loadCharts() {
     if (chartsLoaded) return;
+    chartsLoaded = true; // Prevent multiple clicks from firing this again
+    
+    // Clear container just in case
+    const container = document.getElementById('tradingview_chart');
+    if (container) container.innerHTML = '';
+
     const script = document.createElement('script');
     script.src = "https://s3.tradingview.com/tv.js";
+    script.async = true;
     script.onload = () => {
-        new TradingView.widget({
-            "autosize": true,
-            "symbol": "BSE:SENSEX",
-            "interval": "D",
-            "timezone": "Asia/Kolkata",
-            "theme": "dark",
-            "style": "1",
-            "locale": "in",
-            "enable_publishing": false,
-            "backgroundColor": "rgba(10, 14, 23, 1)",
-            "gridColor": "rgba(255, 255, 255, 0.06)",
-            "hide_top_toolbar": false,
-            "hide_legend": false,
-            "save_image": false,
-            "container_id": "tradingview_chart"
-        });
-        chartsLoaded = true;
+        if (typeof TradingView !== 'undefined') {
+            new TradingView.widget({
+                "width": "100%",
+                "height": "100%",
+                "symbol": "NSE:NIFTY",
+                "interval": "15",
+                "timezone": "Asia/Kolkata",
+                "theme": "dark",
+                "style": "1",
+                "locale": "in",
+                "enable_publishing": false,
+                "backgroundColor": "rgba(10, 14, 23, 1)",
+                "gridColor": "rgba(255, 255, 255, 0.06)",
+                "hide_top_toolbar": false,
+                "hide_legend": false,
+                "save_image": true,
+                "container_id": "tradingview_chart",
+                "allow_symbol_change": true,
+                "hide_side_toolbar": false,
+                "withdateranges": true
+            });
+        }
     };
-    document.getElementById('tab-charts').appendChild(script);
+    
+    // ✅ Script duplicate load mat hone do
+    if (!document.querySelector('script[src="https://s3.tradingview.com/tv.js"]')) {
+        document.body.appendChild(script);
+    } else {
+        script.onload();
+    }
 }
 
 // ===== OPTIONS ANALYZER =====
@@ -766,12 +920,180 @@ function generateAITrades() {
 document.getElementById('load-options-btn').addEventListener('click', loadOptionsData);
 document.getElementById('load-fiidii-btn').addEventListener('click', loadFiiDiiData);
 document.getElementById('generate-ai-btn').addEventListener('click', generateAITrades);
+if(document.getElementById('load-global-btn')) {
+    document.getElementById('load-global-btn').addEventListener('click', () => { globalLoaded = false; loadGlobalMarkets(); });
+}
+
+// ===== GLOBAL MARKETS =====
+function loadGlobalMarkets() {
+    const loading = document.getElementById('global-loading');
+    const content = document.getElementById('global-content');
+    const grid = document.getElementById('global-grid');
+    
+    loading.classList.add('active'); content.style.display = 'none';
+    
+    // Mock Data for Global Markets
+    setTimeout(() => {
+        const globals = [
+            { name: 'DOW JONES', val: 39500.12, chg: 0.85, region: 'US' },
+            { name: 'S&P 500', val: 5200.45, chg: 1.12, region: 'US' },
+            { name: 'NASDAQ', val: 16400.33, chg: 1.45, region: 'US' },
+            { name: 'FTSE 100', val: 7900.22, chg: -0.25, region: 'EU' },
+            { name: 'DAX', val: 18200.11, chg: 0.40, region: 'EU' },
+            { name: 'NIKKEI 225', val: 40100.50, chg: 2.10, region: 'ASIA' },
+            { name: 'HANG SENG', val: 16800.75, chg: -1.20, region: 'ASIA' }
+        ];
+        
+        grid.innerHTML = '';
+        globals.forEach(g => {
+            const isUp = g.chg >= 0;
+            const color = isUp ? 'var(--strong-green)' : 'var(--mild-red)';
+            const icon = isUp ? '▲' : '▼';
+            
+            grid.innerHTML += `
+                <div class="brk-card" style="border-left: 4px solid ${color};">
+                    <div class="brk-info">
+                        <div class="brk-sym">${g.name} <span class="tag tag-cyan" style="font-size:0.6rem;">${g.region}</span></div>
+                    </div>
+                    <div class="brk-price-col">
+                        <div class="brk-price">${g.val.toLocaleString('en-US')}</div>
+                        <div class="brk-chg" style="color:${color}">${icon} ${Math.abs(g.chg).toFixed(2)}%</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        loading.classList.remove('active');
+        content.style.display = 'block';
+        globalLoaded = true;
+    }, 800);
+}
+
+// ===== NEWS & SENTIMENT =====
+function loadNews() {
+    const grid = document.getElementById('news-grid');
+    
+    const news = [
+        { title: "FIIs turn net buyers after 5 days, inject ₹2,500 Cr", source: "Moneycontrol", time: "10 mins ago", type: "bullish" },
+        { title: "Inflation cools down, rate cut hopes rise", source: "Bloomberg", time: "45 mins ago", type: "bullish" },
+        { title: "Tech sector faces headwinds on global cues", source: "Reuters", time: "2 hours ago", type: "bearish" },
+        { title: "RBI maintains status quo on repo rate", source: "ET", time: "3 hours ago", type: "neutral" },
+        { title: "Oil prices spike amidst geopolitical tensions", source: "CNBC", time: "4 hours ago", type: "bearish" }
+    ];
+    
+    grid.innerHTML = '';
+    news.forEach((n, i) => {
+        let tagColor = n.type === 'bullish' ? 'tag-green' : (n.type === 'bearish' ? 'tag-red' : 'tag-gold');
+        grid.innerHTML += `
+            <div class="top-card animate-in" style="animation-delay:${i*100}ms; flex-direction:column; align-items:flex-start; gap:10px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <span style="font-size:0.75rem; color:var(--text-muted);">${n.source} • ${n.time}</span>
+                    <span class="tag ${tagColor}">${n.type.toUpperCase()}</span>
+                </div>
+                <div style="font-size:1rem; font-weight:600; line-height:1.4;">${n.title}</div>
+            </div>
+        `;
+    });
+    newsLoaded = true;
+}
+
+// ===== ALGO STRATEGIES =====
+function loadStrategies() {
+    const grid = document.getElementById('strategies-grid');
+    
+    const strategies = [
+        { name: "Short Straddle (Intraday)", type: "Neutral", winRate: "68%", roi: "1.5-2%", risk: "High", desc: "Sell ATM Call and Put. Profits from theta decay in sideways markets." },
+        { name: "Iron Condor", type: "Range Bound", winRate: "75%", roi: "3-4%", risk: "Defined", desc: "Sell OTM Strangle and buy further OTM Strangle for protection." },
+        { name: "Bull Call Spread", type: "Bullish", winRate: "55%", roi: "10-15%", risk: "Defined", desc: "Buy ATM Call and sell OTM Call to reduce premium cost." },
+        { name: "Bear Put Spread", type: "Bearish", winRate: "58%", roi: "12-18%", risk: "Defined", desc: "Buy ATM Put and sell OTM Put. Best for moderate downtrends." }
+    ];
+    
+    grid.innerHTML = '';
+    strategies.forEach((s, i) => {
+        grid.innerHTML += `
+            <div class="ai-card" style="animation: fade-in 0.3s ease forwards; animation-delay:${i*100}ms; opacity:0;">
+                <div class="ai-header">
+                    <span class="ai-sym" style="font-size:1.1rem;">${s.name}</span>
+                    <span class="tag tag-cyan">${s.type}</span>
+                </div>
+                <div class="ai-reasoning" style="min-height:50px;">${s.desc}</div>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:15px; background:rgba(255,255,255,0.02); padding:10px; border-radius:6px;">
+                    <div><div style="font-size:0.7rem; color:var(--text-muted);">Win Rate</div><div style="font-weight:bold;">${s.winRate}</div></div>
+                    <div><div style="font-size:0.7rem; color:var(--text-muted);">Est. ROI</div><div style="font-weight:bold; color:var(--strong-green);">${s.roi}</div></div>
+                    <div><div style="font-size:0.7rem; color:var(--text-muted);">Risk</div><div style="font-weight:bold;">${s.risk}</div></div>
+                </div>
+                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px; border-color:var(--accent-cyan); color:var(--accent-cyan);">Deploy Strategy</button>
+            </div>
+        `;
+    });
+    strategiesLoaded = true;
+}
 
 document.querySelectorAll('.nav-item').forEach(nav => {
     nav.addEventListener('click', (e) => {
         const targetId = e.currentTarget.dataset.target;
         if (targetId === 'tab-ai') generateAITrades();
+        if (targetId === 'tab-global' && !globalLoaded) loadGlobalMarkets();
+        if (targetId === 'tab-news' && !newsLoaded) loadNews();
+        if (targetId === 'tab-strategies' && !strategiesLoaded) loadStrategies();
     });
 });
 
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

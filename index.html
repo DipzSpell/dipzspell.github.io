@@ -61,6 +61,7 @@
                     <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
                 </svg>
             </button>
+            <button class="sidebar-toggle" id="sidebar-toggle" title="Open Menu">☰</button>
         </div>
     </header>
 
@@ -83,11 +84,15 @@
         </div>
     </div>
 
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
     <!-- Main Content Layout -->
     <div class="layout-wrapper">
         <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
+                <div class="nav-section-title" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; padding: 10px 15px 5px; letter-spacing: 1px; font-weight: 600;">Dashboard</div>
                 <a href="#" class="nav-item active" data-target="tab-market-pulse">
                     <span class="nav-icon">📊</span> Market Pulse
                 </a>
@@ -102,6 +107,34 @@
                 </a>
                 <a href="#" class="nav-item" data-target="tab-ai">
                     <span class="nav-icon">🤖</span> AI Trading Alpha
+                </a>
+                <a href="#" class="nav-item" data-target="tab-global">
+                    <span class="nav-icon">🌍</span> Global Markets
+                </a>
+                <a href="#" class="nav-item" data-target="tab-news">
+                    <span class="nav-icon">📰</span> News & Sentiment
+                </a>
+                <a href="#" class="nav-item" data-target="tab-strategies">
+                    <span class="nav-icon">♟️</span> Algo Strategies
+                </a>
+
+                <div class="nav-divider" style="height: 1px; background: var(--border-color); margin: 10px 0; opacity: 0.5;"></div>
+                <div class="nav-section-title" style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; padding: 10px 15px 5px; letter-spacing: 1px; font-weight: 600;">Resources & Info</div>
+                
+                <a href="#" class="nav-item" data-target="tab-blog">
+                    <span class="nav-icon">📝</span> Blog & Tips
+                </a>
+                <a href="#" class="nav-item" data-target="tab-community">
+                    <span class="nav-icon">💬</span> Community
+                </a>
+                <a href="#" class="nav-item" data-target="tab-about">
+                    <span class="nav-icon">ℹ️</span> About
+                </a>
+                <a href="#" class="nav-item" data-target="tab-contact">
+                    <span class="nav-icon">📧</span> Contact
+                </a>
+                <a href="#" class="nav-item" data-target="tab-privacy">
+                    <span class="nav-icon">🛡️</span> Privacy Policy
                 </a>
             </nav>
         </aside>
@@ -207,8 +240,7 @@
                 <section class="dashboard-section" style="padding: 0; overflow: hidden; border-radius: var(--radius-md);">
                     <!-- TradingView Widget BEGIN -->
                     <div class="tradingview-widget-container" style="height: 600px; width: 100%;">
-                      <div id="tradingview_chart" style="height: calc(100% - 32px); width: 100%;"></div>
-                      <div class="tradingview-widget-copyright"><a href="https://in.tradingview.com/" rel="noopener nofollow" target="_blank"><span class="blue-text">Track all markets on TradingView</span></a></div>
+                      <div id="tradingview_chart" style="height: 100%; width: 100%;"></div>
                     </div>
                     <!-- TradingView Widget END -->
                 </section>
@@ -310,13 +342,293 @@
                     </div>
                 </section>
             </div>
+
+            <!-- TAB: GLOBAL MARKETS -->
+            <div id="tab-global" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>🌍 Global Market Indices</h2>
+                        <div class="header-actions">
+                            <button class="modal-back-btn" id="load-global-btn" style="padding:4px 12px">Refresh World Markets</button>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:400px">
+                        <div class="modal-loading" id="global-loading">
+                            <div class="spinner"></div>
+                            <span>Connecting to Global Exchanges...</span>
+                        </div>
+                        <div id="global-content" style="display:none;">
+                            <div class="global-grid" id="global-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                                <!-- Global cards will be injected here -->
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: NEWS & SENTIMENT -->
+            <div id="tab-news" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>📰 Live Market News & AI Sentiment</h2>
+                        <div class="header-actions">
+                            <span class="tag tag-purple">Powered by AI</span>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px">
+                        <div class="sentiment-overview" id="sentiment-overview" style="margin-bottom: 25px; padding: 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between;">
+                            <div>
+                                <h3 style="font-size: 1.1rem; margin-bottom: 5px; color: var(--text-light);">Overall Market Sentiment</h3>
+                                <p style="font-size: 0.9rem; color: var(--text-muted);">Aggregated from top financial news sources</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div class="sentiment-meter" style="width: 200px; height: 12px; background: var(--bg-surface); border-radius: 6px; overflow: hidden; position: relative;">
+                                    <div style="position: absolute; left: 0; top: 0; height: 100%; width: 65%; background: linear-gradient(90deg, #ef5350, #ffb74d, #66bb6a);"></div>
+                                    <div style="position: absolute; left: 65%; top: -2px; width: 4px; height: 16px; background: white; border-radius: 2px; box-shadow: 0 0 5px rgba(255,255,255,0.5);"></div>
+                                </div>
+                                <span style="font-weight: bold; color: var(--strong-green); font-size: 1.2rem;">65% Bullish</span>
+                            </div>
+                        </div>
+                        <div class="news-grid" id="news-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                            <!-- News cards injected here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: ALGO STRATEGIES -->
+            <div id="tab-strategies" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>♟️ Pre-built Algo Strategies</h2>
+                        <div class="header-actions">
+                            <span class="tag tag-cyan">One-Click Deployment</span>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px">
+                        <p class="breakout-desc" style="margin-bottom: 24px;">Deploy institutional-grade algorithmic strategies with a single click. These strategies automatically adjust based on market volatility and trend.</p>
+                        <div class="strategies-grid" id="strategies-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+                            <!-- Strategy cards injected here -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: BLOG & TIPS -->
+            <div id="tab-blog" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>📝 Trading Blog & Pro Tips</h2>
+                        <div class="header-actions">
+                            <span class="tag tag-green">New Articles</span>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px">
+                        <div class="strategies-grid" id="blog-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+                            <!-- Article 1 -->
+                            <div class="ai-card" style="border-top: 4px solid var(--accent-cyan);">
+                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Options Trading • 5 Min Read</div>
+                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">Mastering Theta Decay in BankNifty</h3>
+                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">Learn how to profit from sideways markets by understanding how options lose value over time, especially on expiry days...</p>
+                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
+                            </div>
+                            <!-- Article 2 -->
+                            <div class="ai-card" style="border-top: 4px solid #ffb74d;">
+                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Psychology • 4 Min Read</div>
+                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">The Discipline of Stop Loss</h3>
+                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">Why most retail traders wipe out their accounts and how maintaining strict risk management can make you consistently profitable...</p>
+                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
+                            </div>
+                            <!-- Article 3 -->
+                            <div class="ai-card" style="border-top: 4px solid var(--strong-green);">
+                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Market Analysis • 6 Min Read</div>
+                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">FII & DII Data Demystified</h3>
+                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">A complete guide to tracking institutional footprints and predicting market reversals before they happen...</p>
+                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
+                            </div>
+                            <!-- Article 4 -->
+                            <div class="ai-card" style="border-top: 4px solid var(--mild-red);">
+                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Technical Analysis • 8 Min Read</div>
+                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">Trading the Open Drive</h3>
+                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">Strategies to catch the explosive momentum that occurs in the first 15 minutes of the market opening...</p>
+                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: COMMUNITY -->
+            <div id="tab-community" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>💬 TradeFinder Community</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
+                        <h3 style="font-size: 1.8rem; margin-bottom: 10px; color: var(--text-light);">Join 10,000+ Traders</h3>
+                        <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 30px; line-height: 1.6;">Connect with like-minded traders, share charts, discuss real-time setups, and get instant updates on market breakouts.</p>
+                        
+                        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
+                            <a href="#" style="text-decoration:none;">
+                                <div class="ai-card" style="width: 200px; display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid #0088cc; transition: transform 0.2s;">
+                                    <div style="font-size: 3rem;">✈️</div>
+                                    <div style="font-weight: bold; color: #0088cc;">Telegram Channel</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Live Alerts & Updates</div>
+                                </div>
+                            </a>
+                            <a href="#" style="text-decoration:none;">
+                                <div class="ai-card" style="width: 200px; display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid #5865F2; transition: transform 0.2s;">
+                                    <div style="font-size: 3rem;">🎮</div>
+                                    <div style="font-weight: bold; color: #5865F2;">Discord Server</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Voice & Chart Discussions</div>
+                                </div>
+                            </a>
+                            <a href="#" style="text-decoration:none;">
+                                <div class="ai-card" style="width: 200px; display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid #1DA1F2; transition: transform 0.2s;">
+                                    <div style="font-size: 3rem;">🐦</div>
+                                    <div style="font-weight: bold; color: #1DA1F2;">Twitter / X</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Market Commentary</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: ABOUT -->
+            <div id="tab-about" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>ℹ️ About TradeFinder</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:400px; padding: 40px; background: rgba(255,255,255,0.01); border-radius: 12px; line-height: 1.8; color: var(--text-muted);">
+                        <div style="max-width: 800px; margin: 0 auto;">
+                            <h3 style="font-size: 1.5rem; color: var(--text-light); margin-bottom: 20px;">Empowering Retail Traders with Institutional Data</h3>
+                            <p style="margin-bottom: 20px;">
+                                TradeFinder was born out of a simple necessity: to level the playing field. Retail traders often rely on lagging indicators and delayed news, while institutions execute trades based on real-time order flow and options data. Our platform bridges that gap.
+                            </p>
+                            <p style="margin-bottom: 20px;">
+                                We aggregate billions of data points from the National Stock Exchange (NSE) — including Options Chain structures, FII/DII activities, and sectoral rotation — and process them through our proprietary AI engine to present actionable insights.
+                            </p>
+                            <h4 style="font-size: 1.2rem; color: var(--text-light); margin: 30px 0 15px;">Our Mission</h4>
+                            <p style="margin-bottom: 20px;">
+                                To eliminate the "noise" of the stock market and provide traders with purely quantitative, bias-free, and high-probability trading setups. We believe data over opinions.
+                            </p>
+                            <div style="margin-top: 40px; padding: 20px; border-radius: 8px; background: rgba(0,217,245,0.05); border: 1px solid rgba(0,217,245,0.2);">
+                                <strong style="color: var(--accent-cyan);">Note:</strong> TradeFinder is an educational platform. All AI scans, levels, and strategies are meant to supplement your own technical analysis, not replace it.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: CONTACT -->
+            <div id="tab-contact" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>📧 Contact Us</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:400px; display: flex; flex-wrap: wrap; gap: 40px;">
+                        <div style="flex: 1; min-width: 300px;">
+                            <h3 style="color: var(--text-light); margin-bottom: 15px;">Get in Touch</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 30px; line-height: 1.6;">Have questions, feature requests, or encountered a bug? Send us a message and our support team will get back to you within 24 hours.</p>
+                            
+                            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">✉️</div>
+                                <div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Email Support</div>
+                                    <div style="font-weight: 500;">support@tradefinder.app</div>
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 20px; display: flex; align-items: center; gap: 15px;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">🏢</div>
+                                <div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Office Location</div>
+                                    <div style="font-weight: 500;">Mumbai, Maharashtra, India</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="flex: 1.5; min-width: 300px; background: rgba(255,255,255,0.02); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color);">
+                            <form id="contact-form" onsubmit="event.preventDefault(); alert('Message sent successfully! We will get back to you soon.'); this.reset();">
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">Your Name</label>
+                                    <input type="text" required style="width: 100%; padding: 12px 15px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; font-family: var(--font-base);" placeholder="John Doe">
+                                </div>
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">Email Address</label>
+                                    <input type="email" required style="width: 100%; padding: 12px 15px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; font-family: var(--font-base);" placeholder="john@example.com">
+                                </div>
+                                <div style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 0.9rem;">Message</label>
+                                    <textarea required rows="5" style="width: 100%; padding: 12px 15px; border-radius: 8px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: white; font-family: var(--font-base); resize: vertical;" placeholder="How can we help you?"></textarea>
+                                </div>
+                                <button type="submit" class="modal-back-btn" style="width: 100%; justify-content: center; padding: 12px; background: var(--accent-cyan); color: #000; font-weight: bold; border: none; font-size: 1rem;">Send Message</button>
+                            </form>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: PRIVACY POLICY -->
+            <div id="tab-privacy" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>🛡️ Privacy Policy & Terms</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px; padding: 40px; background: rgba(255,255,255,0.01); border-radius: 12px; line-height: 1.8; color: var(--text-muted);">
+                        <div style="max-width: 800px; margin: 0 auto;">
+                            <h3 style="color: var(--text-light); margin-bottom: 10px;">Privacy Policy</h3>
+                            <p style="font-size: 0.85rem; margin-bottom: 20px;">Last updated: May 10, 2026</p>
+                            
+                            <h4 style="color: #fff; margin-top: 25px; margin-bottom: 10px;">1. Information We Collect</h4>
+                            <p style="margin-bottom: 15px;">We do not collect personally identifiable information unless explicitly provided by you (e.g., through our contact form). We use standard analytics tools to collect non-personal data such as browser type, operating system, and pages visited to improve our services.</p>
+                            
+                            <h4 style="color: #fff; margin-top: 25px; margin-bottom: 10px;">2. Advertising and Google AdSense</h4>
+                            <p style="margin-bottom: 15px;">TradeFinder uses Google AdSense to display advertisements. Google, as a third-party vendor, uses cookies to serve ads on our site. Google's use of the DART cookie enables it to serve ads to our users based on their visit to our site and other sites on the Internet.</p>
+                            <p style="margin-bottom: 15px;">Users may opt out of the use of the DART cookie by visiting the Google ad and content network privacy policy.</p>
+
+                            <h4 style="color: #fff; margin-top: 25px; margin-bottom: 10px;">3. Use of Cookies</h4>
+                            <p style="margin-bottom: 15px;">We use cookies to store your preferences, such as cached market data and theme settings. You can choose to disable cookies through your individual browser options, though this may affect the functionality of the dashboard.</p>
+
+                            <h4 style="color: #fff; margin-top: 25px; margin-bottom: 10px;">4. Disclaimer</h4>
+                            <p style="margin-bottom: 15px;">The financial data and AI insights provided on this platform are for educational purposes only. They do not constitute financial advice. Trading in the stock market involves substantial risk. TradeFinder is not responsible for any financial losses incurred based on the data displayed on this site.</p>
+                            
+                            <h4 style="color: #fff; margin-top: 25px; margin-bottom: 10px;">5. Changes to This Policy</h4>
+                            <p style="margin-bottom: 15px;">We reserve the right to modify this privacy policy at any time. Any changes will be posted on this page.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
 
     <!-- Footer -->
     <footer id="main-footer">
-        <p>TradeFinder — NSE Sectoral Heatmap Dashboard &bull; Data for educational purposes only &bull; Not financial advice</p>
+        <p style="margin-bottom: 6px;">
+            TradeFinder — NSE Sectoral Heatmap Dashboard &bull; Data for educational purposes only &bull; Not financial advice
+        </p>
+        <p style="font-size: 0.65rem; color: var(--text-muted); opacity: 0.7;">
+            &copy; <span id="footer-year"></span> <strong style="color: var(--accent-green);">DipzSpell</strong> &bull; All Rights Reserved
+        </p>
     </footer>
+
+    <!-- Stock Chart Modal -->
+    <div class="modal-overlay" id="stock-chart-modal" style="z-index: 300;">
+        <div class="modal-content" style="max-width: 1100px; height: 85vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="flex-shrink: 0;">
+                <div class="modal-title-area">
+                    <button class="modal-back-btn" onclick="closeStockChart()">← Back</button>
+                    <h2 id="chart-modal-title">Stock Chart</h2>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <span class="tag tag-cyan" style="font-size:0.68rem;">NSE • 15m</span>
+                    <span class="tag tag-green" style="font-size:0.68rem;">Live TradingView</span>
+                </div>
+                <button class="modal-close-btn" onclick="closeStockChart()">✕</button>
+            </div>
+            <div id="stock-chart-container" style="flex: 1; width: 100%; background: rgba(7,11,20,1);"></div>
+        </div>
+    </div>
 
     <!-- Sector Stocks Modal -->
     <div class="modal-overlay" id="sector-modal">
