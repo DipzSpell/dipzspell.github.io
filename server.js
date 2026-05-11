@@ -194,16 +194,39 @@ app.get('/api/options/:symbol', async (req, res) => {
     }
     try {
         if (!nseCookies) await getNSECookies();
-        const url = `https://www.nseindia.com/api/option-chain-indices?symbol=${symbol}`;
-        let result = await httpsGet(url, { 'Cookie': nseCookies, 'Referer': 'https://www.nseindia.com/option-chain' });
+        
+        // Use liveEquity-derivatives for NIFTY as it bypasses the {} bot protection
+        const url = symbol === 'NIFTY' 
+            ? `https://www.nseindia.com/api/liveEquity-derivatives?index=nse50_opt`
+            : `https://www.nseindia.com/api/option-chain-indices?symbol=${symbol}`;
+            
+        let result = await httpsGet(url, { 'Cookie': nseCookies, 'Referer': 'https://www.nseindia.com/' });
         if (result.status === 401 || result.status === 403) {
             nseCookies = ''; await getNSECookies();
-            result = await httpsGet(url, { 'Cookie': nseCookies, 'Referer': 'https://www.nseindia.com/option-chain' });
+            result = await httpsGet(url, { 'Cookie': nseCookies, 'Referer': 'https://www.nseindia.com/' });
         }
         if (result.status === 200) {
             const json = JSON.parse(result.body);
-            optionsCache[symbol] = { data: json, ts: Date.now() };
-            return res.json({ success: true, data: json });
+            
+            let responseData = json;
+            // Transform data so frontend doesn't need changes
+            if (symbol === 'NIFTY' && json.data) {
+                let peOI = 0;
+                let ceOI = 0;
+                json.data.forEach(item => {
+                    if (item.optionType === 'Put') peOI += item.openInterest;
+                    if (item.optionType === 'Call') ceOI += item.openInterest;
+                });
+                responseData = {
+                    filtered: {
+                        PE: { totOI: peOI },
+                        CE: { totOI: ceOI }
+                    }
+                };
+            }
+            
+            optionsCache[symbol] = { data: responseData, ts: Date.now() };
+            return res.json({ success: true, data: responseData });
         }
         res.json({ success: false, error: 'Failed to fetch options data' });
     } catch (e) {

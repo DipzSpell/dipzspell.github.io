@@ -852,8 +852,8 @@ async function loadOptionsData() {
             const ceOI = data.CE.totOI;
             const pcr = (peOI / ceOI).toFixed(2);
             
-            document.getElementById('total-pe-oi').textContent = peOI.toLocaleString('en-IN');
-            document.getElementById('total-ce-oi').textContent = ceOI.toLocaleString('en-IN');
+            document.getElementById('total-pe-oi').textContent = Math.round(peOI).toLocaleString('en-IN');
+            document.getElementById('total-ce-oi').textContent = Math.round(ceOI).toLocaleString('en-IN');
             const pcrEl = document.getElementById('options-pcr');
             pcrEl.textContent = pcr;
             pcrEl.style.color = pcr > 1 ? 'var(--strong-green)' : (pcr < 0.8 ? 'var(--mild-red)' : 'var(--accent-cyan)');
