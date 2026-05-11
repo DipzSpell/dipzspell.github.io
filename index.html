@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=2">
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
     <!-- Ambient background effects -->
@@ -50,7 +51,7 @@
                 <span class="ticker-change" id="nifty-change">--</span>
                 <svg id="nifty-sparkline" width="60" height="20" style="margin-left: 8px;"></svg>
             </div>
-            <div class="expiry-timer" id="expiry-timer" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:600; padding:6px 16px; background:rgba(255,255,255,0.04); border-radius:20px; border:1px solid var(--border-color); color:var(--text-light);">
+            <div class="expiry-timer" id="expiry-timer" style="display:none; font-family:var(--font-mono); font-size:0.85rem; font-weight:600; padding:6px 16px; background:rgba(255,255,255,0.04); border-radius:20px; border:1px solid var(--border-color); color:var(--text-light);">
                 Expiry in: --
             </div>
         </div>
@@ -115,17 +116,26 @@
                 <a href="#" class="nav-item" data-target="tab-fiidii">
                     <span class="nav-icon">🏦</span> Institutional Flow
                 </a>
+                <a href="#" class="nav-item active" data-target="tab-market-pulse">
+                    <span class="nav-icon">⚡</span> Market Pulse
+                </a>
+                <a href="#" class="nav-item" data-target="tab-sectorscope">
+                    <span class="nav-icon">🔭</span> Sector Scope
+                </a>
+                <a href="#" class="nav-item" data-target="tab-swing">
+                    <span class="nav-icon">🌊</span> Swing Spectrum
+                </a>
+                <a href="#" class="nav-item" data-target="tab-options">
+                    <span class="nav-icon">⏱️</span> Option Chain
+                </a>
                 <a href="#" class="nav-item" data-target="tab-ai">
-                    <span class="nav-icon">🤖</span> AI Trading Alpha
+                    <span class="nav-icon">🤖</span> AI Alpha
                 </a>
-                <a href="#" class="nav-item" data-target="tab-global">
-                    <span class="nav-icon">🌍</span> Global Markets
+                <a href="#" class="nav-item" data-target="tab-rfactor">
+                    <span class="nav-icon">🎯</span> R-Factor
                 </a>
-                <a href="#" class="nav-item" data-target="tab-news">
-                    <span class="nav-icon">📰</span> News & Sentiment
-                </a>
-                <a href="#" class="nav-item" data-target="tab-strategies">
-                    <span class="nav-icon">♟️</span> Algo Strategies
+                <a href="#" class="nav-item" data-target="tab-charts">
+                    <span class="nav-icon">📈</span> Charts
                 </a>
 
                 <div class="nav-divider" style="height: 1px; background: var(--border-color); margin: 10px 0; opacity: 0.5;"></div>
@@ -146,6 +156,9 @@
                 <a href="#" class="nav-item" data-target="tab-privacy">
                     <span class="nav-icon">🛡️</span> Privacy Policy
                 </a>
+                <a href="#" class="nav-item" data-target="tab-settings">
+                    <span class="nav-icon">⚙️</span> Settings
+                </a>
             </nav>
         </aside>
 
@@ -154,7 +167,38 @@
             
             <!-- TAB: MARKET PULSE (Existing Content) -->
             <div id="tab-market-pulse" class="tab-pane active">
-                <section class="dashboard-section heatmap-section" id="heatmap-section">
+                <!-- SMART MONEY TRACKER (FII/DII BUILDING POSITIONS) -->
+                <section class="dashboard-section breakout-section" style="margin-top: 0; border: 1px solid rgba(0,217,245,0.2);">
+                    <div class="section-header">
+                        <h2>🕵️ Smart Money Tracker (OI Buildup)</h2>
+                        <div class="header-actions">
+                            <span class="tag tag-cyan">FII/DII Momentum</span>
+                        </div>
+                    </div>
+                    <div class="breakout-content">
+                        <p class="breakout-desc" style="margin-bottom: 24px;">Identifying where big players are building positions using Price & Open Interest analysis.</p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 20px;" id="smart-money-container">
+                            <div class="breakout-col" style="background: rgba(0,200,83,0.05); border: 1px solid rgba(0,200,83,0.1); padding: 15px; border-radius: 12px;">
+                                <h3 style="color: #00c853; font-size: 0.9rem; margin-bottom: 12px; display: flex; justify-content: space-between;">Long Buildup <span style="font-size: 0.7rem; color: var(--text-muted);">P↑ OI↑</span></h3>
+                                <div id="long-buildup-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            </div>
+                            <div class="breakout-col" style="background: rgba(239,83,80,0.05); border: 1px solid rgba(239,83,80,0.1); padding: 15px; border-radius: 12px;">
+                                <h3 style="color: #ef5350; font-size: 0.9rem; margin-bottom: 12px; display: flex; justify-content: space-between;">Short Buildup <span style="font-size: 0.7rem; color: var(--text-muted);">P↓ OI↑</span></h3>
+                                <div id="short-buildup-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            </div>
+                            <div class="breakout-col" style="background: rgba(255,160,0,0.05); border: 1px solid rgba(255,160,0,0.1); padding: 15px; border-radius: 12px;">
+                                <h3 style="color: #ffa000; font-size: 0.9rem; margin-bottom: 12px; display: flex; justify-content: space-between;">Long Unwinding <span style="font-size: 0.7rem; color: var(--text-muted);">P↓ OI↓</span></h3>
+                                <div id="long-unwinding-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            </div>
+                            <div class="breakout-col" style="background: rgba(33,150,243,0.05); border: 1px solid rgba(33,150,243,0.1); padding: 15px; border-radius: 12px;">
+                                <h3 style="color: #2196f3; font-size: 0.9rem; margin-bottom: 12px; display: flex; justify-content: space-between;">Short Covering <span style="font-size: 0.7rem; color: var(--text-muted);">P↑ OI↓</span></h3>
+                                <div id="short-covering-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="dashboard-section heatmap-section" id="heatmap-section" style="margin-top: 32px;">
                     <div class="section-header">
                         <h2>📊 Sectoral Heatmap</h2>
                         <div class="heatmap-legend">
@@ -367,6 +411,163 @@
                 </section>
             </div>
 
+            <!-- TAB: SECTOR SCOPE -->
+            <div id="tab-sectorscope" class="tab-pane">
+                <section class="dashboard-section breakout-section" style="border: 1px solid rgba(0,229,160,0.3); box-shadow: 0 0 20px rgba(0,229,160,0.05);">
+                    <div class="section-header">
+                        <h2><span style="animation: pulse 2s infinite;">🔭</span> Sector Scope (Heatmap & Outperformance)</h2>
+                        <div class="header-actions">
+                            <button class="modal-back-btn" id="run-sectorscope-btn" style="padding:4px 12px; background: rgba(0,229,160,0.1); border-color: rgba(0,229,160,0.4); color: #00e5a0;">Refresh Heatmap</button>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:600px">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; gap: 20px;">
+                            <p class="breakout-desc" style="color:var(--text-secondary); margin-bottom: 0;">
+                                Treemap representing sector weightage and price performance. 
+                                <span id="nifty-ref-perf" style="display:inline-block; margin-left:15px; padding:4px 12px; background:rgba(255,255,255,0.05); border-radius:6px; font-family:var(--font-mono); font-size:0.85rem;">NIFTY 50: --</span>
+                            </p>
+                            <div class="heatmap-legend" style="display: flex; gap: 12px; font-size: 0.75rem;">
+                                <div style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #059669; border-radius: 2px;"></span> >1.5%</div>
+                                <div style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #34d399; border-radius: 2px;"></span> 0.5%</div>
+                                <div style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #475569; border-radius: 2px;"></span> Neutral</div>
+                                <div style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #f87171; border-radius: 2px;"></span> -0.5%</div>
+                                <div style="display: flex; align-items: center; gap: 4px;"><span style="width: 12px; height: 12px; background: #b91c1c; border-radius: 2px;"></span> < -1.5%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-loading" id="sectorscope-loading">
+                            <div class="spinner" style="border-top-color: #00e5a0;"></div>
+                            <span style="color: #00e5a0;">Generating Heatmap & Analyzing Outperformance...</span>
+                        </div>
+
+                        <div id="sectorscope-content" style="display:none;">
+                            <div id="sector-heatmap-chart" style="width: 100%; min-height: 450px; background: rgba(0,0,0,0.1); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;"></div>
+                            
+                            <div id="sector-detail-section" style="margin-top: 32px; display: none; animation: slideUp 0.4s ease-out;">
+                                <div class="section-header" style="margin-bottom: 16px;">
+                                    <h3 id="selected-sector-title" style="color: #00e5a0; display: flex; align-items: center; gap: 10px;">
+                                        Top Stocks: <span id="sector-name-display">--</span>
+                                    </h3>
+                                </div>
+                                <div id="sector-stocks-table-container" style="background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
+                                    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                        <thead style="background: rgba(255,255,255,0.02);">
+                                            <tr>
+                                                <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Symbol</th>
+                                                <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">LTP</th>
+                                                <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Change %</th>
+                                                <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Volume Spike</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="sector-stocks-tbody">
+                                            <!-- Stocks injected here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: R-FACTOR TRACKER -->
+            <div id="tab-rfactor" class="tab-pane">
+                <section class="dashboard-section breakout-section" style="border: 1px solid rgba(155, 89, 182, 0.3); box-shadow: 0 0 20px rgba(155, 89, 182, 0.05);">
+                    <div class="section-header">
+                        <h2><span style="animation: pulse 2s infinite;">📊</span> R-Factor (The Efficiency Metric)</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px; padding: 40px; display: flex; flex-direction: column; align-items: center; gap: 32px;">
+                        <p class="breakout-desc" style="color:var(--text-secondary); text-align: center; max-width: 600px;">
+                            Measure your trading efficiency by tracking Risk-to-Reward. 
+                            The R-Factor tells you how much reward you are getting for every unit of risk taken.
+                        </p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; width: 100%; max-width: 800px; background: rgba(0,0,0,0.2); padding: 40px; border-radius: 20px; border: 1px solid var(--border-color);">
+                            <!-- Inputs -->
+                            <div style="display: flex; flex-direction: column; gap: 24px;">
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 10px; color: var(--text-light); font-weight: 600;">Initial Risk (Stop Loss Amount)</label>
+                                    <div style="position: relative;">
+                                        <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">₹</span>
+                                        <input type="number" id="r-initial-risk" placeholder="e.g. 5000" style="width: 100%; padding: 16px 16px 16px 40px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-light); font-size: 1.1rem; outline: none; transition: 0.3s;" value="5000">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label style="display: block; margin-bottom: 10px; color: var(--text-light); font-weight: 600;">Current Profit / Loss</label>
+                                    <div style="position: relative;">
+                                        <span style="position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);">₹</span>
+                                        <input type="number" id="r-current-pnl" placeholder="e.g. 15000" style="width: 100%; padding: 16px 16px 16px 40px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--border-color); color: var(--text-light); font-size: 1.1rem; outline: none; transition: 0.3s;" value="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Display -->
+                            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 15px; border-left: 1px solid var(--border-color); padding-left: 40px;">
+                                <div style="font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px;">Current R-Value</div>
+                                <div id="r-value-display" style="font-size: 5rem; font-weight: 800; color: #9b59b2; text-shadow: 0 0 30px rgba(155, 89, 182, 0.4); font-family: var(--font-mono);">0.0</div>
+                                <div id="r-status-badge" style="padding: 8px 24px; border-radius: 30px; background: rgba(255,255,255,0.05); color: var(--text-muted); font-weight: 700; font-size: 0.9rem; text-transform: uppercase;">Awaiting Data</div>
+                            </div>
+                        </div>
+
+                        <!-- Benchmarks -->
+                        <div style="display: flex; gap: 20px; width: 100%; max-width: 800px;">
+                            <div style="flex: 1; padding: 20px; border-radius: 12px; background: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.2); text-align: center;">
+                                <div style="color: #e74c3c; font-weight: 700;">R < 1</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Poor / Losing</div>
+                            </div>
+                            <div style="flex: 1; padding: 20px; border-radius: 12px; background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2); text-align: center;">
+                                <div style="color: #f1c40f; font-weight: 700;">R 1.5 - 2.0</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Good Trade</div>
+                            </div>
+                            <div style="flex: 1; padding: 20px; border-radius: 12px; background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.2); text-align: center;">
+                                <div style="color: #2ecc71; font-weight: 700;">R > 3.0</div>
+                                <div style="font-size: 0.8rem; color: var(--text-muted);">Excellent</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- TAB: INTRADAY BOOST -->
+            <div id="tab-momentum" class="tab-pane">
+                <section class="dashboard-section breakout-section" style="border: 1px solid rgba(255,160,0,0.3); box-shadow: 0 0 20px rgba(255,160,0,0.05);">
+                    <div class="section-header">
+                        <h2><span style="animation: pulse 2s infinite;">🚀</span> Intraday Boost (Momentum Scanner)</h2>
+                        <div class="header-actions">
+                            <button class="modal-back-btn" id="run-momentum-btn" style="padding:4px 12px; background: rgba(255,160,0,0.1); border-color: rgba(255,160,0,0.4); color: #ffa000;">Scan Momentum</button>
+                        </div>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px">
+                        <p class="breakout-desc" style="color:var(--text-secondary); margin-bottom: 24px;">Scanning for immediate intraday momentum: Price > PDH, RSI (60-75), and Volume > 10-candle Avg.</p>
+                        
+                        <div id="momentum-notifications" style="margin-bottom: 20px;"></div>
+
+                        <div class="modal-loading" id="momentum-loading">
+                            <div class="spinner" style="border-top-color: #ffa000;"></div>
+                            <span style="color: #ffa000;">Scanning intraday universe for breakouts...</span>
+                        </div>
+                        <div id="momentum-content" style="display:none;">
+                            <div class="table-wrapper" style="background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden;">
+                                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                                    <thead style="background: rgba(255,255,255,0.02);">
+                                        <tr>
+                                            <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Symbol</th>
+                                            <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">LTP</th>
+                                            <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Vol Chg %</th>
+                                            <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Signal</th>
+                                            <th style="padding: 12px 20px; color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="momentum-tbody">
+                                        <!-- Momentum stocks injected here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
             <!-- TAB: GLOBAL MARKETS -->
             <div id="tab-global" class="tab-pane">
                 <section class="dashboard-section breakout-section">
@@ -420,66 +621,176 @@
                 </section>
             </div>
 
-            <!-- TAB: ALGO STRATEGIES -->
-            <div id="tab-strategies" class="tab-pane">
-                <section class="dashboard-section breakout-section">
-                    <div class="section-header">
-                        <h2>♟️ Pre-built Algo Strategies</h2>
-                        <div class="header-actions">
-                            <span class="tag tag-cyan">One-Click Deployment</span>
+            <!-- TAB: SWING SPECTRUM -->
+            <div id="tab-swing" class="tab-pane">
+                <div class="swing-header" style="text-align: center; margin-bottom: 40px; padding: 40px 20px;">
+                    <h1 style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">Swing Spectrum</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">Navigate Market Waves with Precision Swing Trading Insights</p>
+                </div>
+
+                <div class="swing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 32px; padding: 0 20px;">
+                    <!-- 10/50 Day BO -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>📅 10/50 Days BO</h2>
+                            <div class="header-actions"><span class="tag tag-green">Trend Following</span></div>
                         </div>
-                    </div>
-                    <div class="breakout-content" style="min-height:500px">
-                        <p class="breakout-desc" style="margin-bottom: 24px;">Deploy institutional-grade algorithmic strategies with a single click. These strategies automatically adjust based on market volatility and trend.</p>
-                        <div class="strategies-grid" id="strategies-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
-                            <!-- Strategy cards injected here -->
+                        <div class="breakout-content" style="min-height: 300px;">
+                            <div class="table-wrapper">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>LTP</th>
+                                            <th>Breakout</th>
+                                            <th>R-Factor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="swing-bo-tbody">
+                                        <!-- Data injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+
+                    <!-- Reversal Radar -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>🎯 Reversal Radar</h2>
+                            <div class="header-actions"><span class="tag tag-cyan">Mean Reversion</span></div>
+                        </div>
+                        <div class="breakout-content" style="min-height: 300px;">
+                            <div class="table-wrapper">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>LTP</th>
+                                            <th>Distance</th>
+                                            <th>R-Factor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="swing-reversal-tbody">
+                                        <!-- Data injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Channel BO -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>📶 Channel BO</h2>
+                            <div class="header-actions"><span class="tag tag-gold">Accumulation</span></div>
+                        </div>
+                        <div class="breakout-content" style="min-height: 300px;">
+                            <div class="table-wrapper">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>LTP</th>
+                                            <th>Consolidation</th>
+                                            <th>R-Factor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="swing-channel-tbody">
+                                        <!-- Data injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Delivery Scanner -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>📊 Delivery Scanner</h2>
+                            <div class="header-actions"><span class="tag tag-cyan">Institutional Accum</span></div>
+                        </div>
+                        <div class="breakout-content" style="min-height: 300px;">
+                            <div class="table-wrapper">
+                                <table class="ranking-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>Delivery %</th>
+                                            <th>vs 5-Day Avg</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="swing-delivery-tbody">
+                                        <!-- Data injected via JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             </div>
 
-            <!-- TAB: BLOG & TIPS -->
+            <!-- TAB: LEARNING HUB -->
             <div id="tab-blog" class="tab-pane">
-                <section class="dashboard-section breakout-section">
-                    <div class="section-header">
-                        <h2>📝 Trading Blog & Pro Tips</h2>
-                        <div class="header-actions">
-                            <span class="tag tag-green">New Articles</span>
+                <div class="swing-header" style="text-align: center; margin-bottom: 40px; padding: 40px 20px;">
+                    <h1 style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">Learning Hub</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">Master the data-driven approach to the Indian Stock Market</p>
+                </div>
+
+                <div class="swing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; padding: 0 20px;">
+                    <!-- Guide 1: Option Chain -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>📊 Understanding Option Chain</h2>
                         </div>
-                    </div>
-                    <div class="breakout-content" style="min-height:500px">
-                        <div class="strategies-grid" id="blog-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
-                            <!-- Article 1 -->
-                            <div class="ai-card" style="border-top: 4px solid var(--accent-cyan);">
-                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Options Trading • 5 Min Read</div>
-                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">Mastering Theta Decay in BankNifty</h3>
-                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">Learn how to profit from sideways markets by understanding how options lose value over time, especially on expiry days...</p>
-                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
-                            </div>
-                            <!-- Article 2 -->
-                            <div class="ai-card" style="border-top: 4px solid #ffb74d;">
-                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Psychology • 4 Min Read</div>
-                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">The Discipline of Stop Loss</h3>
-                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">Why most retail traders wipe out their accounts and how maintaining strict risk management can make you consistently profitable...</p>
-                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
-                            </div>
-                            <!-- Article 3 -->
-                            <div class="ai-card" style="border-top: 4px solid var(--strong-green);">
-                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Market Analysis • 6 Min Read</div>
-                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">FII & DII Data Demystified</h3>
-                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">A complete guide to tracking institutional footprints and predicting market reversals before they happen...</p>
-                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
-                            </div>
-                            <!-- Article 4 -->
-                            <div class="ai-card" style="border-top: 4px solid var(--mild-red);">
-                                <div style="color:var(--text-muted); font-size:0.8rem; margin-bottom:10px;">Technical Analysis • 8 Min Read</div>
-                                <h3 style="font-size:1.2rem; margin-bottom:10px; color:var(--text-light);">Trading the Open Drive</h3>
-                                <p style="font-size:0.9rem; color:var(--text-muted); line-height:1.5; margin-bottom:15px;">Strategies to catch the explosive momentum that occurs in the first 15 minutes of the market opening...</p>
-                                <button class="modal-back-btn" style="width:100%; justify-content:center; padding:8px;">Read Article</button>
+                        <div class="breakout-content" style="padding: 24px;">
+                            <h3 style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 15px;">What is Open Interest (OI)?</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
+                                OI represents the total number of outstanding contracts. In the Indian market, we look at **Put OI** as Support and **Call OI** as Resistance because institutions (the "Smart Money") are typically Option Sellers.
+                            </p>
+                            <ul style="color: var(--accent-cyan); font-size: 0.85rem; list-style: none; display: flex; flex-direction: column; gap: 8px;">
+                                <li>✅ High PCR (> 1.2): Bullish Sentiment</li>
+                                <li>✅ Low PCR (< 0.7): Bearish Sentiment</li>
+                                <li>✅ OI Spike + Price Rise: Long Buildup</li>
+                            </ul>
+                        </div>
+                    </section>
+
+                    <!-- Guide 2: Sectoral Rotation -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>🔭 Sectoral Rotation Logic</h2>
+                        </div>
+                        <div class="breakout-content" style="padding: 24px;">
+                            <h3 style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 15px;">Relative Strength (RS)</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
+                                Money flows from one sector to another. By comparing a sector index (like Nifty Bank) against Nifty 50, we identify **Outperformance**.
+                            </p>
+                            <p style="color: var(--text-muted); font-size: 0.85rem; background: rgba(255,255,255,0.03); padding: 12px; border-radius: 6px;">
+                                💡 <strong>Pro Tip:</strong> Buy the strongest stocks in the strongest sectors. Avoid sectors in the "Red" zone of the heatmap even if they look "cheap".
+                            </p>
+                        </div>
+                    </section>
+
+                    <!-- Guide 3: Risk Management -->
+                    <section class="dashboard-section breakout-section">
+                        <div class="section-header">
+                            <h2>🎯 The R-Factor Rule</h2>
+                        </div>
+                        <div class="breakout-content" style="padding: 24px;">
+                            <h3 style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 15px;">Survival of the Disciplined</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px;">
+                                R-Factor is the ratio of your Profit to your Initial Risk. A trader with a 40% win rate can be highly profitable if their average R is > 2.0.
+                            </p>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <span class="tag tag-green">R > 3: Excellent</span>
+                                <span class="tag tag-cyan">R 2: Good</span>
+                                <span class="tag tag-red">R < 1: Avoid</span>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
 
             <!-- TAB: COMMUNITY -->
@@ -488,30 +799,37 @@
                     <div class="section-header">
                         <h2>💬 TradeFinder Community</h2>
                     </div>
-                    <div class="breakout-content" style="min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;">
-                        <h3 style="font-size: 1.8rem; margin-bottom: 10px; color: var(--text-light);">Join 10,000+ Traders</h3>
-                        <p style="color: var(--text-muted); max-width: 500px; margin-bottom: 30px; line-height: 1.6;">Connect with like-minded traders, share charts, discuss real-time setups, and get instant updates on market breakouts.</p>
+                    <div class="breakout-content" style="min-height:400px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 40px;">
+                        <h3 style="font-size: 2rem; margin-bottom: 10px; color: var(--text-light); font-weight: 800;">Join 50,000+ Active Traders</h3>
+                        <p style="color: var(--text-secondary); max-width: 600px; margin-bottom: 40px; line-height: 1.6; font-size: 1rem;">The largest community for NSE intraday data analysis. Share setups, discuss institutional flows, and grow together.</p>
                         
-                        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center;">
-                            <a href="#" style="text-decoration:none;">
-                                <div class="ai-card" style="width: 200px; display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid #0088cc; transition: transform 0.2s;">
-                                    <div style="font-size: 3rem;">✈️</div>
-                                    <div style="font-weight: bold; color: #0088cc;">Telegram Channel</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Live Alerts & Updates</div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 24px; width: 100%; max-width: 1000px;">
+                            <a href="https://t.me/tradefinder_updates" target="_blank" style="text-decoration:none;">
+                                <div class="ai-card" style="display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid rgba(0, 136, 204, 0.3); background: rgba(0, 136, 204, 0.05); transition: all 0.3s ease; padding: 30px;">
+                                    <div style="font-size: 3.5rem;">✈️</div>
+                                    <div style="font-weight: 800; color: #0088cc; font-size: 1.1rem;">Telegram Alerts</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Real-time Breakout Signals</div>
                                 </div>
                             </a>
-                            <a href="#" style="text-decoration:none;">
-                                <div class="ai-card" style="width: 200px; display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid #5865F2; transition: transform 0.2s;">
-                                    <div style="font-size: 3rem;">🎮</div>
-                                    <div style="font-weight: bold; color: #5865F2;">Discord Server</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Voice & Chart Discussions</div>
+                            <a href="https://discord.gg/tradefinder" target="_blank" style="text-decoration:none;">
+                                <div class="ai-card" style="display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid rgba(88, 101, 242, 0.3); background: rgba(88, 101, 242, 0.05); transition: all 0.3s ease; padding: 30px;">
+                                    <div style="font-size: 3.5rem;">🎮</div>
+                                    <div style="font-weight: 800; color: #5865F2; font-size: 1.1rem;">Discord Hub</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Live Voice & Chart Analysis</div>
                                 </div>
                             </a>
-                            <a href="#" style="text-decoration:none;">
-                                <div class="ai-card" style="width: 200px; display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid #1DA1F2; transition: transform 0.2s;">
-                                    <div style="font-size: 3rem;">🐦</div>
-                                    <div style="font-weight: bold; color: #1DA1F2;">Twitter / X</div>
-                                    <div style="font-size: 0.8rem; color: var(--text-muted);">Market Commentary</div>
+                            <a href="https://twitter.com/tradefinder" target="_blank" style="text-decoration:none;">
+                                <div class="ai-card" style="display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid rgba(29, 161, 242, 0.3); background: rgba(29, 161, 242, 0.05); transition: all 0.3s ease; padding: 30px;">
+                                    <div style="font-size: 3.5rem;">🐦</div>
+                                    <div style="font-weight: 800; color: #1DA1F2; font-size: 1.1rem;">Twitter / X</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Daily Market Post-Mortems</div>
+                                </div>
+                            </a>
+                            <a href="https://youtube.com/@tradefinder" target="_blank" style="text-decoration:none;">
+                                <div class="ai-card" style="display:flex; flex-direction:column; align-items:center; gap:15px; border: 1px solid rgba(255, 0, 0, 0.3); background: rgba(255, 0, 0, 0.05); transition: all 0.3s ease; padding: 30px;">
+                                    <div style="font-size: 3.5rem;">📺</div>
+                                    <div style="font-weight: 800; color: #ff0000; font-size: 1.1rem;">YouTube Pro</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Weekly Strategy Masterclasses</div>
                                 </div>
                             </a>
                         </div>
@@ -521,29 +839,33 @@
 
             <!-- TAB: ABOUT -->
             <div id="tab-about" class="tab-pane">
-                <section class="dashboard-section breakout-section">
-                    <div class="section-header">
-                        <h2>ℹ️ About TradeFinder</h2>
-                    </div>
-                    <div class="breakout-content" style="min-height:400px; padding: 40px; background: rgba(255,255,255,0.01); border-radius: 12px; line-height: 1.8; color: var(--text-muted);">
-                        <div style="max-width: 800px; margin: 0 auto;">
-                            <h3 style="font-size: 1.5rem; color: var(--text-light); margin-bottom: 20px;">Empowering Retail Traders with Institutional Data</h3>
-                            <p style="margin-bottom: 20px;">
-                                TradeFinder was born out of a simple necessity: to level the playing field. Retail traders often rely on lagging indicators and delayed news, while institutions execute trades based on real-time order flow and options data. Our platform bridges that gap.
-                            </p>
-                            <p style="margin-bottom: 20px;">
-                                We aggregate billions of data points from the National Stock Exchange (NSE) — including Options Chain structures, FII/DII activities, and sectoral rotation — and process them through our proprietary AI engine to present actionable insights.
-                            </p>
-                            <h4 style="font-size: 1.2rem; color: var(--text-light); margin: 30px 0 15px;">Our Mission</h4>
-                            <p style="margin-bottom: 20px;">
-                                To eliminate the "noise" of the stock market and provide traders with purely quantitative, bias-free, and high-probability trading setups. We believe data over opinions.
-                            </p>
-                            <div style="margin-top: 40px; padding: 20px; border-radius: 8px; background: rgba(0,217,245,0.05); border: 1px solid rgba(0,217,245,0.2);">
-                                <strong style="color: var(--accent-cyan);">Note:</strong> TradeFinder is an educational platform. All AI scans, levels, and strategies are meant to supplement your own technical analysis, not replace it.
+                <div class="swing-header" style="text-align: center; margin-bottom: 40px; padding: 40px 20px;">
+                    <h1 style="font-size: 2.5rem; font-weight: 800; background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px;">Institutional Grade Analytics</h1>
+                    <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">TradeFinder bridges the gap between retail traders and institutional data desks</p>
+                </div>
+
+                <div style="max-width: 1000px; margin: 0 auto; padding: 0 20px;">
+                    <section class="dashboard-section" style="padding: 40px;">
+                        <h2 style="color: var(--text-light); margin-bottom: 20px;">Our Story</h2>
+                        <p style="color: var(--text-muted); line-height: 1.8; margin-bottom: 30px;">
+                            Founded in 2024, TradeFinder was built to solve a single problem: **Information Asymmetry**. While institutions have access to high-speed data feeds and advanced order flow analytics, retail traders are often left with lagging indicators. 
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px;">
+                            <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <h3 style="color: var(--accent-green); margin-bottom: 10px;">5B+</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Data points processed daily from NSE servers</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <h3 style="color: var(--accent-cyan); margin-bottom: 10px;">99.9%</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Uptime for our live momentum scanners</p>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.02); padding: 25px; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <h3 style="color: var(--gold); margin-bottom: 10px;">AI Core</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Proprietary algorithms for sector rotation</p>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
 
             <!-- TAB: CONTACT -->
@@ -593,11 +915,58 @@
                 </section>
             </div>
 
+            <!-- TAB: SETTINGS -->
+            <div id="tab-settings" class="tab-pane">
+                <section class="dashboard-section breakout-section">
+                    <div class="section-header">
+                        <h2>⚙️ Application Settings</h2>
+                    </div>
+                    <div class="breakout-content" style="min-height:500px; padding: 40px; background: rgba(255,255,255,0.01); border-radius: 12px; color: var(--text-muted);">
+                        <div style="max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <h3 style="color: var(--text-light); margin-bottom: 4px;">Application Theme</h3>
+                                    <p style="font-size: 0.85rem;">Switch between Dark and Light mode</p>
+                                </div>
+                                <select id="setting-theme" style="padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-light); cursor: pointer;">
+                                    <option value="dark">Dark Theme</option>
+                                    <option value="light">Light Theme</option>
+                                </select>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <h3 style="color: var(--text-light); margin-bottom: 4px;">Time Format</h3>
+                                    <p style="font-size: 0.85rem;">Display clock in 12-hour or 24-hour format</p>
+                                </div>
+                                <select id="setting-time-format" style="padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-light); cursor: pointer;">
+                                    <option value="12">12-hour (AM/PM)</option>
+                                    <option value="24">24-hour</option>
+                                </select>
+                            </div>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; background: rgba(0,0,0,0.2); border-radius: 8px; border: 1px solid var(--border-color);">
+                                <div>
+                                    <h3 style="color: var(--text-light); margin-bottom: 4px;">Weekly Expiry Timer</h3>
+                                    <p style="font-size: 0.85rem;">Show or hide the expiry countdown in the header</p>
+                                </div>
+                                <select id="setting-expiry-timer" style="padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); color: var(--text-light); cursor: pointer;">
+                                    <option value="hide">Hidden</option>
+                                    <option value="show">Visible</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+
             <!-- TAB: PRIVACY POLICY -->
             <div id="tab-privacy" class="tab-pane">
                 <section class="dashboard-section breakout-section">
                     <div class="section-header">
-                        <h2>🛡️ Privacy Policy & Terms</h2>
+                        <h2>🛡️ Institutional Disclosure</h2>
                     </div>
                     <div class="breakout-content" style="min-height:500px; padding: 40px; background: rgba(255,255,255,0.01); border-radius: 12px; line-height: 1.8; color: var(--text-muted);">
                         <div style="max-width: 800px; margin: 0 auto;">
@@ -626,16 +995,64 @@
         </main>
     </div>
 
-    <!-- Footer -->
-    <footer id="main-footer">
-        <p style="margin-bottom: 6px;">
-            TradeFinder — NSE Sectoral Heatmap Dashboard &bull; Data for educational purposes only &bull; Not financial advice
-        </p>
-        <p style="font-size: 0.65rem; color: var(--text-muted); opacity: 0.7;">
-            &copy; <span id="footer-year"></span> <strong style="color: var(--accent-green);">DipzSpell</strong> &bull; All Rights Reserved
-        </p>
-    </footer>
+    <!-- Professional Multi-Column Footer -->
+    <footer style="background: var(--bg-secondary); padding: 60px 40px 20px; border-top: 1px solid var(--border-color); color: var(--text-secondary);">
+        <div style="max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 50px;">
+            <!-- Column 1: Brand & Contact -->
+            <div>
+                <div class="logo" style="margin-bottom: 20px;">
+                    <span class="logo-icon">📡</span>
+                    <div class="logo-text"><h1>TradeFinder</h1></div>
+                </div>
+                <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 20px; color: var(--text-muted);">
+                    The National Stock Exchange's most advanced retail analytics dashboard. Powered by real-time OI analysis and Sectoral Relative Strength.
+                </p>
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem;">
+                    <div style="display: flex; align-items: center; gap: 10px;">🏠 <span>G-Block, Bandra Kurla Complex, Mumbai</span></div>
+                    <div style="display: flex; align-items: center; gap: 10px;">📞 <span>+91 98765 43210</span></div>
+                    <div style="display: flex; align-items: center; gap: 10px;">📧 <span>support@tradefinder.pro</span></div>
+                </div>
+            </div>
 
+            <!-- Column 2: Terms of Use -->
+            <div>
+                <h3 style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 25px; font-weight: 700;">Terms Of Use</h3>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                    <li><a href="#" onclick="showTab('tab-privacy')" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">Disclaimer</a></li>
+                    <li><a href="#" onclick="showTab('tab-privacy')" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">Privacy Policy</a></li>
+                    <li><a href="#" onclick="showTab('tab-privacy')" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">Terms & Conditions</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Company -->
+            <div>
+                <h3 style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 25px; font-weight: 700;">Company</h3>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 0.9rem;">
+                    <li><a href="#" onclick="showTab('tab-about')" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">About us</a></li>
+                    <li><a href="#" onclick="showTab('tab-contact')" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">Contact us</a></li>
+                    <li><a href="#" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">Careers</a></li>
+                    <li><a href="#" style="color: var(--text-muted); text-decoration: none; transition: 0.2s;">Status</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Community -->
+            <div>
+                <h3 style="color: var(--text-light); font-size: 1.1rem; margin-bottom: 25px; font-weight: 700;">Join the community</h3>
+                <div style="display: flex; gap: 15px;">
+                    <a href="#" class="refresh-btn" title="Telegram" style="width: 45px; height: 45px; font-size: 1.2rem;">✈️</a>
+                    <a href="#" class="refresh-btn" title="Discord" style="width: 45px; height: 45px; font-size: 1.2rem;">🎮</a>
+                    <a href="#" class="refresh-btn" title="Twitter" style="width: 45px; height: 45px; font-size: 1.2rem;">🐦</a>
+                </div>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; font-size: 0.8rem; color: var(--text-muted);">
+            <p>&copy; 2024 TradeFinder. All rights reserved. SEBI Registration Pending.</p>
+            <div style="display: flex; gap: 20px;">
+                <span>Made with ❤️ for Indian Traders</span>
+                <span>Data powered by NSE Real-time</span>
+            </div>
+        </div>
     </footer>
 
     <!-- Sector Stocks Modal -->
@@ -658,6 +1075,6 @@
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=4"></script>
 </body>
 </html>

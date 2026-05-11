@@ -5,6 +5,11 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+app.use((req, res, next) => {
+    console.log(`[REQ] ${req.method} ${req.url}`);
+    next();
+});
+
 // ===== CORS — allow Netlify frontend =====
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -143,6 +148,21 @@ app.get('/api/indices', async (req, res) => {
 // Sector stocks cache
 const sectorCache = {};
 const SECTOR_CACHE_MS = 10 * 60 * 1000; // 10 min cache for stock-level data
+
+app.get('/api/fno', async (req, res) => {
+    try {
+        if (!nseCookies) await getNSECookies();
+        const response = await httpsGet('https://www.nseindia.com/api/equity-stockIndices?index=SECURITIES%20IN%20F%26O', {
+            'Cookie': nseCookies,
+            'Referer': 'https://www.nseindia.com/market-data/live-equity-market',
+        });
+        const data = JSON.parse(response.body);
+        res.json({ success: true, data });
+    } catch (e) {
+        console.error('[API] F&O error:', e.message);
+        res.status(500).json({ success: false, error: e.message });
+    }
+});
 
 app.get('/api/sector/:name', async (req, res) => {
     const indexName = decodeURIComponent(req.params.name);
