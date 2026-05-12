@@ -114,33 +114,60 @@ function getOrCreate(selector, parentSelector = '#main-content', tag = 'div', cl
     return el;
 }
 
-function smartUpdate(id, newValue, color) {
+function smartUpdate(id, newValue, defaultColor) {
     const el = document.getElementById(id);
     if(!el) return;
-    if(el.innerText !== newValue) {
-        // Parse float ignoring commas, currency symbols, and spaces
-        const cleanOld = parseFloat(el.innerText.replace(/[^0-9.-]+/g, ""));
+    
+    const oldText = el.innerText;
+    if(oldText !== newValue) {
+        const cleanOld = parseFloat(oldText.replace(/[^0-9.-]+/g, ""));
         const cleanNew = parseFloat(newValue.replace(/[^0-9.-]+/g, ""));
         
-        let flashColor = 'rgba(255,255,255,0.1)';
-        if (!isNaN(cleanOld) && !isNaN(cleanNew)) {
-            if (cleanNew > cleanOld) flashColor = 'rgba(34,197,94,0.3)'; // Green for tick UP
-            else if (cleanNew < cleanOld) flashColor = 'rgba(239,68,68,0.3)'; // Red for tick DOWN
+        // Inject digit flash styles if missing
+        if(!document.getElementById('digit-flash-style')) {
+            const style = document.createElement('style');
+            style.id = 'digit-flash-style';
+            style.innerHTML = `
+                @keyframes textFlashUp { 0%, 15% { color: #22c55e; text-shadow: 0 0 8px rgba(34,197,94,0.5); } 100% { color: inherit; text-shadow: none; } }
+                @keyframes textFlashDown { 0%, 15% { color: #ef4444; text-shadow: 0 0 8px rgba(239,68,68,0.5); } 100% { color: inherit; text-shadow: none; } }
+                .digit-up { animation: textFlashUp 1.2s ease-out forwards; display: inline-block; }
+                .digit-down { animation: textFlashDown 1.2s ease-out forwards; display: inline-block; }
+            `;
+            document.head.appendChild(style);
         }
 
-        el.innerText = newValue;
-        if(color) el.style.color = color;
+        let isUp = cleanNew > cleanOld;
+        let isDown = cleanNew < cleanOld;
+        let diffHTML = '';
+
+        // If lengths match, do a character-by-character diff
+        if (oldText.length === newValue.length && (isUp || isDown)) {
+            for (let i = 0; i < newValue.length; i++) {
+                if (oldText[i] !== newValue[i] && /[0-9]/.test(newValue[i])) {
+                    const cls = isUp ? 'digit-up' : 'digit-down';
+                    diffHTML += `<span class="${cls}">${newValue[i]}</span>`;
+                } else {
+                    diffHTML += newValue[i];
+                }
+            }
+        } else {
+            // If lengths differ, flash the whole string
+            if (isUp || isDown) {
+                const cls = isUp ? 'digit-up' : 'digit-down';
+                diffHTML = `<span class="${cls}">${newValue}</span>`;
+            } else {
+                diffHTML = newValue;
+            }
+        }
+
+        el.innerHTML = diffHTML;
         
-        // Professional tick flash effect
-        el.style.transition = 'none';
-        el.style.backgroundColor = flashColor;
-        el.style.borderRadius = '4px';
-        
-        // Force reflow
-        void el.offsetWidth;
-        
-        el.style.transition = 'background-color 0.8s ease-out';
-        el.style.backgroundColor = 'transparent';
+        // Maintain base text color
+        if(defaultColor) {
+            el.style.color = defaultColor;
+        } else if (!el.style.color) {
+            el.style.color = 'inherit';
+        }
     }
 }
 
