@@ -644,8 +644,8 @@
 
         // Ticker Tape
         const renderTicker = () => {
-            const html = `NIFTY50 ${CONFIG.indices.nifty.ltp} ▲ +0.83% • BANKNIFTY ${CONFIG.indices.banknifty.ltp} ▲ +0.60% • ` + 
-                CONFIG.watchlist.map(w => `${w.s} ₹${w.ltp} <span class="${col(w.chg)}">${sign(w.chg)}${w.chg}%</span>`).join(' • ');
+            const html = `NIFTY50 ${CONFIG.indices.nifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})} ▲ +${fmt(CONFIG.indices.nifty.pct)}% • BANKNIFTY ${CONFIG.indices.banknifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})} ▲ +${fmt(CONFIG.indices.banknifty.pct)}% • ` + 
+                CONFIG.watchlist.map(w => `${w.s} ₹${w.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})} <span class="${col(w.chg)}">${sign(w.chg)}${fmt(w.chg)}%</span>`).join(' • ');
             document.getElementById('ticker-content').innerHTML = html.repeat(4);
         };
 
@@ -682,11 +682,11 @@
                     <div class="text-sm text-muted mt-1">Bullish Bias</div>
                 </div>
             `;
-            document.getElementById('top-nifty-val').innerText = CONFIG.indices.nifty.ltp.toLocaleString('en-IN');
-            document.getElementById('top-nifty-chg').innerText = `+${CONFIG.indices.nifty.pct}%`;
+            document.getElementById('top-nifty-val').innerText = CONFIG.indices.nifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2});
+            document.getElementById('top-nifty-chg').innerText = `+${fmt(CONFIG.indices.nifty.pct)}%`;
             document.getElementById('top-nifty-chg').className = 'text-xs text-green';
-            document.getElementById('top-banknifty-val').innerText = CONFIG.indices.banknifty.ltp.toLocaleString('en-IN');
-            document.getElementById('top-banknifty-chg').innerText = `+${CONFIG.indices.banknifty.pct}%`;
+            document.getElementById('top-banknifty-val').innerText = CONFIG.indices.banknifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2});
+            document.getElementById('top-banknifty-chg').innerText = `+${fmt(CONFIG.indices.banknifty.pct)}%`;
             document.getElementById('top-banknifty-chg').className = 'text-xs text-green';
         };
 
@@ -703,17 +703,17 @@
                 else { bg = 'rgba(252,165,165,0.15)'; bc = '#fca5a5'; tc = '#fca5a5'; }
                 return `<div class="heat-tile ${i===0?'active':''}" style="min-height:${h}px; background:${bg}; border:1px solid ${bc}; color:${tc}">
                     <div class="heat-name">${s.name}</div>
-                    <div class="heat-val">${sign(s.change)}${s.change}%</div>
+                    <div class="heat-val">${sign(s.change)}${fmt(s.change)}%</div>
                 </div>`;
             }).join('');
 
             const ri = document.getElementById('rot-in');
             const ro = document.getElementById('rot-out');
             ri.innerHTML = CONFIG.sectors.filter(s=>s.change>0).sort((a,b)=>b.change-a.change).map(s=>
-                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(s.change/maxC)*100}%; background:var(--green-strong)"></div></div><div class="text-green">+${s.change}%</div></div>`
+                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(s.change/maxC)*100}%; background:var(--green-strong)"></div></div><div class="text-green">+${fmt(s.change)}%</div></div>`
             ).join('');
             ro.innerHTML = CONFIG.sectors.filter(s=>s.change<0).sort((a,b)=>a.change-b.change).map(s=>
-                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(Math.abs(s.change)/maxC)*100}%; background:var(--red-strong)"></div></div><div class="text-red">${s.change}%</div></div>`
+                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(Math.abs(s.change)/maxC)*100}%; background:var(--red-strong)"></div></div><div class="text-red">${fmt(s.change)}%</div></div>`
             ).join('');
 
             const dd = document.getElementById('drill-down');
@@ -736,14 +736,14 @@
             const bea = document.getElementById('fno-bear');
             bul.innerHTML = CONFIG.watchlist.filter(w=>w.chg>0).map(w=>`
                 <div class="scan-card bull">
-                    <div class="flex justify-between font-bold text-white mb-1"><span>${w.s}</span><span class="text-green">+${w.chg}%</span></div>
+                    <div class="flex justify-between font-bold text-white mb-1"><span>${w.s}</span><span class="text-green">+${fmt(w.chg)}%</span></div>
                     <div class="text-xs text-muted">Near Day High | Vol: ${w.vol}</div>
                     <div class="momentum-bar"><div style="width:${w.range}%; height:100%; background:var(--green-strong)"></div></div>
                 </div>
             `).join('');
             bea.innerHTML = CONFIG.watchlist.filter(w=>w.chg<0).map(w=>`
                 <div class="scan-card bear">
-                    <div class="flex justify-between font-bold text-white mb-1"><span>${w.s}</span><span class="text-red">${w.chg}%</span></div>
+                    <div class="flex justify-between font-bold text-white mb-1"><span>${w.s}</span><span class="text-red">${fmt(w.chg)}%</span></div>
                     <div class="text-xs text-muted">Near Day Low | Vol: ${w.vol}</div>
                     <div class="momentum-bar"><div style="width:${w.range}%; height:100%; background:var(--red-strong)"></div></div>
                 </div>
@@ -795,8 +795,8 @@
             t.innerHTML = CONFIG.watchlist.map(w => `
                 <tr>
                     <td class="font-bold text-white">${w.s}</td>
-                    <td>${w.ltp}</td>
-                    <td class="${col(w.chg)}">${sign(w.chg)}${w.chg}%</td>
+                    <td>${w.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})}</td>
+                    <td class="${col(w.chg)}">${sign(w.chg)}${fmt(w.chg)}%</td>
                     <td><div class="badge ${w.chg>0?'badge-green':'badge-red'}">${w.chg>0?'Bullish':'Bearish'}</div></td>
                     <td>${w.vol}</td>
                     <td><div class="momentum-bar" style="width:100px; background:var(--bg-elevated)"><div style="width:${w.range}%; height:100%; background:var(--accent-cyan)"></div></div></td>
