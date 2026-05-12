@@ -647,15 +647,22 @@ function renderAlgos() {
 
 // --- MASTER LOOP ---
 function masterLoop() {
+    const BASE_NIFTY = 22450.30;
+    const BASE_BANKNIFTY = 48320.00;
+
     // Ticker & Indices
     setInterval(() => {
-        STATE.nifty.ltp += (Math.random()-0.5)*3;
-        STATE.nifty.chg += (Math.random()-0.5)*2;
-        STATE.nifty.pct = (STATE.nifty.chg / (STATE.nifty.ltp - STATE.nifty.chg)) * 100;
+        // Use UTC time seconds so every device globally is on the exact same tick
+        const t = Math.floor(Date.now() / 1000);
         
-        STATE.banknifty.ltp += (Math.random()-0.5)*8;
-        STATE.banknifty.chg += (Math.random()-0.5)*5;
-        STATE.banknifty.pct = (STATE.banknifty.chg / (STATE.banknifty.ltp - STATE.banknifty.chg)) * 100;
+        // Complex deterministic wave combining slow trend and fast volatility
+        STATE.nifty.ltp = BASE_NIFTY + Math.sin(t / 15) * 45 + Math.sin(t / 2) * 8 + Math.cos(t) * 3;
+        STATE.nifty.chg = Math.sin(t / 15) * 45 + Math.sin(t / 2) * 8 + Math.cos(t) * 3; 
+        STATE.nifty.pct = (STATE.nifty.chg / BASE_NIFTY) * 100;
+        
+        STATE.banknifty.ltp = BASE_BANKNIFTY + Math.sin(t / 12) * 110 + Math.sin(t / 3) * 18 + Math.cos(t) * 5;
+        STATE.banknifty.chg = Math.sin(t / 12) * 110 + Math.sin(t / 3) * 18 + Math.cos(t) * 5;
+        STATE.banknifty.pct = (STATE.banknifty.chg / BASE_BANKNIFTY) * 100;
 
         renderTopbar();
         renderHero();
@@ -664,16 +671,30 @@ function masterLoop() {
 
     // Watchlist & Sectors & Globals
     setInterval(() => {
-        STATE.watchlist.forEach(w => {
-            w.ltp += (Math.random()-0.5)*2;
-            w.chg += (Math.random()-0.5)*0.1;
+        const t = Math.floor(Date.now() / 1000);
+        
+        STATE.watchlist.forEach((w, i) => {
+            if(!w.baseLtp) w.baseLtp = w.ltp;
+            if(!w.baseChg) w.baseChg = w.chg;
+            // Unique deterministic path per stock
+            const diff = Math.sin(t / (8 + i)) * 8 + Math.cos(t / (2 + i % 3)) * 2;
+            w.ltp = w.baseLtp + diff;
+            w.chg = w.baseChg + diff;
         });
         renderWatchlist();
 
-        SECTORS.forEach(s => s.change += (Math.random()-0.5)*0.1);
+        SECTORS.forEach((s, i) => {
+            if(!s.baseChange) s.baseChange = s.change;
+            s.change = s.baseChange + Math.sin(t / (10 + i)) * 1.2 + Math.cos(t / 3) * 0.3;
+        });
         renderSector();
 
-        GLOBAL.forEach(g => { if(g.status === 'Open') g.chg += (Math.random()-0.5)*0.05; });
+        GLOBAL.forEach((g, i) => { 
+            if(g.status === 'Open') {
+                if(!g.baseChg) g.baseChg = g.chg;
+                g.chg = g.baseChg + Math.sin(t / (15 + i)) * 0.4 + Math.cos(t / 4) * 0.1;
+            }
+        });
         renderGlobals();
     }, 1000);
 }
