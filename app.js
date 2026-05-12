@@ -1656,4 +1656,267 @@ document.querySelectorAll('.nav-item').forEach(nav => {
     });
 });
 
+// ===== SECTOR SCOPE (NEW) =====
+const SS_MOCK_DATA = {
+    "Today": {
+        sectors: [
+            { name: "IT", change: 1.8 },
+            { name: "Pharma", change: 2.4 },
+            { name: "FMCG", change: 0.4 },
+            { name: "Metal", change: -0.9 },
+            { name: "Auto", change: 2.1 },
+            { name: "Realty", change: -1.6 },
+            { name: "Bank", change: 0.1 },
+            { name: "Energy", change: 0.5 }
+        ],
+        stocks: {
+            "Pharma": { stocks: [{sym: "SUNPHARMA", chg: 3.1}, {sym: "CIPLA", chg: 2.8}, {sym: "DRREDDY", chg: 1.9}], adv: 18, dec: 4 },
+            "Auto": { stocks: [{sym: "TATAMOTORS", chg: 3.4}, {sym: "M&M", chg: 2.2}, {sym: "MARUTI", chg: 1.4}], adv: 14, dec: 3 },
+            "Realty": { stocks: [{sym: "DLF", chg: -2.1}, {sym: "GODREJPROP", chg: -1.8}, {sym: "OBEROIRLTY", chg: -1.2}], adv: 3, dec: 11 },
+            "IT": { stocks: [{sym: "INFY", chg: 2.2}, {sym: "TCS", chg: 1.6}, {sym: "WIPRO", chg: 1.1}], adv: 12, dec: 5 },
+            "Bank": { stocks: [{sym: "HDFCBANK", chg: 0.4}, {sym: "ICICIBANK", chg: -0.2}, {sym: "KOTAKBANK", chg: 0.3}], adv: 9, dec: 8 },
+            "FMCG": { stocks: [{sym: "HINDUNILVR", chg: 0.8}, {sym: "ITC", chg: 0.5}, {sym: "NESTLEIND", chg: 0.2}], adv: 11, dec: 6 },
+            "Metal": { stocks: [{sym: "TATASTEEL", chg: -1.4}, {sym: "HINDALCO", chg: -0.8}, {sym: "JSWSTEEL", chg: -0.6}], adv: 4, dec: 14 },
+            "Energy": { stocks: [{sym: "RELIANCE", chg: 1.1}, {sym: "ONGC", chg: 0.3}, {sym: "NTPC", chg: 0.2}], adv: 10, dec: 7 }
+        }
+    },
+    "5D": {
+        sectors: [
+            { name: "IT", change: -1.2 },
+            { name: "Pharma", change: 4.5 },
+            { name: "FMCG", change: 1.2 },
+            { name: "Metal", change: -3.4 },
+            { name: "Auto", change: 5.1 },
+            { name: "Realty", change: -4.2 },
+            { name: "Bank", change: -0.8 },
+            { name: "Energy", change: 2.3 }
+        ],
+        stocks: {
+            "Pharma": { stocks: [{sym: "SUNPHARMA", chg: 5.1}, {sym: "CIPLA", chg: 4.2}, {sym: "DRREDDY", chg: 3.9}], adv: 20, dec: 2 },
+            "Auto": { stocks: [{sym: "TATAMOTORS", chg: 6.4}, {sym: "M&M", chg: 5.2}, {sym: "MARUTI", chg: 4.4}], adv: 15, dec: 2 },
+            "Realty": { stocks: [{sym: "DLF", chg: -5.1}, {sym: "GODREJPROP", chg: -4.8}, {sym: "OBEROIRLTY", chg: -3.2}], adv: 2, dec: 12 },
+            "IT": { stocks: [{sym: "INFY", chg: -1.2}, {sym: "TCS", chg: -0.6}, {sym: "WIPRO", chg: -2.1}], adv: 5, dec: 12 },
+            "Bank": { stocks: [{sym: "HDFCBANK", chg: -0.4}, {sym: "ICICIBANK", chg: -1.2}, {sym: "KOTAKBANK", chg: -0.3}], adv: 6, dec: 11 },
+            "FMCG": { stocks: [{sym: "HINDUNILVR", chg: 1.8}, {sym: "ITC", chg: 1.5}, {sym: "NESTLEIND", chg: 0.2}], adv: 12, dec: 5 },
+            "Metal": { stocks: [{sym: "TATASTEEL", chg: -4.4}, {sym: "HINDALCO", chg: -3.8}, {sym: "JSWSTEEL", chg: -2.6}], adv: 2, dec: 16 },
+            "Energy": { stocks: [{sym: "RELIANCE", chg: 3.1}, {sym: "ONGC", chg: 2.3}, {sym: "NTPC", chg: 1.2}], adv: 12, dec: 5 }
+        }
+    },
+    "1M": {
+        sectors: [
+            { name: "IT", change: -5.2 },
+            { name: "Pharma", change: 8.5 },
+            { name: "FMCG", change: 3.2 },
+            { name: "Metal", change: -7.4 },
+            { name: "Auto", change: 12.1 },
+            { name: "Realty", change: -9.2 },
+            { name: "Bank", change: -3.8 },
+            { name: "Energy", change: 6.3 }
+        ],
+        stocks: {
+            "Pharma": { stocks: [{sym: "SUNPHARMA", chg: 10.1}, {sym: "CIPLA", chg: 8.2}, {sym: "DRREDDY", chg: 7.9}], adv: 21, dec: 1 },
+            "Auto": { stocks: [{sym: "TATAMOTORS", chg: 15.4}, {sym: "M&M", chg: 12.2}, {sym: "MARUTI", chg: 10.4}], adv: 16, dec: 1 },
+            "Realty": { stocks: [{sym: "DLF", chg: -12.1}, {sym: "GODREJPROP", chg: -10.8}, {sym: "OBEROIRLTY", chg: -8.2}], adv: 1, dec: 13 },
+            "IT": { stocks: [{sym: "INFY", chg: -6.2}, {sym: "TCS", chg: -4.6}, {sym: "WIPRO", chg: -5.1}], adv: 3, dec: 14 },
+            "Bank": { stocks: [{sym: "HDFCBANK", chg: -4.4}, {sym: "ICICIBANK", chg: -3.2}, {sym: "KOTAKBANK", chg: -2.3}], adv: 4, dec: 13 },
+            "FMCG": { stocks: [{sym: "HINDUNILVR", chg: 4.8}, {sym: "ITC", chg: 3.5}, {sym: "NESTLEIND", chg: 2.2}], adv: 14, dec: 3 },
+            "Metal": { stocks: [{sym: "TATASTEEL", chg: -9.4}, {sym: "HINDALCO", chg: -8.8}, {sym: "JSWSTEEL", chg: -6.6}], adv: 1, dec: 17 },
+            "Energy": { stocks: [{sym: "RELIANCE", chg: 8.1}, {sym: "ONGC", chg: 6.3}, {sym: "NTPC", chg: 5.2}], adv: 14, dec: 3 }
+        }
+    }
+};
 
+let currentPeriod = "Today";
+
+function initSectorScope() {
+    const toggles = document.querySelectorAll('.ss-toggle');
+    toggles.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            toggles.forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            currentPeriod = e.target.dataset.period;
+            renderSectorScope();
+        });
+    });
+    
+    // Initial render
+    renderSectorScope();
+}
+
+function renderSectorScope() {
+    const data = SS_MOCK_DATA[currentPeriod];
+    if(!data) return;
+
+    // 1. Heatmap
+    const hmGrid = document.getElementById('ss-heatmap-grid');
+    if(!hmGrid) return; // Ensure the element exists
+    hmGrid.innerHTML = '';
+    
+    let maxChange = 0;
+    data.sectors.forEach(s => {
+        if(Math.abs(s.change) > maxChange) maxChange = Math.abs(s.change);
+    });
+    
+    data.sectors.forEach(s => {
+        const minHeight = 80 + (Math.abs(s.change) / (maxChange || 1)) * 40; // 80px to 120px
+        let bg = '#e0e0e0';
+        if(s.change > 1.5) bg = '#4caf50';
+        else if(s.change > 0) bg = '#a5d6a7';
+        else if(s.change < -1.5) bg = '#e53935';
+        else if(s.change < 0) bg = '#ef9a9a';
+        
+        const tile = document.createElement('div');
+        tile.className = 'ss-heat-tile animate-in';
+        tile.style.backgroundColor = bg;
+        tile.style.minHeight = minHeight + 'px';
+        tile.innerHTML = `
+            <div class="ss-ht-name">${s.name}</div>
+            <div class="ss-ht-chg">${s.change > 0 ? '+'+s.change : s.change}%</div>
+        `;
+        tile.addEventListener('click', () => {
+            renderDrillDown(s.name, data);
+        });
+        hmGrid.appendChild(tile);
+    });
+
+    // 2. Rotation Meter
+    const rotIn = document.getElementById('ss-rot-in');
+    const rotOut = document.getElementById('ss-rot-out');
+    rotIn.innerHTML = '';
+    rotOut.innerHTML = '';
+    
+    const flowingIn = [...data.sectors].filter(s => s.change > 0).sort((a,b) => b.change - a.change);
+    const flowingOut = [...data.sectors].filter(s => s.change < 0).sort((a,b) => a.change - b.change);
+    
+    flowingIn.forEach((s, i) => {
+        const w = (s.change / (maxChange || 1)) * 100;
+        rotIn.innerHTML += `
+            <div class="ss-rot-row animate-in" style="animation-delay: ${i*50}ms">
+                <div class="ss-rot-name">${s.name}</div>
+                <div class="ss-rot-bar-wrap"><div class="ss-rot-bar" style="width: ${w}%; background: #4caf50;"></div></div>
+                <div class="ss-rot-val green">+${s.change}%</div>
+            </div>
+        `;
+    });
+    flowingOut.forEach((s, i) => {
+        const w = (Math.abs(s.change) / (maxChange || 1)) * 100;
+        rotOut.innerHTML += `
+            <div class="ss-rot-row animate-in" style="animation-delay: ${i*50}ms">
+                <div class="ss-rot-name">${s.name}</div>
+                <div class="ss-rot-bar-wrap"><div class="ss-rot-bar" style="width: ${w}%; background: #ef9a9a;"></div></div>
+                <div class="ss-rot-val red">${s.change}%</div>
+            </div>
+        `;
+    });
+
+    // 3. Stats Row
+    const statsRow = document.getElementById('ss-stats-row');
+    const bullishCount = data.sectors.filter(s => s.change > 0).length;
+    const bearishCount = data.sectors.filter(s => s.change < 0).length;
+    let strongest = data.sectors[0];
+    data.sectors.forEach(s => { if(s.change > strongest.change) strongest = s; });
+    const marketBreadth = Math.round((bullishCount / data.sectors.length) * 100);
+    
+    statsRow.innerHTML = `
+        <div class="ss-stat-card animate-in">
+            <div class="ss-stat-lbl">Bullish sectors</div>
+            <div class="ss-stat-val green">${bullishCount}</div>
+        </div>
+        <div class="ss-stat-card animate-in" style="animation-delay: 50ms">
+            <div class="ss-stat-lbl">Bearish sectors</div>
+            <div class="ss-stat-val red">${bearishCount}</div>
+        </div>
+        <div class="ss-stat-card animate-in" style="animation-delay: 100ms">
+            <div class="ss-stat-lbl">Strongest sector</div>
+            <div class="ss-stat-val">${strongest.name}</div>
+        </div>
+        <div class="ss-stat-card animate-in" style="animation-delay: 150ms">
+            <div class="ss-stat-lbl">Market breadth</div>
+            <div class="ss-stat-val green">${marketBreadth}% Bull</div>
+        </div>
+    `;
+
+    // 4. AI Insight
+    let insightText = '';
+    const defNames = ['Pharma', 'FMCG'];
+    const cycNames = ['Auto', 'Metal', 'Realty'];
+    let defChg = 0, cycChg = 0;
+    data.sectors.forEach(s => {
+        if(defNames.includes(s.name)) defChg += s.change;
+        if(cycNames.includes(s.name)) cycChg += s.change;
+    });
+    if(defChg > cycChg) {
+        insightText = `Defensive rotation detected — Pharma & FMCG leading while Metal & Realty under pressure. Suggests cautious sentiment. Best intraday opportunity in <strong>${strongest.name} & IT</strong>. Avoid Realty longs today.`;
+    } else {
+        insightText = `Risk-on rotation detected — Auto & Metal leading while defensives lag. Suggests bullish sentiment. Best intraday opportunity in <strong>${strongest.name}</strong>. Avoid shorting cyclicals today.`;
+    }
+    document.getElementById('ss-ai-text').innerHTML = insightText;
+
+    // 5. Drill Down
+    const sortedAll = [...data.sectors].sort((a,b) => b.change - a.change);
+    const drillCards = document.getElementById('ss-drill-cards');
+    drillCards.innerHTML = '';
+    drillCards.innerHTML += createDrillCard(sortedAll[0].name, data);
+    drillCards.innerHTML += createDrillCard(sortedAll[1].name, data);
+    drillCards.innerHTML += createDrillCard(sortedAll[sortedAll.length - 1].name, data);
+}
+
+function renderDrillDown(sectorName, data) {
+    const drillCards = document.getElementById('ss-drill-cards');
+    // Check if it's already there
+    const existing = drillCards.querySelectorAll('.ss-dc-name');
+    let found = false;
+    existing.forEach(el => { if(el.textContent === sectorName) found = true; });
+    if(found) return;
+
+    const newCardHTML = createDrillCard(sectorName, data);
+    drillCards.insertAdjacentHTML('afterbegin', newCardHTML);
+    if(drillCards.children.length > 3) {
+        drillCards.removeChild(drillCards.lastChild);
+    }
+}
+
+function createDrillCard(sectorName, data) {
+    const sector = data.sectors.find(s => s.name === sectorName);
+    const stocksInfo = data.stocks[sectorName];
+    if(!sector || !stocksInfo) return '';
+    
+    const isBullish = sector.change >= 0;
+    const badgeClass = isBullish ? 'bullish' : 'bearish';
+    const badgeText = isBullish ? 'Bullish' : 'Bearish';
+    
+    let stocksHtml = '';
+    stocksInfo.stocks.forEach(st => {
+        const cClass = st.chg >= 0 ? 'green' : 'red';
+        const sign = st.chg > 0 ? '+' : '';
+        stocksHtml += `
+            <div class="ss-dc-stock">
+                <span>${st.sym}</span>
+                <span class="${cClass}">${sign}${st.chg}%</span>
+            </div>
+        `;
+    });
+
+    return `
+        <div class="ss-drill-card animate-in">
+            <div class="ss-dc-header">
+                <div class="ss-dc-name">${sectorName}</div>
+                <div class="ss-dc-badge ${badgeClass}">${badgeText}</div>
+            </div>
+            <div class="ss-dc-movers-lbl">Top movers</div>
+            ${stocksHtml}
+            <div class="ss-dc-advdec">
+                Adv/Dec: <span class="green">${stocksInfo.adv}</span> / <span class="red">${stocksInfo.dec}</span>
+            </div>
+        </div>
+    `;
+}
+
+// Hook into the tab click
+document.querySelectorAll('.nav-item').forEach(nav => {
+    nav.addEventListener('click', (e) => {
+        if (e.currentTarget.dataset.target === 'tab-sectorscope') {
+            setTimeout(initSectorScope, 100);
+        }
+    });
+});
