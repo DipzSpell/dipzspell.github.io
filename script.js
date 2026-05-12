@@ -78,7 +78,8 @@ const ALGOS = [
 let STATE = {
     nifty: { ltp: 22450.30, chg: 185.20, pct: 0.83 },
     banknifty: { ltp: 48320.00, chg: 290.00, pct: 0.60 },
-    watchlist: []
+    watchlist: [],
+    selectedSector: null
 };
 
 // --- UTILITIES ---
@@ -242,7 +243,7 @@ function renderSector() {
             else if(s.change > -2) { bg = 'rgba(252,165,165,0.13)'; bc = '#fca5a5'; tc = '#fca5a5'; }
             else { bg = 'rgba(239,68,68,0.22)'; bc = '#ef4444'; tc = '#ef4444'; }
             
-            return `<div style="cursor:pointer; transition:all 0.18s; border-radius:8px; padding:12px; border:1px solid ${bc}; background:${bg}" onmouseover="this.style.transform='scale(1.04)';this.style.opacity='0.85'" onmouseout="this.style.transform='scale(1)';this.style.opacity='1'">
+            return `<div style="cursor:pointer; transition:all 0.18s; border-radius:8px; padding:12px; border:1px solid ${bc}; background:${bg}" onclick="selectSector('${s.name}')" onmouseover="this.style.transform='scale(1.04)';this.style.opacity='0.85'" onmouseout="this.style.transform='scale(1)';this.style.opacity='1'">
                 <div style="font-size:13px; font-weight:500; color:${tc}">${s.name}</div>
                 <div style="font-size:15px; font-weight:700; color:${tc}">${sgn(s.change)}${s.change.toFixed(2)}%</div>
                 <div style="width:${Math.min(100, Math.abs(s.change)*30)}%; background:${tc}; height:3px; border-radius:2px; margin-top:6px"></div>
@@ -250,16 +251,55 @@ function renderSector() {
         }).join('');
     }
 
-    // Top Bullish/Bearish Insights
+    renderSectorDrilldown();
+}
+
+window.selectSector = function(name) {
+    // Toggle off if clicking the same sector
+    STATE.selectedSector = STATE.selectedSector === name ? null : name;
+    renderSectorDrilldown();
+}
+
+function renderSectorDrilldown() {
     const dd = document.querySelector('#drill-down') || document.querySelector('.drill-down');
-    if(dd) {
+    if(!dd) return;
+
+    const tvLink = (sym) => `onclick="window.open('https://in.tradingview.com/chart/?symbol=NSE%3A${sym}&interval=3', '_blank')" style="cursor:pointer" title="Open TradingView Chart"`;
+
+    if (STATE.selectedSector) {
+        // Show specific sector with all its stocks
+        const sec = SECTORS.find(s => s.name === STATE.selectedSector);
+        if(!sec) return;
+        dd.style.cssText = "display:grid; grid-template-columns:1fr; gap:16px;";
+        dd.innerHTML = `
+            <div class="card p-4">
+                <div class="flex justify-between items-center mb-2">
+                    <div class="font-bold text-lg text-1">${sec.name} Sector Constituents</div>
+                    <button class="badge badge-outline" onclick="selectSector('${sec.name}')" style="cursor:pointer">Close ✕</button>
+                </div>
+                <div class="text-xs text-2 mb-4 all-caps">Click any stock to open TradingView (3m timeframe)</div>
+                <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:12px;">
+                    ${sec.stocks.map(st => `<div class="card p-3" ${tvLink(st.s)} onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='var(--border-dim)'">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold" style="color:#f1f5f9">${st.s}</span>
+                            <span style="color:${col(st.c)}; font-weight:600">${sgn(st.c)}${st.c.toFixed(2)}%</span>
+                        </div>
+                        <div class="text-xs text-2 mt-1">₹${fmt(st.ltp)}</div>
+                    </div>`).join('')}
+                </div>
+                <div class="text-xs text-2 mt-4" style="border-top:1px solid var(--border-dim); padding-top:10px">Advancing: ${sec.adv} | Declining: ${sec.dec} | Relative Volume: ${sec.vol}x avg</div>
+            </div>
+        `;
+    } else {
+        // Show default top/bottom movers
+        dd.style.cssText = "display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;";
         const top = [...SECTORS].sort((a,b)=>b.change-a.change).slice(0,2);
         const bot = [...SECTORS].sort((a,b)=>a.change-b.change).slice(0,1);
         dd.innerHTML = [...top, ...bot].map(s => `
             <div class="card p-4">
                 <div class="flex justify-between items-center mb-2"><div class="font-bold text-md text-1">${s.name}</div><div class="badge ${s.change>0?'badge-bull':'badge-bear'}">${s.change>0?'Bullish':'Bearish'}</div></div>
                 <div class="text-xs text-2 mb-2 all-caps">Top Movers</div>
-                ${s.stocks.slice(0,3).map(st => `<div class="stock-row"><span class="font-semibold">${st.s}</span><span style="color:${col(st.c)}">${sgn(st.c)}${st.c.toFixed(2)}%</span></div>`).join('')}
+                ${s.stocks.slice(0,3).map(st => `<div class="stock-row" ${tvLink(st.s)} onmouseover="this.style.background='rgba(255,255,255,0.03)'" onmouseout="this.style.background='transparent'"><span class="font-semibold">${st.s}</span><span style="color:${col(st.c)}">${sgn(st.c)}${st.c.toFixed(2)}%</span></div>`).join('')}
                 <div class="text-xs text-2 mt-2">Adv: ${s.adv} Dec: ${s.dec} | Vol: ${s.vol}x avg</div>
             </div>
         `).join('');
