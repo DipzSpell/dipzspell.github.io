@@ -645,31 +645,55 @@ function renderAlgos() {
     }).join('');
 }
 
+// --- REAL DATA INTEGRATION ---
+async function fetchRealData() {
+    try {
+        const res = await fetch('https://dipzspelll-github-io.onrender.com/api/indices');
+        const json = await res.json();
+        if(json.success && json.data && json.data.data) {
+            const indices = json.data.data;
+            
+            // Update NIFTY 50
+            const nifty = indices.find(i => i.index === 'NIFTY 50');
+            if (nifty) {
+                STATE.nifty.ltp = nifty.last;
+                STATE.nifty.chg = nifty.variation;
+                STATE.nifty.pct = nifty.percentChange;
+            }
+            
+            // Update BANKNIFTY
+            const banknifty = indices.find(i => i.index === 'NIFTY BANK');
+            if (banknifty) {
+                STATE.banknifty.ltp = banknifty.last;
+                STATE.banknifty.chg = banknifty.variation;
+                STATE.banknifty.pct = banknifty.percentChange;
+            }
+
+            // Update SECTORS
+            SECTORS.forEach(sec => {
+                const apiSector = indices.find(i => i.index === sec.name.toUpperCase());
+                if (apiSector) sec.change = apiSector.percentChange;
+            });
+
+            // Trigger targeted UI renders with real flashes
+            renderTopbar();
+            renderHero();
+            renderTicker();
+            renderSector();
+        }
+    } catch(e) {
+        console.error("Failed to fetch live API data:", e);
+    }
+}
+
 // --- MASTER LOOP ---
 function masterLoop() {
     const BASE_NIFTY = 22450.30;
     const BASE_BANKNIFTY = 48320.00;
 
-    // Ticker & Indices
-    setInterval(() => {
-        // Use UTC time seconds so every device globally is on the exact same tick
-        const t = Math.floor(Date.now() / 1000);
-        
-        // Complex deterministic wave combining slow trend and fast volatility
-        STATE.nifty.ltp = BASE_NIFTY + Math.sin(t / 15) * 45 + Math.sin(t / 2) * 8 + Math.cos(t) * 3;
-        STATE.nifty.chg = Math.sin(t / 15) * 45 + Math.sin(t / 2) * 8 + Math.cos(t) * 3; 
-        STATE.nifty.pct = (STATE.nifty.chg / BASE_NIFTY) * 100;
-        
-        STATE.banknifty.ltp = BASE_BANKNIFTY + Math.sin(t / 12) * 110 + Math.sin(t / 3) * 18 + Math.cos(t) * 5;
-        STATE.banknifty.chg = Math.sin(t / 12) * 110 + Math.sin(t / 3) * 18 + Math.cos(t) * 5;
-        STATE.banknifty.pct = (STATE.banknifty.chg / BASE_BANKNIFTY) * 100;
-
-        renderTopbar();
-        renderHero();
-        renderTicker();
-    }, 1000);
-
-    // Watchlist & Sectors & Globals
+    // Ticker & Indices simulation removed -> Now powered by Real API
+    
+    // Watchlist & Globals (Kept deterministic so UI feels alive while real data fetches in background)
     setInterval(() => {
         const t = Math.floor(Date.now() / 1000);
         
@@ -683,11 +707,7 @@ function masterLoop() {
         });
         renderWatchlist();
 
-        SECTORS.forEach((s, i) => {
-            if(!s.baseChange) s.baseChange = s.change;
-            s.change = s.baseChange + Math.sin(t / (10 + i)) * 1.2 + Math.cos(t / 3) * 0.3;
-        });
-        renderSector();
+        // SECTORS simulation removed -> Now powered by Real API
 
         GLOBAL.forEach((g, i) => { 
             if(g.status === 'Open') {
@@ -728,6 +748,10 @@ function init() {
         });
     }, { threshold: 0.3 });
     document.querySelectorAll('section').forEach(sec => observer.observe(sec));
+
+    // Initial Real Data Fetch & Interval
+    fetchRealData();
+    setInterval(fetchRealData, 15000); // Fetch real NSE data every 15s
 
     masterLoop();
 }
