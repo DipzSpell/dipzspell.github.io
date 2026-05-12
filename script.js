@@ -118,12 +118,22 @@ function smartUpdate(id, newValue, color) {
     const el = document.getElementById(id);
     if(!el) return;
     if(el.innerText !== newValue) {
+        // Parse float ignoring commas, currency symbols, and spaces
+        const cleanOld = parseFloat(el.innerText.replace(/[^0-9.-]+/g, ""));
+        const cleanNew = parseFloat(newValue.replace(/[^0-9.-]+/g, ""));
+        
+        let flashColor = 'rgba(255,255,255,0.1)';
+        if (!isNaN(cleanOld) && !isNaN(cleanNew)) {
+            if (cleanNew > cleanOld) flashColor = 'rgba(34,197,94,0.3)'; // Green for tick UP
+            else if (cleanNew < cleanOld) flashColor = 'rgba(239,68,68,0.3)'; // Red for tick DOWN
+        }
+
         el.innerText = newValue;
         if(color) el.style.color = color;
         
-        // Professional flash effect
+        // Professional tick flash effect
         el.style.transition = 'none';
-        el.style.backgroundColor = (color === '#22c55e' || color === 'var(--bull-strong, #22c55e)') ? 'rgba(34,197,94,0.3)' : (color === '#ef4444' || color === 'var(--bear-strong, #ef4444)') ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)';
+        el.style.backgroundColor = flashColor;
         el.style.borderRadius = '4px';
         
         // Force reflow
