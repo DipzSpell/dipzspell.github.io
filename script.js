@@ -232,7 +232,8 @@ function renderSector() {
     const heatEl = document.querySelector('#heatmap') || document.querySelector('.heatmap-grid');
     if(heatEl) {
         heatEl.style.cssText = "display:grid; grid-template-columns:repeat(4,1fr); gap:8px;";
-        heatEl.innerHTML = SECTORS.map(s => {
+        const sortedSectors = [...SECTORS].sort((a, b) => b.change - a.change);
+        heatEl.innerHTML = sortedSectors.map(s => {
             let h = Math.max(60, Math.min(110, 60 + Math.abs(s.change)*14));
             let bg, bc, tc;
             if(s.change > 2) { bg = 'rgba(34,197,94,0.22)'; bc = '#22c55e'; tc = '#22c55e'; }
