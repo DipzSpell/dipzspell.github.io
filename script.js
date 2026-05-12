@@ -114,6 +114,26 @@ function getOrCreate(selector, parentSelector = '#main-content', tag = 'div', cl
     return el;
 }
 
+function smartUpdate(id, newValue, color) {
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(el.innerText !== newValue) {
+        el.innerText = newValue;
+        if(color) el.style.color = color;
+        
+        // Professional flash effect
+        el.style.transition = 'none';
+        el.style.backgroundColor = (color === '#22c55e' || color === 'var(--bull-strong, #22c55e)') ? 'rgba(34,197,94,0.3)' : (color === '#ef4444' || color === 'var(--bear-strong, #ef4444)') ? 'rgba(239,68,68,0.3)' : 'rgba(255,255,255,0.1)';
+        el.style.borderRadius = '4px';
+        
+        // Force reflow
+        void el.offsetWidth;
+        
+        el.style.transition = 'background-color 0.8s ease-out';
+        el.style.backgroundColor = 'transparent';
+    }
+}
+
 // --- RENDERING FUNCTIONS ---
 
 function renderNav() {
@@ -146,15 +166,11 @@ function renderTopbar() {
     if (clockEl) clockEl.innerText = new Date().toLocaleTimeString('en-IN') + ' IST';
     
     // Nifty & BankNifty Topbar
-    const tnVal = document.querySelector('#top-nifty-val');
-    const tnChg = document.querySelector('#top-nifty-chg');
-    if(tnVal) tnVal.innerText = fmt(STATE.nifty.ltp);
-    if(tnChg) { tnChg.innerText = `+${STATE.nifty.pct.toFixed(2)}%`; tnChg.style.color = col(STATE.nifty.pct); }
+    smartUpdate('top-nifty-val', fmt(STATE.nifty.ltp));
+    smartUpdate('top-nifty-chg', `+${STATE.nifty.pct.toFixed(2)}%`, col(STATE.nifty.pct));
     
-    const tbVal = document.querySelector('#top-banknifty-val');
-    const tbChg = document.querySelector('#top-banknifty-chg');
-    if(tbVal) tbVal.innerText = fmt(STATE.banknifty.ltp);
-    if(tbChg) { tbChg.innerText = `+${STATE.banknifty.pct.toFixed(2)}%`; tbChg.style.color = col(STATE.banknifty.pct); }
+    smartUpdate('top-banknifty-val', fmt(STATE.banknifty.ltp));
+    smartUpdate('top-banknifty-chg', `+${STATE.banknifty.pct.toFixed(2)}%`, col(STATE.banknifty.pct));
     
     // Expiry
     const expEl = document.querySelector('#expiry');
@@ -214,9 +230,14 @@ function renderTicker() {
         document.head.appendChild(style);
     }
 
-    wrap.innerHTML = `<div style="display:flex; width:max-content; animation:ticker-slide 45s linear infinite; cursor:pointer;" onmouseover="this.style.animationPlayState='paused'" onmouseout="this.style.animationPlayState='running'">
-        ${fullContent.repeat(4)}
-    </div>`;
+    let slider = document.getElementById('ticker-slider');
+    if (!slider) {
+        wrap.innerHTML = `<div id="ticker-slider" style="display:flex; width:max-content; animation:ticker-slide 45s linear infinite; cursor:pointer;" onmouseover="this.style.animationPlayState='paused'" onmouseout="this.style.animationPlayState='running'"></div>`;
+        slider = document.getElementById('ticker-slider');
+    }
+    
+    // Only update the inner HTML of the slider to prevent animation reset
+    slider.innerHTML = fullContent.repeat(4);
 }
 
 function renderHero() {
@@ -226,13 +247,25 @@ function renderHero() {
     const vix = 13.42 + (Math.random()-0.5)*0.2;
     const pcr = 1.24 + (Math.random()-0.5)*0.02;
     
-    hero.innerHTML = `
-        <div class="card p-4"><div class="text-xs all-caps text-2">NIFTY 50</div><div class="text-xl font-bold flash-bg" id="hero-nifty-val">${fmt(STATE.nifty.ltp)}</div><div class="text-sm font-medium" style="color:${col(STATE.nifty.chg)}">${sgn(STATE.nifty.chg)}${fmt(STATE.nifty.chg)} (${sgn(STATE.nifty.pct)}${STATE.nifty.pct.toFixed(2)}%)</div><svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,20 Q10,25 20,15 T40,10 T60,18 T80,5 T100,2" fill="none" stroke="var(--bull-strong)" stroke-width="2"/></svg></div>
-        <div class="card p-4"><div class="text-xs all-caps text-2">BANKNIFTY</div><div class="text-xl font-bold flash-bg">${fmt(STATE.banknifty.ltp)}</div><div class="text-sm font-medium" style="color:${col(STATE.banknifty.chg)}">${sgn(STATE.banknifty.chg)}${fmt(STATE.banknifty.chg)} (${sgn(STATE.banknifty.pct)}${STATE.banknifty.pct.toFixed(2)}%)</div><svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 Q10,20 20,25 T40,15 T60,5 T80,10 T100,5" fill="none" stroke="var(--bull-strong)" stroke-width="2"/></svg></div>
-        <div class="card p-4"><div class="text-xs all-caps text-2">Market Breadth</div><div class="text-xl font-bold">67% Bullish</div><div class="breadth-bar"><div class="breadth-green" style="width:67%"></div><div class="breadth-red" style="width:33%"></div></div><div class="text-xs text-2 mt-2">Adv: 1,234 | Dec: 567</div></div>
-        <div class="card p-4"><div class="text-xs all-caps text-2">India VIX</div><div class="text-xl font-bold" style="color:${vix<15?'#22c55e':vix>20?'#ef4444':'#eab308'}">${fmt(vix)}</div><div class="text-sm text-2 mt-1">Volatility Index</div></div>
-        <div class="card p-4"><div class="text-xs all-caps text-2">Put Call Ratio</div><div class="text-xl font-bold" style="color:${pcr>1?'#22c55e':'#ef4444'}">${fmt(pcr)}</div><div class="text-sm text-2 mt-1">${pcr>1?'Bullish Bias':'Bearish Bias'}</div></div>
-    `;
+    if(hero.children.length === 0) {
+        hero.innerHTML = `
+            <div class="card p-4"><div class="text-xs all-caps text-2">NIFTY 50</div><div class="text-xl font-bold" id="hero-nifty-val" style="padding:2px 6px; margin:-2px -6px"></div><div class="text-sm font-medium" id="hero-nifty-chg" style="padding:2px 6px; margin:-2px -6px; display:inline-block"></div><svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,20 Q10,25 20,15 T40,10 T60,18 T80,5 T100,2" fill="none" stroke="var(--bull-strong)" stroke-width="2"/></svg></div>
+            <div class="card p-4"><div class="text-xs all-caps text-2">BANKNIFTY</div><div class="text-xl font-bold" id="hero-banknifty-val" style="padding:2px 6px; margin:-2px -6px"></div><div class="text-sm font-medium" id="hero-banknifty-chg" style="padding:2px 6px; margin:-2px -6px; display:inline-block"></div><svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 Q10,20 20,25 T40,15 T60,5 T80,10 T100,5" fill="none" stroke="var(--bull-strong)" stroke-width="2"/></svg></div>
+            <div class="card p-4"><div class="text-xs all-caps text-2">Market Breadth</div><div class="text-xl font-bold">67% Bullish</div><div class="breadth-bar"><div class="breadth-green" style="width:67%"></div><div class="breadth-red" style="width:33%"></div></div><div class="text-xs text-2 mt-2">Adv: 1,234 | Dec: 567</div></div>
+            <div class="card p-4"><div class="text-xs all-caps text-2">India VIX</div><div class="text-xl font-bold" id="hero-vix-val" style="padding:2px 6px; margin:-2px -6px"></div><div class="text-sm text-2 mt-1">Volatility Index</div></div>
+            <div class="card p-4"><div class="text-xs all-caps text-2">Put Call Ratio</div><div class="text-xl font-bold" id="hero-pcr-val" style="padding:2px 6px; margin:-2px -6px"></div><div class="text-sm text-2 mt-1" id="hero-pcr-txt"></div></div>
+        `;
+    }
+    
+    smartUpdate('hero-nifty-val', fmt(STATE.nifty.ltp));
+    smartUpdate('hero-nifty-chg', `${sgn(STATE.nifty.chg)}${fmt(STATE.nifty.chg)} (${sgn(STATE.nifty.pct)}${STATE.nifty.pct.toFixed(2)}%)`, col(STATE.nifty.chg));
+    
+    smartUpdate('hero-banknifty-val', fmt(STATE.banknifty.ltp));
+    smartUpdate('hero-banknifty-chg', `${sgn(STATE.banknifty.chg)}${fmt(STATE.banknifty.chg)} (${sgn(STATE.banknifty.pct)}${STATE.banknifty.pct.toFixed(2)}%)`, col(STATE.banknifty.chg));
+    
+    smartUpdate('hero-vix-val', fmt(vix), vix<15?'#22c55e':vix>20?'#ef4444':'#eab308');
+    smartUpdate('hero-pcr-val', fmt(pcr), pcr>1?'#22c55e':'#ef4444');
+    smartUpdate('hero-pcr-txt', pcr>1?'Bullish Bias':'Bearish Bias', pcr>1?'#22c55e':'#ef4444');
 }
 
 function renderSector() {
