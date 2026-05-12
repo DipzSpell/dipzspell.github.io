@@ -519,7 +519,7 @@ function masterLoop() {
         renderTopbar();
         renderHero();
         renderTicker();
-    }, 3000);
+    }, 1000);
 
     // Watchlist & Sectors & Globals
     setInterval(() => {
@@ -534,7 +534,7 @@ function masterLoop() {
 
         GLOBAL.forEach(g => { if(g.status === 'Open') g.chg += (Math.random()-0.5)*0.05; });
         renderGlobals();
-    }, 5000);
+    }, 1000);
 }
 
 // --- INIT ---
