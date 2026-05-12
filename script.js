@@ -9,9 +9,15 @@ const SECTORS = [
     { name:"Auto", change:2.1, prev:0.9, stocks:[{s:"TATAMOTORS",c:3.4,ltp:923},{s:"M&M",c:2.2,ltp:2234},{s:"MARUTI",c:1.4,ltp:12450},{s:"BAJAJ-AUTO",c:1.8,ltp:8945},{s:"HEROMOTOCO",c:0.9,ltp:4567}], adv:14, dec:3, vol:3.1 },
     { name:"FMCG", change:0.4, prev:0.6, stocks:[{s:"HINDUNILVR",c:0.8,ltp:2345},{s:"ITC",c:0.5,ltp:456},{s:"NESTLEIND",c:0.2,ltp:2345},{s:"BRITANNIA",c:0.6,ltp:4892},{s:"DABUR",c:0.3,ltp:567}], adv:11, dec:6, vol:0.9 },
     { name:"Bank", change:0.1, prev:-0.3, stocks:[{s:"HDFCBANK",c:0.4,ltp:1678},{s:"ICICIBANK",c:-0.2,ltp:1123},{s:"KOTAKBANK",c:0.3,ltp:1834},{s:"AXISBANK",c:0.6,ltp:1089},{s:"SBIN",c:-0.1,ltp:812}], adv:9, dec:8, vol:1.4 },
+    { name:"PSU Bank", change:-0.5, prev:-0.8, stocks:[{s:"SBIN",c:-0.2,ltp:812},{s:"PNB",c:-0.8,ltp:124},{s:"BANKBARODA",c:-0.5,ltp:256},{s:"CANBK",c:-1.1,ltp:567},{s:"UNIONBANK",c:-0.4,ltp:145}], adv:3, dec:9, vol:1.1 },
+    { name:"Fin Service", change:0.3, prev:0.1, stocks:[{s:"BAJFINANCE",c:1.8,ltp:6823},{s:"BAJAJFINSV",c:0.9,ltp:1567},{s:"CHOLAFIN",c:0.4,ltp:1234},{s:"MUTHOOTFIN",c:-0.2,ltp:1678},{s:"PFC",c:0.5,ltp:456}], adv:12, dec:8, vol:1.6 },
     { name:"Energy", change:0.5, prev:0.8, stocks:[{s:"RELIANCE",c:1.1,ltp:2945},{s:"ONGC",c:0.3,ltp:267},{s:"NTPC",c:0.2,ltp:389},{s:"POWERGRID",c:0.4,ltp:312},{s:"ADANIPOWER",c:0.8,ltp:456}], adv:10, dec:7, vol:1.2 },
+    { name:"Oil & Gas", change:0.7, prev:0.4, stocks:[{s:"RELIANCE",c:1.1,ltp:2945},{s:"ONGC",c:0.3,ltp:267},{s:"BPCL",c:0.8,ltp:589},{s:"IOC",c:0.2,ltp:167},{s:"GAIL",c:0.5,ltp:198}], adv:8, dec:4, vol:1.3 },
     { name:"Metal", change:-0.9, prev:-0.4, stocks:[{s:"TATASTEEL",c:-1.4,ltp:145},{s:"HINDALCO",c:-0.8,ltp:634},{s:"JSWSTEEL",c:-0.6,ltp:867},{s:"COALINDIA",c:-0.3,ltp:456},{s:"NMDC",c:-1.1,ltp:234}], adv:4, dec:14, vol:1.7 },
-    { name:"Realty", change:-1.6, prev:-2.1, stocks:[{s:"DLF",c:-2.1,ltp:834},{s:"GODREJPROP",c:-1.8,ltp:2345},{s:"OBEROIRLTY",c:-1.2,ltp:1678},{s:"PRESTIGE",c:-0.9,ltp:1456},{s:"PHOENIXLTD",c:-1.4,ltp:1234}], adv:3, dec:11, vol:2.1 }
+    { name:"Realty", change:-1.6, prev:-2.1, stocks:[{s:"DLF",c:-2.1,ltp:834},{s:"GODREJPROP",c:-1.8,ltp:2345},{s:"OBEROIRLTY",c:-1.2,ltp:1678},{s:"PRESTIGE",c:-0.9,ltp:1456},{s:"PHOENIXLTD",c:-1.4,ltp:1234}], adv:3, dec:11, vol:2.1 },
+    { name:"Media", change:-0.4, prev:-0.1, stocks:[{s:"ZEEL",c:-1.2,ltp:145},{s:"SUNTV",c:-0.4,ltp:678},{s:"PVRINOX",c:0.5,ltp:1456},{s:"NETWORK18",c:-0.8,ltp:89},{s:"TV18BRDCST",c:-0.5,ltp:45}], adv:4, dec:6, vol:0.8 },
+    { name:"Cons Dur", change:0.6, prev:0.3, stocks:[{s:"TITAN",c:0.8,ltp:3456},{s:"VOLTAS",c:1.2,ltp:1089},{s:"HAVELLS",c:0.4,ltp:1456},{s:"DIXON",c:1.8,ltp:7890},{s:"CROMPTON",c:-0.2,ltp:289}], adv:9, dec:6, vol:1.4 },
+    { name:"Healthcare", change:1.5, prev:1.1, stocks:[{s:"APOLLOHOSP",c:1.4,ltp:6234},{s:"MAXHEALTH",c:2.1,ltp:845},{s:"SYNGENE",c:0.8,ltp:745},{s:"LALPATHLAB",c:1.2,ltp:2345},{s:"METROPOLIS",c:0.5,ltp:1678}], adv:15, dec:5, vol:1.9 }
 ];
 
 const FNO_STOCKS = {
@@ -232,7 +238,6 @@ function renderHero() {
 function renderSector() {
     const heatEl = document.querySelector('#heatmap') || document.querySelector('.heatmap-grid');
     if(heatEl) {
-        heatEl.style.cssText = "display:grid; grid-template-columns:repeat(4,1fr); gap:8px;";
         const sortedSectors = [...SECTORS].sort((a, b) => b.change - a.change);
         heatEl.innerHTML = sortedSectors.map(s => {
             let h = Math.max(60, Math.min(110, 60 + Math.abs(s.change)*14));
