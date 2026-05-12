@@ -804,15 +804,58 @@
             `).join('');
         };
 
-        // Simulation Loop
+        // Simulation Loop (Updates every 1 second)
         setInterval(() => {
-            CONFIG.indices.nifty.ltp += (Math.random() - 0.5) * 5;
-            document.getElementById('hero-nifty-val').innerText = CONFIG.indices.nifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2});
-            document.getElementById('hero-nifty-val').classList.remove('flash-bg');
-            void document.getElementById('hero-nifty-val').offsetWidth; // trigger reflow
-            document.getElementById('hero-nifty-val').classList.add('flash-bg');
+            // Randomly tick indices
+            CONFIG.indices.nifty.ltp += (Math.random() - 0.5) * 3;
+            CONFIG.indices.nifty.change += (Math.random() - 0.5) * 2;
+            CONFIG.indices.nifty.pct = (CONFIG.indices.nifty.change / (CONFIG.indices.nifty.ltp - CONFIG.indices.nifty.change)) * 100;
+
+            CONFIG.indices.banknifty.ltp += (Math.random() - 0.5) * 8;
+            CONFIG.indices.banknifty.change += (Math.random() - 0.5) * 5;
+            CONFIG.indices.banknifty.pct = (CONFIG.indices.banknifty.change / (CONFIG.indices.banknifty.ltp - CONFIG.indices.banknifty.change)) * 100;
+
+            // Randomly tick sectors
+            CONFIG.sectors.forEach(s => {
+                s.change += (Math.random() - 0.5) * 0.1;
+            });
+
+            // Randomly tick globals
+            CONFIG.globals.forEach(g => {
+                const numVal = parseFloat(g.val.replace(/,/g, '').replace('$', ''));
+                const tick = (Math.random() - 0.5) * 2;
+                g.chg += (Math.random() - 0.5) * 0.05;
+                if(g.val.includes('$')) {
+                    g.val = '$' + (numVal + tick).toLocaleString('en-US', {maximumFractionDigits:2});
+                } else {
+                    g.val = (numVal + tick).toLocaleString('en-US', {maximumFractionDigits:2});
+                }
+            });
+
+            // Re-render components with new data
+            renderHero();
+            renderSectorScope();
+            renderGlobals();
             renderTicker();
-        }, 5000);
+            
+            // Add flash effect to hero values
+            ['top-nifty-val', 'top-banknifty-val'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.remove('text-green', 'text-red');
+                    el.classList.add(Math.random() > 0.5 ? 'text-green' : 'text-red');
+                    setTimeout(() => el.classList.remove('text-green', 'text-red'), 300);
+                }
+            });
+            
+            // Trigger background flash on NIFTY hero card
+            const heroNifty = document.getElementById('hero-nifty-val');
+            if(heroNifty) {
+                heroNifty.classList.remove('flash-bg');
+                void heroNifty.offsetWidth; // trigger reflow
+                heroNifty.classList.add('flash-bg');
+            }
+        }, 1000);
 
         // Theme Toggle
         document.getElementById('theme-btn').addEventListener('click', () => {
