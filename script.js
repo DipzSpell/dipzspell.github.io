@@ -176,15 +176,40 @@ function renderTicker() {
     if (!wrap) {
         wrap = document.createElement('div');
         wrap.className = 'ticker-wrap';
-        wrap.style.cssText = "overflow:hidden; background:#0e1117; border-bottom:1px solid #1e2535; height:32px; display:flex; align-items:center;";
+        wrap.style.cssText = "width: 100%; overflow: hidden; background: #080b0f; border-bottom: 1px solid #1e2535; height: 38px; display: flex; align-items: center;";
         const main = document.querySelector('#main-content') || document.body;
         main.insertBefore(wrap, main.firstChild);
     }
     
-    const str = `NIFTY50 ${fmt(STATE.nifty.ltp)} ▲ +${STATE.nifty.pct.toFixed(2)}% • BANKNIFTY ${fmt(STATE.banknifty.ltp)} ▲ +${STATE.banknifty.pct.toFixed(2)}% • ` +
-        DEFAULT_WATCHLIST.map(w => `${w.sym} ₹${fmt(w.ltp)} <span style="color:${col(w.chg)}">${w.chg>0?'▲':'▼'} ${Math.abs(w.chg).toFixed(2)}%</span>`).join(' • ');
+    const upArrow = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+    const downArrow = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>';
     
-    wrap.innerHTML = `<div class="ticker-content" style="display:flex; gap:32px; animation:ticker 50s linear infinite; white-space:nowrap;">${str.repeat(3)}</div>`;
+    const buildItem = (name, price, chg, pct) => `
+        <div style="display:inline-flex; align-items:center; gap:8px; font-family:'Inter', monospace; font-size:12px; font-weight:600; padding:0 16px; border-right:1px solid #1e2535">
+            <span style="color:#f1f5f9; letter-spacing:0.5px">${name}</span>
+            <span style="color:#94a3b8">₹${fmt(price)}</span>
+            <span style="color:${col(chg)}; display:flex; align-items:center; gap:2px; background:${chg>0?'rgba(34,197,94,0.1)':'rgba(239,68,68,0.1)'}; padding:2px 6px; border-radius:4px;">
+                ${chg>0?upArrow:downArrow} ${Math.abs(pct).toFixed(2)}%
+            </span>
+        </div>`;
+
+    const niftyItem = buildItem("NIFTY 50", STATE.nifty.ltp, STATE.nifty.chg, STATE.nifty.pct);
+    const bankNiftyItem = buildItem("BANKNIFTY", STATE.banknifty.ltp, STATE.banknifty.chg, STATE.banknifty.pct);
+    const stocks = DEFAULT_WATCHLIST.map(w => buildItem(w.sym, w.ltp, w.chg, (w.chg/w.ltp)*100)).join('');
+    
+    const fullContent = niftyItem + bankNiftyItem + stocks;
+    
+    // Check if style for ticker keyframes exists, if not inject it
+    if(!document.getElementById('ticker-style')) {
+        const style = document.createElement('style');
+        style.id = 'ticker-style';
+        style.innerHTML = `@keyframes ticker-slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`;
+        document.head.appendChild(style);
+    }
+
+    wrap.innerHTML = `<div style="display:flex; width:max-content; animation:ticker-slide 45s linear infinite; cursor:pointer;" onmouseover="this.style.animationPlayState='paused'" onmouseout="this.style.animationPlayState='running'">
+        ${fullContent.repeat(4)}
+    </div>`;
 }
 
 function renderHero() {
