@@ -12,18 +12,18 @@
             --bg-elevated: #141820;
             --bg-overlay: #1c2130;
             --border-dim: #1e2535;
-            --border-glow: #2d3a52;
-            --accent-blue: #3b82f6;
+            --border-bright: #2d3a52;
+            --accent: #3b82f6;
             --accent-cyan: #06b6d4;
             --accent-purple: #8b5cf6;
-            --green-strong: #22c55e;
-            --green-mild: #86efac;
-            --red-strong: #ef4444;
-            --red-mild: #fca5a5;
+            --bull-strong: #22c55e;
+            --bull-mild: #86efac;
+            --bear-strong: #ef4444;
+            --bear-mild: #fca5a5;
             --neutral: #94a3b8;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --text-muted: #4a5568;
+            --text-1: #f1f5f9;
+            --text-2: #94a3b8;
+            --text-3: #4a5568;
         }
 
         [data-theme="light"] {
@@ -31,18 +31,21 @@
             --bg-surface: #ffffff;
             --bg-elevated: #f1f5f9;
             --bg-overlay: #e2e8f0;
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
+            --text-1: #0f172a;
+            --text-2: #475569;
+            --text-3: #94a3b8;
             --border-dim: #e2e8f0;
-            --border-glow: #cbd5e1;
+            --border-bright: #cbd5e1;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-base); color: var(--text-primary); font-size: 13px; line-height: 1.5; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-base); color: var(--text-1); font-size: 13px; line-height: 1.5; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
         a { color: inherit; text-decoration: none; }
-        button { cursor: pointer; border: none; outline: none; font-family: inherit; transition: all 0.18s ease; }
+        button { cursor: pointer; border: none; outline: none; font-family: inherit; transition: all 0.18s ease; background: transparent; color: inherit; }
+        input, select { font-family: inherit; background: var(--bg-elevated); border: 1px solid var(--border-dim); color: var(--text-1); padding: 8px 12px; border-radius: 6px; outline: none; transition: border-color 0.18s; }
+        input:focus, select:focus { border-color: var(--accent); }
 
-        /* Typography & Utilities */
+        /* Typography */
         .text-xs { font-size: 11px; }
         .text-sm { font-size: 13px; }
         .text-md { font-size: 15px; }
@@ -52,14 +55,15 @@
         .font-medium { font-weight: 500; }
         .font-semibold { font-weight: 600; }
         .font-bold { font-weight: 700; }
-        .text-primary { color: var(--text-primary); }
-        .text-secondary { color: var(--text-secondary); }
-        .text-muted { color: var(--text-muted); }
-        .text-green { color: var(--green-strong); }
-        .text-red { color: var(--red-strong); }
+        .text-1 { color: var(--text-1); }
+        .text-2 { color: var(--text-2); }
+        .text-3 { color: var(--text-3); }
+        .text-bull { color: var(--bull-strong); }
+        .text-bear { color: var(--bear-strong); }
         .text-cyan { color: var(--accent-cyan); }
         .all-caps { text-transform: uppercase; letter-spacing: 0.06em; }
         
+        /* Layout Utilities */
         .flex { display: flex; }
         .flex-col { display: flex; flex-direction: column; }
         .items-center { align-items: center; }
@@ -67,117 +71,121 @@
         .justify-center { justify-content: center; }
         .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-5 { gap: 20px; } .gap-6 { gap: 24px; }
         .p-4 { padding: 16px; } .p-5 { padding: 20px; }
+        .mt-6 { margin-top: 24px; } .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; }
         .grid { display: grid; }
-
-        .card { background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.4); transition: all 0.18s ease; }
-        .card:hover { box-shadow: 0 1px 6px rgba(0,0,0,0.6), 0 0 0 1px var(--border-glow); transform: translateY(-1px); }
-        .badge { padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
-        .badge-green { background: rgba(34,197,94,0.15); color: var(--green-strong); border: 1px solid var(--green-strong); }
-        .badge-red { background: rgba(239,68,68,0.15); color: var(--red-strong); border: 1px solid var(--red-strong); }
+        .w-full { width: 100%; }
+        
+        /* Components */
+        .card { background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: 10px; transition: all 0.18s ease; }
+        .card:hover { border-color: var(--border-bright); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .badge { padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-block; }
+        .badge-bull { background: rgba(34,197,94,0.15); color: var(--bull-strong); border: 1px solid var(--bull-strong); }
+        .badge-bear { background: rgba(239,68,68,0.15); color: var(--bear-strong); border: 1px solid var(--bear-strong); }
         .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
+        .badge-outline { border: 1px solid var(--border-dim); color: var(--text-2); }
+        .btn-primary { background: var(--accent); color: #fff; padding: 8px 16px; border-radius: 6px; font-weight: 600; }
+        .btn-outline { border: 1px solid var(--border-dim); padding: 8px 16px; border-radius: 6px; font-weight: 600; color: var(--text-2); }
+        .btn-outline:hover { background: var(--bg-elevated); color: var(--text-1); }
 
         /* Animations */
-        @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); } 70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
-        @keyframes priceFlash { 0% { background: transparent; } 30% { background: rgba(34,197,94,0.2); } 100% { background: transparent; } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); } 70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+        @keyframes priceFlash { 0% { background: transparent; } 30% { background: rgba(34,197,94,0.15); } 100% { background: transparent; } }
         @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
 
-        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green-strong); animation: pulse-green 2s infinite; }
-        .flash-bg { animation: priceFlash 1s ease-out; }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bull-strong); animation: pulse 2s infinite; }
+        .flash-bg { animation: priceFlash 0.6s ease-out; }
         .skeleton { background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
+        .fade-in { animation: fadeSlideUp 0.6s ease-out forwards; opacity: 0; }
 
-        /* Layout */
-        #topbar { position: fixed; top: 0; width: 100%; height: 56px; background: var(--bg-base); border-bottom: 1px solid var(--border-dim); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; }
-        #sidebar { position: fixed; left: 0; top: 56px; width: 220px; height: calc(100vh - 56px); background: var(--bg-surface); border-right: 1px solid var(--border-dim); overflow-y: auto; display: flex; flex-direction: column; z-index: 900; transition: width 0.3s; }
-        #main-content { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding-bottom: 40px; transition: margin-left 0.3s; }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation: none !important; transition: none !important; }
+        }
 
-        /* Topbar */
+        /* Topbar & Sidebar */
+        #topbar { position: fixed; top: 0; width: 100%; height: 56px; background: var(--bg-base); border-bottom: 1px solid var(--border-dim); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
+        #sidebar { position: fixed; left: 0; top: 56px; width: 220px; height: calc(100vh - 56px); background: var(--bg-surface); border-right: 1px solid var(--border-dim); overflow-y: auto; display: flex; flex-direction: column; z-index: 900; transition: transform 0.3s; }
+        #main-content { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding-bottom: 40px; }
+
         .logo-text { font-size: 20px; font-weight: 700; color: #fff; }
-        .logo-text span { color: var(--accent-blue); }
-        .topbar-center { display: flex; gap: 24px; }
-        .index-ticker { display: flex; flex-direction: column; }
-        .index-ticker span.val { font-weight: 700; font-size: 15px; }
-        .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 11px; font-weight: 600; color: var(--text-secondary); }
-        .theme-toggle { background: transparent; color: var(--text-secondary); padding: 4px; }
+        .logo-text span { color: var(--accent); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-2); font-weight: 500; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-item:hover { background: var(--bg-elevated); color: var(--text-1); }
+        .nav-item.active { border-left-color: var(--accent); background: var(--bg-elevated); color: var(--text-1); }
+        .nav-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        
+        .pro-card { margin: 20px; padding: 16px; border-radius: 8px; border: 1px solid var(--accent); background: linear-gradient(180deg, rgba(59,130,246,0.1), transparent); text-align: center; }
+        .pro-btn { width: 100%; padding: 8px; margin-top: 12px; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 11px; }
 
-        /* Sidebar */
-        .nav-items { padding: 16px 0; flex-grow: 1; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-secondary); font-weight: 500; font-size: 13px; transition: all 0.2s; border-left: 3px solid transparent; }
-        .nav-item:hover { background: var(--bg-elevated); color: var(--text-primary); }
-        .nav-item.active { border-left-color: var(--accent-blue); background: var(--bg-elevated); color: var(--text-primary); }
-        .nav-item svg { width: 18px; height: 18px; fill: currentColor; }
-        .pro-card { margin: 20px; padding: 16px; border-radius: 8px; background: var(--bg-elevated); border: 1px solid transparent; position: relative; background-clip: padding-box; }
-        .pro-card::before { content: ''; position: absolute; inset: 0; border-radius: 8px; padding: 1px; background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
-        .pro-btn { width: 100%; padding: 8px; margin-top: 12px; border-radius: 6px; background: var(--accent-blue); color: #fff; font-weight: 600; font-size: 11px; }
-
-        /* Ticker Tape */
+        /* Ticker */
         .ticker-wrap { width: 100%; height: 32px; background: var(--bg-surface); border-bottom: 1px solid var(--border-dim); overflow: hidden; display: flex; align-items: center; white-space: nowrap; }
         .ticker-inner { display: inline-block; animation: ticker 60s linear infinite; font-size: 11px; font-weight: 600; }
         .ticker-wrap:hover .ticker-inner { animation-play-state: paused; }
         .ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border-right: 1px solid var(--border-dim); }
 
-        /* Sections General */
-        .section-container { padding: 24px; max-width: 1600px; margin: 0 auto; opacity: 0; transform: translateY(10px); transition: all 0.5s ease-out; }
-        .section-container.visible { opacity: 1; transform: translateY(0); }
+        /* Sections */
+        .section-container { padding: 24px; max-width: 1400px; margin: 0 auto; }
         .section-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border-dim); margin-bottom: 20px; }
-        .section-title { font-size: 16px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px; }
-        .section-title::before { content: ''; display: block; width: 4px; height: 16px; background: var(--accent-blue); border-radius: 2px; }
+        .section-title { font-size: 16px; font-weight: 600; color: var(--text-1); display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content: ''; display: block; width: 4px; height: 16px; background: var(--accent); border-radius: 2px; }
 
-        /* Hero Stats Bar */
+        /* Hero Stats */
         .hero-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
-        .stat-card { display: flex; flex-direction: column; gap: 4px; }
         .mini-sparkline { height: 30px; width: 100%; margin-top: 8px; }
         .breadth-bar { width: 100%; height: 6px; border-radius: 3px; display: flex; overflow: hidden; margin-top: 8px; }
-        .breadth-green { background: var(--green-strong); }
-        .breadth-red { background: var(--red-strong); }
+        .breadth-green { background: var(--bull-strong); }
+        .breadth-red { background: var(--bear-strong); }
 
-        /* Sector Scope */
-        .sector-grid { display: grid; grid-template-columns: 60% 40%; gap: 24px; margin-bottom: 24px; }
+        /* Heatmap & Rotation */
+        .sector-grid { display: grid; grid-template-columns: 60% 40%; gap: 24px; }
         .heatmap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .heat-tile { border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
-        .heat-tile:hover { transform: scale(1.03); z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
-        .heat-tile.active { border-width: 2px; }
-        .heat-name { font-size: 13px; font-weight: 500; }
-        .heat-val { font-size: 15px; font-weight: 700; text-align: right; }
+        .heat-tile { border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: all 0.18s; border: 1px solid; }
+        .heat-tile:hover { transform: scale(1.03); opacity: 0.8; z-index: 10; }
+        .heat-tile.active { box-shadow: 0 0 0 2px var(--text-1); }
         .rot-section { margin-bottom: 16px; }
         .rot-header { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
         .rot-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .rot-bar-wrap { flex-grow: 1; height: 6px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; }
         .rot-bar { height: 100%; border-radius: 3px; }
-        .drill-down { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+        
+        /* Drill-down */
+        .drill-down { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
         .stock-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-dim); }
         .stock-row:last-child { border-bottom: none; }
-        .ai-insight { background: linear-gradient(135deg, rgba(59,130,246,0.08), rgba(139,92,246,0.08)); border-left: 3px solid; border-image: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple)) 1; border-radius: 8px; padding: 16px; display: flex; gap: 16px; align-items: center; }
+        
+        /* AI Insight */
+        .ai-insight { background: rgba(59,130,246,0.06); border-left: 3px solid var(--accent); border-radius: 8px; padding: 16px; display: flex; gap: 16px; align-items: center; margin-top: 24px; }
 
         /* F&O Scanner */
         .scanner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .scan-card { background: var(--bg-elevated); border-radius: 8px; padding: 16px; border-left: 3px solid transparent; margin-bottom: 12px; }
-        .scan-card.bull { border-left-color: var(--green-strong); }
-        .scan-card.bear { border-left-color: var(--red-strong); }
-        .momentum-bar { height: 4px; width: 100%; background: var(--bg-base); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-        
-        /* Options Analyzer */
+        .scan-card { background: var(--bg-surface); border: 1px solid var(--border-dim); border-left: 3px solid; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .scan-card.bull { border-left-color: var(--bull-strong); }
+        .scan-card.bear { border-left-color: var(--bear-strong); }
+        .momentum-bar { height: 4px; width: 100%; background: var(--bg-elevated); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+
+        /* Option Chain */
         .option-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-        .max-pain-gauge { height: 8px; background: linear-gradient(90deg, var(--green-mild), var(--neutral), var(--red-mild)); border-radius: 4px; position: relative; margin: 16px 0; }
-        .pain-marker { position: absolute; top: -6px; width: 4px; height: 20px; background: #fff; border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 4px #000; }
+        .max-pain-gauge { height: 8px; background: linear-gradient(90deg, var(--bull-mild), var(--neutral), var(--bear-mild)); border-radius: 4px; position: relative; margin: 16px 0; }
+        .pain-marker { position: absolute; top: -6px; width: 4px; height: 20px; background: var(--text-1); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 4px #000; }
         table { width: 100%; border-collapse: collapse; text-align: right; }
         th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-dim); font-size: 13px; }
-        th { color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 11px; }
+        th { color: var(--text-2); font-weight: 600; text-transform: uppercase; font-size: 11px; cursor: pointer; }
         .strike-col { text-align: center; font-weight: 700; background: var(--bg-elevated); }
         .atm-row { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
         .oi-bar { height: 4px; border-radius: 2px; display: inline-block; vertical-align: middle; margin-left: 8px; }
 
-        /* Institutional */
-        .inst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        /* Institutional Flow */
+        .inst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .flow-chart { height: 120px; width: 100%; margin-top: 16px; }
 
         /* AI Alpha */
         .ai-header { text-align: center; margin-bottom: 24px; }
-        .btn-ai { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: #fff; padding: 12px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block; }
+        .btn-ai { background: linear-gradient(135deg, var(--accent), var(--accent-purple)); color: #fff; padding: 12px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block; border: 1px solid var(--accent-purple); }
         .setup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .setup-card { position: relative; padding: 20px; border-top: 3px solid var(--accent-purple); }
-        .circular-progress { width: 60px; height: 60px; border-radius: 50%; background: conic-gradient(var(--accent-purple) 75%, var(--bg-base) 0); display: flex; align-items: center; justify-content: center; font-weight: 700; }
-        .circular-progress::before { content: ''; position: absolute; width: 50px; height: 50px; border-radius: 50%; background: var(--bg-surface); }
+        .circular-progress { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; position: relative; }
+        .circular-progress::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: var(--bg-surface); z-index: 1; }
 
         /* Global Markets */
         .global-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -186,39 +194,42 @@
         /* News & Sentiment */
         .news-layout { display: grid; grid-template-columns: 70% 30%; gap: 24px; }
         .news-item { padding: 16px 0; border-bottom: 1px solid var(--border-dim); }
-        .news-item:hover .news-headline { color: var(--accent-blue); }
-        
-        /* Watchlist */
-        .wl-table th { text-align: left; }
-        .wl-table td { text-align: left; }
+        .news-item:hover .text-md { color: var(--accent); }
 
-        /* Algo */
+        /* Algo Strategies */
         .algo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .algo-card { padding: 20px; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; }
-        
+        .algo-card { display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; }
+
+        /* Blog, Comm, About, Contact */
+        .bca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+        .blog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
         /* Footer */
         footer { background: var(--bg-elevated); border-top: 1px solid var(--border-dim); padding: 48px 24px 24px; margin-top: 48px; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; gap: 32px; max-width: 1600px; margin: 0 auto; }
+        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; gap: 32px; max-width: 1400px; margin: 0 auto; }
         
+        /* Mobile Hamburger */
+        .hamburger { display: none; background: none; border: none; color: var(--text-1); font-size: 24px; cursor: pointer; }
+
         /* Responsive */
         @media (max-width: 1200px) {
-            #sidebar { width: 64px; }
-            .nav-item span, .pro-card { display: none; }
-            .nav-item { justify-content: center; padding: 12px; }
-            #main-content { margin-left: 64px; }
             .hero-stats { grid-template-columns: repeat(3, 1fr); }
-            .sector-grid, .news-layout { grid-template-columns: 1fr; }
+            .sector-grid, .news-layout, .bca-grid { grid-template-columns: 1fr; }
             .global-grid, .setup-grid, .algo-grid { grid-template-columns: repeat(2, 1fr); }
+            .drill-down { grid-template-columns: 1fr; }
         }
         @media (max-width: 768px) {
-            #sidebar { transform: translateX(-100%); }
+            #sidebar { transform: translateX(-100%); z-index: 1001; }
+            #sidebar.open { transform: translateX(0); }
             #main-content { margin-left: 0; }
+            .hamburger { display: block; }
+            .topbar-center { display: none; }
             .hero-stats { grid-template-columns: 1fr 1fr; }
             .heatmap-grid { grid-template-columns: 1fr 1fr; }
-            .drill-down, .scanner-grid, .inst-grid, .global-grid, .setup-grid, .algo-grid { grid-template-columns: 1fr; }
-            .option-stats { grid-template-columns: 1fr; }
+            .scanner-grid, .inst-grid, .global-grid, .setup-grid, .algo-grid, .option-stats, .blog-grid { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr; }
-            .topbar-center { display: none; }
+            .table-wrap { overflow-x: auto; }
+            .table-wrap table td:first-child, .table-wrap table th:first-child { position: sticky; left: 0; background: var(--bg-surface); z-index: 2; }
         }
     </style>
 </head>
@@ -226,669 +237,696 @@
 
     <!-- TOPBAR -->
     <header id="topbar">
-        <div class="logo-text">Trade<span>Finder</span> <span class="text-xs text-muted font-normal all-caps" style="margin-left: 8px;">NSE Intelligence Platform</span></div>
-        
-        <div class="topbar-center">
-            <div class="index-ticker" id="top-nifty">
-                <span class="text-xs text-muted all-caps">NIFTY 50</span>
-                <div class="flex items-center gap-2"><span class="val" id="top-nifty-val">--</span> <span class="text-xs" id="top-nifty-chg">--</span></div>
+        <div class="flex items-center gap-4">
+            <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+            <div>
+                <div class="logo-text">Trade<span>Finder</span></div>
+                <div class="text-xs text-2">NSE Intelligence Platform</div>
             </div>
-            <div class="index-ticker" id="top-banknifty">
-                <span class="text-xs text-muted all-caps">BANKNIFTY</span>
-                <div class="flex items-center gap-2"><span class="val" id="top-banknifty-val">--</span> <span class="text-xs" id="top-banknifty-chg">--</span></div>
+        </div>
+        
+        <div class="topbar-center flex gap-6">
+            <div class="flex-col">
+                <span class="text-xs text-2 all-caps">NIFTY 50</span>
+                <div class="flex items-center gap-2"><span class="font-bold text-md flash-bg" id="top-nifty-val">--</span> <span class="text-xs text-bull" id="top-nifty-chg">--</span></div>
+            </div>
+            <div class="flex-col">
+                <span class="text-xs text-2 all-caps">BANKNIFTY</span>
+                <div class="flex items-center gap-2"><span class="font-bold text-md flash-bg" id="top-banknifty-val">--</span> <span class="text-xs text-bull" id="top-banknifty-chg">--</span></div>
             </div>
         </div>
 
-        <div class="topbar-right">
-            <div class="flex items-center gap-2">
-                <div class="live-dot"></div> <span id="market-status">Market Open</span>
-            </div>
-            <div id="clock">12:00:00 IST</div>
-            <div class="text-cyan">Expiry: <span id="expiry-countdown">--</span></div>
-            <button class="theme-toggle" id="theme-btn" title="Toggle Theme">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-            </button>
+        <div class="flex items-center gap-4 text-sm font-semibold text-2">
+            <div class="flex items-center gap-2"><div class="live-dot"></div> Market Open</div>
+            <div id="clock">--:--:-- IST</div>
+            <div class="text-cyan">Expiry: <span id="expiry">--</span></div>
+            <button id="theme-btn" title="Toggle Theme"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
         </div>
     </header>
 
     <!-- SIDEBAR -->
     <nav id="sidebar">
-        <div class="nav-items">
-            <a href="#pulse" class="nav-item active">
-                <svg viewBox="0 0 24 24"><path d="M3 3v18h18M9 15l3-3 4 4 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
-                <span>Market Pulse</span>
-            </a>
-            <a href="#sector" class="nav-item">
-                <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/><rect x="14" y="3" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/><rect x="14" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/><rect x="3" y="14" width="7" height="7" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                <span>Sector Scope</span>
-            </a>
-            <a href="#fno" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                <span>F&O Scanner</span>
-            </a>
-            <a href="#options" class="nav-item">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                <span>Option Chain</span>
-            </a>
-            <a href="#inst" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4M7 11h2M15 11h2M7 15h2M15 15h2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                <span>Institutional</span>
-            </a>
-            <a href="#ai" class="nav-item">
-                <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M9 9h6M9 13h6M9 17h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                <span>AI Alpha</span>
-            </a>
-            <a href="#global" class="nav-item">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                <span>Global Markets</span>
-            </a>
-            <a href="#news" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10l6 6v10a2 2 0 0 1-2 2z" stroke="currentColor" stroke-width="2" fill="none"/><path d="M14 2v6h6M8 10h4M8 14h8M8 18h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                <span>News Feed</span>
-            </a>
-            <a href="#watchlist" class="nav-item">
-                <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                <span>Watchlist</span>
-            </a>
-            <a href="#algo" class="nav-item">
-                <svg viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
-                <span>Algo Strategies</span>
-            </a>
+        <div class="flex-col" style="flex-grow: 1; padding: 16px 0;" id="nav-menu">
+            <!-- Icons injected via JS for brevity -->
         </div>
-        
         <div class="pro-card">
-            <div class="font-bold text-md text-white mb-1">PRO UPDATE</div>
-            <div class="text-xs text-muted mb-2">Unlock real-time data, alerts & more</div>
-            <button class="pro-btn">UPGRADE NOW</button>
+            <div class="font-bold text-md text-1 mb-1">Upgrade to PRO</div>
+            <div class="text-xs text-2">Real-time data & alerts</div>
+            <button class="pro-btn">UPGRADE</button>
         </div>
     </nav>
 
     <!-- MAIN CONTENT -->
     <main id="main-content">
         <!-- TICKER TAPE -->
-        <div class="ticker-wrap" id="pulse">
-            <div class="ticker-inner" id="ticker-content">
-                <!-- Injected via JS -->
-            </div>
+        <div class="ticker-wrap">
+            <div class="ticker-inner" id="ticker-content"></div>
         </div>
 
-        <div class="section-container visible">
+        <div class="section-container">
             <!-- HERO STATS -->
-            <div class="hero-stats" id="hero-stats">
-                <!-- Injected via JS -->
-            </div>
+            <div class="hero-stats fade-in" id="hero-stats"></div>
             
-            <!-- SECTOR SCOPE -->
-            <div id="sector">
+            <!-- SECTION 1: SECTOR SCOPE -->
+            <section id="sec-sector" class="mt-6 fade-in">
                 <div class="section-header">
                     <div class="section-title">Sector Scope</div>
                     <div class="flex gap-2">
-                        <button class="badge badge-green">Today</button>
-                        <button class="badge" style="background:var(--bg-elevated); color:var(--text-secondary)">5D</button>
-                        <button class="badge" style="background:var(--bg-elevated); color:var(--text-secondary)">1M</button>
+                        <button class="badge badge-bull">Today</button>
+                        <button class="badge badge-outline">5D</button>
+                        <button class="badge badge-outline">1M</button>
                     </div>
                 </div>
                 
                 <div class="sector-grid">
                     <div class="card p-5">
-                        <div class="text-xs all-caps text-muted mb-3">Sectoral Heatmap</div>
                         <div class="heatmap-grid" id="heatmap"></div>
+                        <div class="flex justify-between text-xs text-2 mt-4">
+                            <span>Strong Bearish &lt;-2%</span><span>Mild Bearish</span><span>Neutral</span><span>Mild Bullish</span><span>Strong Bullish &gt;2%</span>
+                        </div>
                     </div>
                     
                     <div class="card p-5">
-                        <div class="text-xs all-caps text-muted mb-3">Capital Rotation</div>
+                        <div class="text-xs all-caps text-2 mb-3">Capital Rotation</div>
                         <div class="rot-section">
-                            <div class="rot-header" style="background: rgba(34,197,94,0.1); color: var(--green-strong)">INFLOW</div>
+                            <div class="rot-header" style="background:rgba(34,197,94,0.1); color:var(--bull-strong)">INFLOW</div>
                             <div id="rot-in"></div>
                         </div>
-                        <div class="rot-section mt-4">
-                            <div class="rot-header" style="background: rgba(239,68,68,0.1); color: var(--red-strong)">OUTFLOW</div>
+                        <div class="rot-section">
+                            <div class="rot-header" style="background:rgba(239,68,68,0.1); color:var(--bear-strong)">OUTFLOW</div>
                             <div id="rot-out"></div>
                         </div>
+                        <div class="mt-4"><span class="badge badge-outline">Rotation Signal: Defensive</span></div>
                     </div>
                 </div>
 
                 <div class="drill-down" id="drill-down"></div>
 
-                <div class="ai-insight mb-5">
-                    <svg width="24" height="24" viewBox="0 0 24 24" stroke="var(--accent-cyan)" stroke-width="2" fill="none"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                    <div class="flex-grow">
-                        <div class="text-xs font-bold text-cyan all-caps mb-1">AI Sector Insight</div>
-                        <div class="text-sm font-medium" id="ai-insight-text">Analyzing rotation...</div>
-                    </div>
-                    <div class="text-xs text-muted">Generated just now</div>
+                <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px;">
+                    <div class="card p-4 text-center"><div class="text-xl font-bold text-bull">5</div><div class="text-xs text-2">Bullish Sectors</div></div>
+                    <div class="card p-4 text-center"><div class="text-xl font-bold text-bear">3</div><div class="text-xs text-2">Bearish Sectors</div></div>
+                    <div class="card p-4 text-center"><div class="text-lg font-bold text-1">Pharma</div><div class="text-xs text-bull">+2.4%</div></div>
+                    <div class="card p-4 flex items-center justify-center gap-4"><div class="text-lg font-bold text-1">62%</div><div class="text-xs text-2">Market Breadth</div></div>
                 </div>
-            </div>
 
-            <!-- F&O SCANNER -->
-            <div id="fno" class="mt-6">
+                <div class="ai-insight">
+                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--accent-cyan)" fill="none" stroke-width="2"><path d="M9 21h6M12 2v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                    <div>
+                        <div class="text-xs font-bold text-cyan all-caps mb-1">AI Sector Insight</div>
+                        <div class="text-sm font-medium">Money rotating INTO defensives (risk-off). Traders seeking safety in Pharma and IT.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 2: F&O SCANNER -->
+            <section id="sec-fno" class="mt-6 fade-in">
                 <div class="section-header">
                     <div class="section-title">F&O Breakout Scanner</div>
-                    <div class="text-xs text-muted">Filter: Nifty 50 ▼</div>
+                    <div class="flex gap-2">
+                        <select><option>Nifty 50</option><option>All F&O</option></select>
+                        <select><option>Sort: Volume</option><option>Sort: % Change</option></select>
+                    </div>
                 </div>
                 <div class="scanner-grid">
                     <div>
-                        <div class="flex items-center gap-2 mb-3"><span class="badge badge-green">Bullish Breakouts</span> <div class="live-dot"></div></div>
+                        <div class="flex items-center gap-2 mb-3"><span class="badge badge-bull">Bullish Breakouts</span><div class="live-dot"></div><span class="badge badge-outline">5</span></div>
                         <div id="fno-bull"></div>
                     </div>
                     <div>
-                        <div class="flex items-center gap-2 mb-3"><span class="badge badge-red">Bearish Breakdowns</span> <div class="live-dot"></div></div>
+                        <div class="flex items-center gap-2 mb-3"><span class="badge badge-bear">Bearish Breakdowns</span><div class="live-dot" style="background:var(--bear-strong)"></div><span class="badge badge-outline">5</span></div>
                         <div id="fno-bear"></div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- OPTION CHAIN -->
-            <div id="options" class="mt-6">
+            <!-- SECTION 3: OPTION CHAIN -->
+            <section id="sec-options" class="mt-6 fade-in">
                 <div class="section-header">
                     <div class="section-title">Option Chain Analyzer</div>
                     <div class="flex gap-2">
-                        <span class="badge badge-purple">NIFTY</span>
-                        <span class="badge" style="background:var(--bg-elevated); color:var(--text-secondary)">BANKNIFTY</span>
+                        <button class="badge badge-purple">NIFTY</button>
+                        <button class="badge badge-outline">BANKNIFTY</button>
+                        <select><option>Weekly (Current)</option><option>Monthly</option></select>
+                        <button class="btn-primary" style="padding: 4px 12px">Load Live Data</button>
                     </div>
                 </div>
                 
                 <div class="card p-5 mb-5">
-                    <div class="flex justify-between items-center text-sm font-semibold mb-2">
-                        <span>Max Pain: <span class="text-white" id="max-pain-val">22,400</span></span>
-                        <span class="text-muted">Current: <span id="max-pain-cur">22,450</span></span>
-                        <span class="text-red">Bias: Below Max Pain (Bearish)</span>
+                    <div class="flex justify-between text-sm font-semibold mb-2">
+                        <span>Max Pain: <span class="text-1">22,400</span></span>
+                        <span class="text-2">Current: 22,450</span>
+                        <span class="text-bear">Bias: Below Max Pain (Bearish)</span>
                     </div>
-                    <div class="max-pain-gauge">
-                        <div class="pain-marker" style="left: 55%;"></div>
-                    </div>
+                    <div class="max-pain-gauge"><div class="pain-marker" style="left: 45%;"></div></div>
                 </div>
 
                 <div class="option-stats">
-                    <div class="card p-4">
-                        <div class="text-xs all-caps text-muted">Total Put OI (Support)</div>
-                        <div class="text-xl font-bold text-green mt-1">45.2M</div>
-                    </div>
-                    <div class="card p-4">
-                        <div class="text-xs all-caps text-muted">Total Call OI (Resistance)</div>
-                        <div class="text-xl font-bold text-red mt-1">38.7M</div>
-                    </div>
-                    <div class="card p-4">
-                        <div class="text-xs all-caps text-muted">Put Call Ratio</div>
-                        <div class="text-xl font-bold text-green mt-1">1.16 <span class="text-sm font-medium">Bullish</span></div>
-                    </div>
+                    <div class="card p-4"><div class="text-xs all-caps text-2">Total Put OI (Support)</div><div class="text-xl font-bold text-bull mt-1">45.2M</div></div>
+                    <div class="card p-4"><div class="text-xs all-caps text-2">Total Call OI (Resistance)</div><div class="text-xl font-bold text-bear mt-1">38.7M</div></div>
+                    <div class="card p-4"><div class="text-xs all-caps text-2">Put Call Ratio</div><div class="text-xl font-bold text-bull mt-1">1.16 <span class="text-sm font-medium">Bullish</span></div></div>
                 </div>
 
-                <div class="card overflow-x-auto">
+                <div class="card table-wrap">
                     <table id="option-chain">
-                        <thead>
-                            <tr>
-                                <th>CE OI</th><th>CE Chg</th><th>CE LTP</th><th class="strike-col">STRIKE</th><th>PE LTP</th><th>PE Chg</th><th>PE OI</th>
-                            </tr>
-                        </thead>
-                        <tbody><!-- Injected via JS --></tbody>
+                        <thead><tr><th>CE OI</th><th>CE Chg</th><th>CE LTP</th><th class="strike-col">STRIKE</th><th>PE LTP</th><th>PE Chg</th><th>PE OI</th></tr></thead>
+                        <tbody><!-- JS Inject --></tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- INSTITUTIONAL -->
-            <div id="inst" class="mt-6">
-                <div class="section-header">
-                    <div class="section-title">FII & DII Cash Market</div>
-                    <div class="badge badge-purple">SEBI Data</div>
+                <!-- Mini grouped bar chart placeholder -->
+                <div class="card p-4 mt-4" style="height: 150px; display:flex; align-items:flex-end; justify-content:space-around; padding-top:40px;">
+                    <!-- SVG bars would be here, representing OI -->
+                    <div style="width:100%; text-align:center; color:var(--text-2)">[OI Bar Chart Visualization]</div>
                 </div>
-                
+            </section>
+
+            <!-- SECTION 4: INSTITUTIONAL FLOW -->
+            <section id="sec-inst" class="mt-6 fade-in">
+                <div class="section-header">
+                    <div class="section-title">Institutional Flow (FII/DII)</div>
+                    <span class="badge badge-purple">SEBI Data</span>
+                </div>
                 <div class="inst-grid">
                     <div class="card p-5">
-                        <div class="font-semibold text-md mb-4 flex items-center gap-2">🌐 FII / Foreign Investors</div>
+                        <div class="font-semibold text-md mb-4">🌐 FII / Foreign Investors</div>
                         <div class="flex justify-between items-end mb-2">
-                            <div>
-                                <div class="text-xs text-muted">Net Today</div>
-                                <div class="text-xl font-bold text-red">-₹2,145 Cr</div>
-                            </div>
-                            <span class="badge badge-red">NET SELLER</span>
+                            <div><div class="text-xs text-2">Net Today</div><div class="text-xl font-bold text-bull">+₹530 Cr</div></div>
+                            <span class="badge badge-bull">NET BUYER</span>
                         </div>
-                        <div class="text-xs text-muted mb-4">Buy: ₹8,420 Cr | Sell: ₹10,565 Cr</div>
+                        <div class="text-xs text-2 mb-4">Buy: ₹8,420 Cr | Sell: ₹7,890 Cr</div>
                         <svg class="flow-chart" viewBox="0 0 100 30" preserveAspectRatio="none">
-                            <rect x="0" y="15" width="10" height="15" fill="var(--red-strong)" opacity="0.8"/>
-                            <rect x="15" y="10" width="10" height="20" fill="var(--red-strong)" opacity="0.8"/>
-                            <rect x="30" y="20" width="10" height="10" fill="var(--red-strong)" opacity="0.8"/>
-                            <rect x="45" y="5" width="10" height="25" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="60" y="18" width="10" height="12" fill="var(--red-strong)" opacity="0.8"/>
-                            <rect x="75" y="12" width="10" height="18" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="90" y="8" width="10" height="22" fill="var(--red-strong)" opacity="0.8"/>
+                            <rect x="0" y="10" width="10" height="20" fill="var(--bull-strong)"/>
+                            <rect x="15" y="20" width="10" height="10" fill="var(--bear-strong)"/>
+                            <rect x="30" y="5" width="10" height="25" fill="var(--bull-strong)"/>
+                            <rect x="45" y="15" width="10" height="15" fill="var(--bull-strong)"/>
+                            <rect x="60" y="18" width="10" height="12" fill="var(--bear-strong)"/>
+                            <rect x="75" y="8" width="10" height="22" fill="var(--bull-strong)"/>
+                            <rect x="90" y="12" width="10" height="18" fill="var(--bull-strong)"/>
                         </svg>
                     </div>
                     <div class="card p-5">
-                        <div class="font-semibold text-md mb-4 flex items-center gap-2">🏛️ DII / Domestic Investors</div>
+                        <div class="font-semibold text-md mb-4">🏛️ DII / Domestic Investors</div>
                         <div class="flex justify-between items-end mb-2">
-                            <div>
-                                <div class="text-xs text-muted">Net Today</div>
-                                <div class="text-xl font-bold text-green">+₹1,850 Cr</div>
-                            </div>
-                            <span class="badge badge-green">NET BUYER</span>
+                            <div><div class="text-xs text-2">Net Today</div><div class="text-xl font-bold text-bull">+₹230 Cr</div></div>
+                            <span class="badge badge-bull">NET BUYER</span>
                         </div>
-                        <div class="text-xs text-muted mb-4">Buy: ₹6,210 Cr | Sell: ₹4,360 Cr</div>
+                        <div class="text-xs text-2 mb-4">Buy: ₹5,210 Cr | Sell: ₹4,980 Cr</div>
                         <svg class="flow-chart" viewBox="0 0 100 30" preserveAspectRatio="none">
-                            <rect x="0" y="12" width="10" height="18" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="15" y="5" width="10" height="25" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="30" y="15" width="10" height="15" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="45" y="20" width="10" height="10" fill="var(--red-strong)" opacity="0.8"/>
-                            <rect x="60" y="10" width="10" height="20" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="75" y="8" width="10" height="22" fill="var(--green-strong)" opacity="0.8"/>
-                            <rect x="90" y="5" width="10" height="25" fill="var(--green-strong)" opacity="0.8"/>
+                            <rect x="0" y="15" width="10" height="15" fill="var(--bull-strong)"/>
+                            <rect x="15" y="18" width="10" height="12" fill="var(--bull-strong)"/>
+                            <rect x="30" y="8" width="10" height="22" fill="var(--bull-strong)"/>
+                            <rect x="45" y="22" width="10" height="8" fill="var(--bear-strong)"/>
+                            <rect x="60" y="12" width="10" height="18" fill="var(--bull-strong)"/>
+                            <rect x="75" y="18" width="10" height="12" fill="var(--bull-strong)"/>
+                            <rect x="90" y="10" width="10" height="20" fill="var(--bull-strong)"/>
                         </svg>
                     </div>
                 </div>
-            </div>
+                <div class="card p-4 mt-4 text-center text-sm font-medium">
+                    Smart Money Signal: Both FII & DII net buyers — Institutional accumulation phase. <span class="text-bull">Bullish for medium term.</span>
+                </div>
+            </section>
 
-            <!-- AI ALPHA ENGINE -->
-            <div id="ai" class="mt-6 card p-5" style="border-top: 4px solid var(--accent-purple); background: linear-gradient(180deg, rgba(139,92,246,0.05) 0%, var(--bg-surface) 100%);">
+            <!-- SECTION 5: AI ALPHA ENGINE -->
+            <section id="sec-ai" class="mt-6 card p-5 fade-in" style="border-top: 4px solid var(--accent-purple); background: linear-gradient(180deg, rgba(139,92,246,0.05) 0%, var(--bg-surface) 100%);">
                 <div class="ai-header">
-                    <div class="text-xl font-bold mb-1"><span class="text-white">TradeFinder</span> <span class="text-purple">ALPHA ENGINE</span></div>
-                    <div class="text-sm text-muted mb-4">Powered by sector rotation + F&O data + institutional footprint</div>
-                    <button class="btn-ai">Scan Market for Top Setups</button>
+                    <div class="text-xl font-bold mb-1"><span class="text-1">TradeFinder</span> <span style="color:var(--accent-purple)">ALPHA ENGINE</span></div>
+                    <div class="text-sm text-2 mb-4">Analyzing 500+ data points across F&O, sectors & institutional footprint</div>
+                    <button class="btn-ai">Run AI Scan</button>
                 </div>
-                
-                <div class="setup-grid">
-                    <div class="card setup-card">
-                        <div class="badge badge-green mb-3 inline-block">Bullish Breakout</div>
-                        <div class="text-lg font-bold text-white mb-1">RELIANCE</div>
-                        <div class="text-xs text-muted mb-4">Energy Sector Leader</div>
-                        <div class="grid grid-cols-2 gap-2 text-sm mb-4">
-                            <div>Entry: <span class="text-white">₹2950</span></div>
-                            <div>SL: <span class="text-red">₹2910</span></div>
-                            <div>Target 1: <span class="text-green">₹3020</span></div>
-                            <div>Target 2: <span class="text-green">₹3080</span></div>
-                        </div>
-                        <div class="flex justify-between items-center border-top border-dim pt-3">
-                            <span class="text-xs text-muted">Win Prob.</span>
-                            <div class="circular-progress"><span style="position:relative; z-index:2; color:#fff">78%</span></div>
-                        </div>
-                    </div>
-                    <div class="card setup-card" style="border-top-color:var(--red-strong)">
-                        <div class="badge badge-red mb-3 inline-block">Short Setup</div>
-                        <div class="text-lg font-bold text-white mb-1">DLF</div>
-                        <div class="text-xs text-muted mb-4">Realty Sector Laggard</div>
-                        <div class="grid grid-cols-2 gap-2 text-sm mb-4">
-                            <div>Entry: <span class="text-white">₹820</span></div>
-                            <div>SL: <span class="text-red">₹845</span></div>
-                            <div>Target 1: <span class="text-green">₹780</span></div>
-                            <div>Target 2: <span class="text-green">₹750</span></div>
-                        </div>
-                        <div class="flex justify-between items-center border-top border-dim pt-3">
-                            <span class="text-xs text-muted">Win Prob.</span>
-                            <div class="circular-progress" style="background: conic-gradient(var(--red-strong) 65%, var(--bg-base) 0);"><span style="position:relative; z-index:2; color:#fff">65%</span></div>
-                        </div>
-                    </div>
-                    <div class="card setup-card" style="border-top-color:var(--accent-blue)">
-                        <div class="badge badge-purple mb-3 inline-block">Range Play</div>
-                        <div class="text-lg font-bold text-white mb-1">TCS</div>
-                        <div class="text-xs text-muted mb-4">IT Sector Consolidation</div>
-                        <div class="grid grid-cols-2 gap-2 text-sm mb-4">
-                            <div>Entry: <span class="text-white">₹3800</span></div>
-                            <div>SL: <span class="text-red">₹3750</span></div>
-                            <div>Target 1: <span class="text-green">₹3900</span></div>
-                            <div>Target 2: <span class="text-green">₹3950</span></div>
-                        </div>
-                        <div class="flex justify-between items-center border-top border-dim pt-3">
-                            <span class="text-xs text-muted">Win Prob.</span>
-                            <div class="circular-progress" style="background: conic-gradient(var(--accent-blue) 72%, var(--bg-base) 0);"><span style="position:relative; z-index:2; color:#fff">72%</span></div>
-                        </div>
-                    </div>
+                <div class="setup-grid" id="ai-setups">
+                    <!-- JS Inject -->
                 </div>
-            </div>
+                <div class="mt-6 pt-4" style="border-top: 1px solid var(--border-dim)">
+                    <details>
+                        <summary class="font-semibold cursor-pointer text-accent">View AI Reasoning Logic</summary>
+                        <ul class="text-2 text-sm mt-2 ml-4" style="line-height:2">
+                            <li>Searches for high relative volume (2x+ average) in F&O stocks.</li>
+                            <li>Checks Option Chain for heavy put writing (support) or call writing (resistance).</li>
+                            <li>Correlates with sector rotation (buying leading sectors, shorting laggards).</li>
+                            <li>Calculates probabilities based on historical breakout success rates.</li>
+                        </ul>
+                    </details>
+                </div>
+            </section>
 
-            <!-- GLOBAL MARKETS -->
-            <div id="global" class="mt-6">
+            <!-- SECTION 6: GLOBAL MARKETS -->
+            <section id="sec-global" class="mt-6 fade-in">
                 <div class="section-header">
                     <div class="section-title">Global Markets</div>
-                    <div class="text-xs text-muted">Live Feed</div>
+                    <div class="text-xs text-2">SGX Nifty at 22,480 — suggesting flat-to-positive open.</div>
                 </div>
-                <div class="global-grid" id="global-markets">
-                    <!-- Injected via JS -->
+                <div class="global-grid" id="global-markets"></div>
+            </section>
+
+            <!-- SECTION 7: NEWS & SENTIMENT -->
+            <section id="sec-news" class="mt-6 fade-in">
+                <div class="section-header"><div class="section-title">News & Sentiment</div></div>
+                <div class="news-layout">
+                    <div class="card p-5">
+                        <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
+                            <span class="badge badge-bull">All</span><span class="badge badge-outline">Market</span><span class="badge badge-outline">FII/DII</span>
+                        </div>
+                        <div id="news-feed">
+                            <div class="news-item">
+                                <div class="text-xs text-2 mb-1">Reuters • 15m ago</div>
+                                <div class="font-bold text-md mb-1 cursor-pointer">RBI keeps repo rate unchanged at 6.5%, maintains 'withdrawal of accommodation' stance</div>
+                                <div class="flex gap-2 mt-2"><span class="badge badge-outline">Economy</span><span class="badge badge-purple">NEUTRAL</span></div>
+                            </div>
+                            <div class="news-item">
+                                <div class="text-xs text-2 mb-1">Bloomberg • 42m ago</div>
+                                <div class="font-bold text-md mb-1 cursor-pointer">TCS Q4 Results: Net profit rises 9% YoY, beats street estimates</div>
+                                <div class="flex gap-2 mt-2"><span class="badge badge-outline">TCS</span><span class="badge badge-bull">BULLISH</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-5">
+                        <div class="font-semibold mb-4">Overall Sentiment</div>
+                        <div style="position:relative; width:150px; height:150px; margin: 0 auto;">
+                            <!-- CSS Donut approximation -->
+                            <div style="width:100%; height:100%; border-radius:50%; background:conic-gradient(var(--bull-strong) 64%, var(--neutral) 0 78%, var(--bear-strong) 0); display:flex; align-items:center; justify-content:center;">
+                                <div style="width:110px; height:110px; border-radius:50%; background:var(--bg-surface); display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                                    <div class="font-bold text-lg text-bull">64%</div><div class="text-xs">Bullish</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6">
+                            <div class="text-xs all-caps text-2 mb-2">Trending</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="badge badge-outline">#Elections (12k)</span>
+                                <span class="badge badge-outline">#RateCut (8k)</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- WATCHLIST & ALGO -->
-            <div id="watchlist" class="mt-6">
-                 <div class="section-header">
-                    <div class="section-title">My Watchlist</div>
+            </section>
+
+            <!-- SECTION 8: WATCHLIST -->
+            <section id="sec-watchlist" class="mt-6 fade-in">
+                <div class="section-header">
+                    <div class="section-title">Watchlist</div>
+                    <div class="flex gap-2">
+                        <input type="text" placeholder="Search symbol..." style="width:150px; padding:4px 8px;">
+                        <button class="btn-primary" style="padding: 4px 12px">Add</button>
+                    </div>
                 </div>
-                <div class="card p-0 overflow-x-auto">
-                    <table class="wl-table">
-                        <thead>
-                            <tr><th>Symbol</th><th>LTP</th><th>Change</th><th>% Chg</th><th>Volume</th><th>52W H/L Range</th></tr>
-                        </thead>
-                        <tbody id="wl-tbody">
-                            <!-- JS Inject -->
-                        </tbody>
+                <div class="card table-wrap">
+                    <table id="wl-table">
+                        <thead><tr><th>☆</th><th>Symbol</th><th>LTP</th><th>Change</th><th>% Chg</th><th>High</th><th>Low</th><th>Volume</th><th>52W Range</th><th>Act</th></tr></thead>
+                        <tbody id="wl-tbody"></tbody>
                     </table>
                 </div>
-            </div>
+            </section>
 
+            <!-- SECTION 9: ALGO STRATEGIES -->
+            <section id="sec-algo" class="mt-6 fade-in">
+                <div class="section-header"><div class="section-title">Algo Strategies</div></div>
+                <div class="algo-grid" id="algo-grid"></div>
+            </section>
+
+            <!-- SECTION 10: RESOURCES (BLOG/COMMUNITY/ABOUT/CONTACT) -->
+            <section id="sec-resources" class="mt-6 fade-in">
+                <div class="section-header"><div class="section-title">Resources & Community</div></div>
+                
+                <div class="bca-grid">
+                    <!-- Blog -->
+                    <div class="card p-5">
+                        <div class="font-semibold text-md mb-4 flex items-center gap-2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4h16v15a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg> Latest from Blog</div>
+                        <div class="blog-grid">
+                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
+                                <div class="text-xs text-accent mb-1">Education · 5m read</div>
+                                <div class="font-semibold text-sm mb-2">Mastering Option Greeks</div>
+                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
+                            </div>
+                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
+                                <div class="text-xs text-accent mb-1">Market Prep · 3m read</div>
+                                <div class="font-semibold text-sm mb-2">Trading the Election Volatility</div>
+                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
+                            </div>
+                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
+                                <div class="text-xs text-accent mb-1">Strategy · 8m read</div>
+                                <div class="font-semibold text-sm mb-2">Mean Reversion Systems</div>
+                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
+                            </div>
+                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
+                                <div class="text-xs text-accent mb-1">Tech · 4m read</div>
+                                <div class="font-semibold text-sm mb-2">API Rate Limits Explained</div>
+                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Community & About -->
+                    <div class="flex-col gap-4">
+                        <div class="card p-5 flex justify-between items-center">
+                            <div>
+                                <div class="font-semibold text-md mb-1">Join the Community</div>
+                                <div class="text-xs text-2">10K+ Traders active daily</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <button class="btn-outline">Discord</button>
+                                <button class="btn-primary">Telegram</button>
+                            </div>
+                        </div>
+                        <div class="card p-5">
+                            <div class="font-semibold text-md mb-2">About TradeFinder</div>
+                            <p class="text-sm text-2 mb-4">We democratize institutional-grade analytics for the modern retail trader, processing over 500K+ data points per second with 99.9% uptime.</p>
+                            <div class="flex justify-between text-xs font-semibold">
+                                <div><span class="text-1">10K+</span> Users</div>
+                                <div><span class="text-1">500K+</span> Data Points</div>
+                                <div><span class="text-bull">99.9%</span> Uptime</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact -->
+                <div class="card p-5 text-center">
+                    <div class="font-semibold text-md mb-2">Need Help?</div>
+                    <p class="text-sm text-2 mb-4">Contact our support team at support@tradefinder.app or fill out the form below.</p>
+                    <div class="flex gap-4 justify-center flex-wrap">
+                        <input type="text" placeholder="Name" style="width: 200px;">
+                        <input type="email" placeholder="Email" style="width: 200px;">
+                        <button class="btn-primary">Send Message</button>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <footer>
-            <div class="footer-grid text-sm text-muted">
+            <div class="footer-grid">
                 <div>
                     <div class="logo-text mb-2">Trade<span>Finder</span></div>
-                    <p>World-class NSE Intelligence Platform for the modern retail trader.</p>
+                    <p class="text-2 text-sm mb-4">World-class NSE Intelligence Platform for the modern retail trader.</p>
+                    <div class="flex gap-4 text-2">
+                        <!-- Social placeholders -->
+                        <span>Twitter</span><span>Discord</span><span>YouTube</span>
+                    </div>
                 </div>
                 <div>
-                    <div class="font-semibold text-white mb-2">Platform</div>
-                    <ul style="list-style:none; line-height:2;">
-                        <li><a href="#sector">Sector Scope</a></li>
-                        <li><a href="#fno">F&O Scanner</a></li>
-                        <li><a href="#ai">AI Engine</a></li>
+                    <div class="font-semibold text-1 mb-2">Platform</div>
+                    <ul class="text-2 text-sm" style="list-style:none; line-height:2;">
+                        <li><a href="#sec-sector">Sector Scope</a></li>
+                        <li><a href="#sec-fno">F&O Scanner</a></li>
+                        <li><a href="#sec-ai">AI Engine</a></li>
                     </ul>
                 </div>
                 <div>
-                    <div class="font-semibold text-white mb-2">Resources</div>
-                    <ul style="list-style:none; line-height:2;">
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">API</a></li>
-                        <li><a href="#">Support</a></li>
+                    <div class="font-semibold text-1 mb-2">Resources</div>
+                    <ul class="text-2 text-sm" style="list-style:none; line-height:2;">
+                        <li><a href="#">API Docs</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
                     </ul>
                 </div>
                 <div>
-                    <div class="font-semibold text-white mb-2">Disclaimer</div>
-                    <p class="text-xs">Trading involves significant risk. Data is delayed and simulated for educational purposes. Not financial advice.</p>
+                    <div class="font-semibold text-1 mb-2">Disclaimer</div>
+                    <p class="text-xs text-2">Trading involves significant risk of loss and is not suitable for all investors. Data provided is simulated and delayed for educational purposes only. TradeFinder is not a registered investment advisor.</p>
                 </div>
             </div>
-            <div class="text-center text-xs mt-6 pt-6 border-t border-dim">
-                © 2026 DipzSpell · TradeFinder · Educational purposes only
+            <div class="text-center text-xs text-2 mt-6 pt-6 border-dim" style="border-top: 1px solid var(--border-dim)">
+                © 2026 DipzSpell · TradeFinder · Educational purposes only · Not financial advice
             </div>
         </footer>
     </main>
 
     <script>
-        // CONFIG & SIMULATED DATA
-        const CONFIG = {
-            indices: {
-                nifty: { ltp: 22450.30, change: 185.20, pct: 0.83 },
-                banknifty: { ltp: 48320.15, change: 290.45, pct: 0.60 }
-            },
+        // DATA
+        const DATA = {
+            indices: { nifty: { ltp: 22450.30, chg: 185.20, pct: 0.83 }, banknifty: { ltp: 48320.00, chg: 290.00, pct: 0.60 }, vix: 13.42, pcr: 1.24 },
             sectors: [
-                { name: "IT", change: 1.8, stocks: [{s:"TCS",c:1.2},{s:"INFY",c:2.1},{s:"WIPRO",c:0.8}] },
-                { name: "Pharma", change: 2.4, stocks: [{s:"SUNPHARMA",c:3.1},{s:"CIPLA",c:2.2},{s:"DRREDDY",c:1.5}] },
-                { name: "Auto", change: 2.1, stocks: [{s:"TATAMOTORS",c:2.8},{s:"M&M",c:1.9},{s:"MARUTI",c:1.2}] },
-                { name: "FMCG", change: 0.4, stocks: [{s:"ITC",c:0.5},{s:"HINDUNILVR",c:0.2},{s:"NESTLEIND",c:0.1}] },
-                { name: "Bank", change: 0.1, stocks: [{s:"HDFCBANK",c:0.2},{s:"ICICIBANK",c:-0.1},{s:"KOTAKBANK",c:0.3}] },
-                { name: "Energy", change: 0.5, stocks: [{s:"RELIANCE",c:0.8},{s:"ONGC",c:0.2},{s:"NTPC",c:0.1}] },
-                { name: "Metal", change: -0.9, stocks: [{s:"TATASTEEL",c:-1.2},{s:"HINDALCO",c:-0.8},{s:"JSWSTEEL",c:-0.5}] },
-                { name: "Realty", change: -1.6, stocks: [{s:"DLF",c:-2.1},{s:"GODREJPROP",c:-1.5},{s:"OBEROIRLTY",c:-1.0}] },
+                {name:"IT", change:1.8, stocks:[{s:"INFY",c:2.2},{s:"TCS",c:1.6},{s:"WIPRO",c:1.1}], adv:12, dec:5},
+                {name:"Pharma", change:2.4, stocks:[{s:"SUNPHARMA",c:3.1},{s:"CIPLA",c:2.8},{s:"DRREDDY",c:1.9}], adv:18, dec:4},
+                {name:"Auto", change:2.1, stocks:[{s:"TATAMOTORS",c:3.4},{s:"M&M",c:2.2},{s:"MARUTI",c:1.4}], adv:14, dec:3},
+                {name:"FMCG", change:0.4, stocks:[{s:"HINDUNILVR",c:0.8},{s:"ITC",c:0.5},{s:"NESTLEIND",c:0.2}], adv:11, dec:6},
+                {name:"Bank", change:0.1, stocks:[{s:"HDFCBANK",c:0.4},{s:"ICICIBANK",c:-0.2},{s:"KOTAKBANK",c:0.3}], adv:9, dec:8},
+                {name:"Energy", change:0.5, stocks:[{s:"RELIANCE",c:1.1},{s:"ONGC",c:0.3},{s:"NTPC",c:0.2}], adv:10, dec:7},
+                {name:"Metal", change:-0.9, stocks:[{s:"TATASTEEL",c:-1.4},{s:"HINDALCO",c:-0.8},{s:"JSWSTEEL",c:-0.6}], adv:4, dec:14},
+                {name:"Realty", change:-1.6, stocks:[{s:"DLF",c:-2.1},{s:"GODREJPROP",c:-1.8},{s:"OBEROIRLTY",c:-1.2}], adv:3, dec:11}
             ],
-            globals: [
-                {name:"S&P 500", val:"5,123.69", chg:1.02}, {name:"Nasdaq", val:"16,248.52", chg:1.14},
-                {name:"Dow Jones", val:"38,904.04", chg:0.80}, {name:"DAX", val:"17,735.07", chg:0.32},
-                {name:"FTSE 100", val:"7,682.50", chg:0.69}, {name:"Nikkei 225", val:"39,910.82", chg:1.90},
-                {name:"Hang Seng", val:"16,589.44", chg:0.47}, {name:"Shanghai", val:"3,027.02", chg:0.39},
-                {name:"SGX Nifty", val:"22,510.00", chg:0.92}, {name:"Crude Oil", val:"$79.97", chg:2.19},
-                {name:"Gold", val:"$2,082.50", chg:1.80}, {name:"USD/INR", val:"82.90", chg:-0.05}
-            ],
-            watchlist: [
-                {s:"RELIANCE", ltp:2950, chg:0.8, vol:"1.2x", range:80},
-                {s:"TCS", ltp:3800, chg:1.2, vol:"0.9x", range:60},
-                {s:"HDFCBANK", ltp:1450, chg:0.2, vol:"1.5x", range:20},
-                {s:"TATAMOTORS", ltp:980, chg:2.8, vol:"2.1x", range:95},
-                {s:"INFY", ltp:1650, chg:-0.5, vol:"1.0x", range:50}
+            tape: ["RELIANCE", "TCS", "INFY", "HDFCBANK", "ICICIBANK", "KOTAKBANK", "AXISBANK", "SBIN", "ITC", "HINDUNILVR", "WIPRO", "LT", "BAJFINANCE", "MARUTI", "TATAMOTORS", "SUNPHARMA", "DRREDDY", "CIPLA", "M&M", "DLF"],
+            fnoBull: [{s:"RELIANCE", p:2945, c:1.2, r:85}, {s:"TCS", p:3842, c:1.1, r:90}, {s:"INFY", p:1456, c:2.3, r:95}, {s:"BAJFINANCE", p:6840, c:1.8, r:80}, {s:"MARUTI", p:12450, c:1.5, r:75}],
+            fnoBear: [{s:"DLF", p:820, c:-2.1, r:15}, {s:"TATASTEEL", p:155, c:-1.4, r:10}, {s:"GODREJPROP", p:2150, c:-1.8, r:20}, {s:"HINDALCO", p:580, c:-1.2, r:25}, {s:"JSWSTEEL", p:840, c:-0.9, r:30}],
+            globals: [{f:"🇺🇸", n:"S&P 500", v:5234, c:0.41}, {f:"🇺🇸", n:"Nasdaq", v:16420, c:0.68}, {f:"🇺🇸", n:"Dow Jones", v:38920, c:0.22}, {f:"🇩🇪", n:"DAX", v:18240, c:0.35}, {f:"🇬🇧", n:"FTSE 100", v:8340, c:-0.12}, {f:"🇯🇵", n:"Nikkei 225", v:38680, c:0.88}, {f:"🇭🇰", n:"Hang Seng", v:17240, c:-0.54}, {f:"🇨🇳", n:"Shanghai", v:3120, c:-0.21}, {f:"🇸🇬", n:"SGX Nifty", v:22480, c:0.15}, {f:"🛢️", n:"Crude Oil", v:78.40, c:1.12}, {f:"🥇", n:"Gold", v:2345, c:0.33}, {f:"💵", n:"USD/INR", v:83.42, c:-0.08}],
+            wl: [{s:"RELIANCE", p:2945, c:1.2, v:"1.2x", l:2200, h:3000}, {s:"TCS", p:3842, c:0.8, v:"0.9x", l:3100, h:4200}, {s:"INFY", p:1456, c:1.4, v:"1.5x", l:1200, h:1700}, {s:"HDFCBANK", p:1678, c:0.3, v:"1.1x", l:1350, h:1750}, {s:"ICICIBANK", p:1123, c:-0.2, v:"0.8x", l:850, h:1150}],
+            algos: [
+                {n:"Open Drive Momentum", t:"Intraday", d:"9:15-9:45 breakout plays on heavy volume.", w:67, r:2.1, dd:-4.2, a:true},
+                {n:"BankNifty Expiry Scalp", t:"Expiry Day", d:"Straddle/strangle expiry plays.", w:58, r:3.4, dd:-8.1, a:true},
+                {n:"Sector Rotation Swing", t:"Positional", d:"3-5 day sector leader trades.", w:72, r:4.8, dd:-6.3, a:true},
+                {n:"FII Follow Strategy", t:"Positional", d:"Trade with institutional flow.", w:69, r:3.9, dd:-5.7, a:false},
+                {n:"Gap & Go", t:"Intraday", d:"Morning gap continuation plays.", w:61, r:1.8, dd:-3.9, a:true},
+                {n:"VWAP Reversal", t:"Intraday", d:"Mean reversion at VWAP levels.", w:64, r:1.5, dd:-2.8, a:true}
             ]
         };
 
-        // Utility: Format Number
-        const fmt = (num) => parseFloat(num).toFixed(2);
-        const col = (val) => val > 0 ? 'text-green' : val < 0 ? 'text-red' : 'text-muted';
-        const sign = (val) => val > 0 ? '+' : '';
+        const fmt = (n) => parseFloat(n).toFixed(2);
+        const col = (v) => v > 0 ? 'text-bull' : v < 0 ? 'text-bear' : 'text-2';
+        const sgn = (v) => v > 0 ? '+' : '';
 
-        // Topbar Clock & Expiry
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-IN') + ' IST';
-        }, 1000);
-        document.getElementById('expiry-countdown').innerText = "2d 4h";
+        // Nav Setup
+        const navItems = [
+            {id:'sec-pulse', icon:'<path d="M18 20V10M12 20V4M6 20v-6"/>', label:'Market Pulse'},
+            {id:'sec-sector', icon:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>', label:'Sector Scope'},
+            {id:'sec-fno', icon:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>', label:'F&O Scanner'},
+            {id:'sec-options', icon:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>', label:'Option Chain'},
+            {id:'sec-inst', icon:'<rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>', label:'Institutional'},
+            {id:'sec-ai', icon:'<rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/>', label:'AI Alpha'},
+            {id:'sec-global', icon:'<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>', label:'Global Markets'},
+            {id:'sec-news', icon:'<path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>', label:'News Feed'},
+            {id:'sec-watchlist', icon:'<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>', label:'Watchlist'},
+            {id:'sec-algo', icon:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1Z"/>', label:'Algo Strategies'}
+        ];
+        
+        document.getElementById('nav-menu').innerHTML = navItems.map((n, i) => 
+            `<div class="nav-item ${i===0?'active':''}" onclick="document.getElementById('${n.id}').scrollIntoView({behavior:'smooth'})">
+                <svg viewBox="0 0 24 24">${n.icon}</svg> <span>${n.label}</span>
+            </div>`
+        ).join('');
 
-        // Ticker Tape
-        const renderTicker = () => {
-            const html = `NIFTY50 ${CONFIG.indices.nifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})} ▲ +${fmt(CONFIG.indices.nifty.pct)}% • BANKNIFTY ${CONFIG.indices.banknifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})} ▲ +${fmt(CONFIG.indices.banknifty.pct)}% • ` + 
-                CONFIG.watchlist.map(w => `${w.s} ₹${w.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})} <span class="${col(w.chg)}">${sign(w.chg)}${fmt(w.chg)}%</span>`).join(' • ');
-            document.getElementById('ticker-content').innerHTML = html.repeat(4);
-        };
+        // Ticker & Header
+        function renderHeader() {
+            document.getElementById('top-nifty-val').innerText = DATA.indices.nifty.ltp.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('top-nifty-chg').innerText = `+${fmt(DATA.indices.nifty.pct)}%`;
+            document.getElementById('top-banknifty-val').innerText = DATA.indices.banknifty.ltp.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2});
+            document.getElementById('top-banknifty-chg').innerText = `+${fmt(DATA.indices.banknifty.pct)}%`;
+            
+            // Tape
+            const str = `NIFTY50 ${DATA.indices.nifty.ltp.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})} ▲ +${fmt(DATA.indices.nifty.pct)}% • BANKNIFTY ${DATA.indices.banknifty.ltp.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})} ▲ +${fmt(DATA.indices.banknifty.pct)}% • ` +
+                DATA.tape.map(s => `${s} ₹${(Math.random()*3000+500).toFixed(2)} <span class="${Math.random()>0.5?'text-bull':'text-bear'}">${Math.random()>0.5?'▲':'▼'} ${(Math.random()*3).toFixed(2)}%</span>`).join(' • ');
+            document.getElementById('ticker-content').innerHTML = str.repeat(2);
+        }
 
-        // Hero Stats
-        const renderHero = () => {
-            const h = document.getElementById('hero-stats');
-            h.innerHTML = `
-                <div class="card p-4">
-                    <div class="text-xs all-caps text-muted">NIFTY 50</div>
-                    <div class="text-xl font-bold flash-bg" id="hero-nifty-val">${CONFIG.indices.nifty.ltp.toLocaleString('en-IN')}</div>
-                    <div class="text-sm font-medium ${col(CONFIG.indices.nifty.pct)}">${sign(CONFIG.indices.nifty.change)}${fmt(CONFIG.indices.nifty.change)} (${sign(CONFIG.indices.nifty.pct)}${fmt(CONFIG.indices.nifty.pct)}%)</div>
-                    <svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,20 Q10,25 20,15 T40,10 T60,18 T80,5 T100,2" fill="none" stroke="var(--green-strong)" stroke-width="2"/></svg>
-                </div>
-                <div class="card p-4">
-                    <div class="text-xs all-caps text-muted">BANKNIFTY</div>
-                    <div class="text-xl font-bold flash-bg">${CONFIG.indices.banknifty.ltp.toLocaleString('en-IN')}</div>
-                    <div class="text-sm font-medium ${col(CONFIG.indices.banknifty.pct)}">${sign(CONFIG.indices.banknifty.change)}${fmt(CONFIG.indices.banknifty.change)} (${sign(CONFIG.indices.banknifty.pct)}${fmt(CONFIG.indices.banknifty.pct)}%)</div>
-                    <svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 Q10,20 20,25 T40,15 T60,5 T80,10 T100,5" fill="none" stroke="var(--green-strong)" stroke-width="2"/></svg>
-                </div>
-                <div class="card p-4">
-                    <div class="text-xs all-caps text-muted">Market Breadth</div>
-                    <div class="text-xl font-bold text-white">67% Bullish</div>
-                    <div class="breadth-bar"><div class="breadth-green" style="width:67%"></div><div class="breadth-red" style="width:33%"></div></div>
-                    <div class="text-xs text-muted mt-2">Adv: 1,345 | Dec: 654</div>
-                </div>
-                <div class="card p-4">
-                    <div class="text-xs all-caps text-muted">India VIX</div>
-                    <div class="text-xl font-bold text-green">13.42 ▼</div>
-                    <div class="text-sm text-muted mt-1">Volatility Index</div>
-                </div>
-                <div class="card p-4">
-                    <div class="text-xs all-caps text-muted">Put Call Ratio</div>
-                    <div class="text-xl font-bold text-green">1.24</div>
-                    <div class="text-sm text-muted mt-1">Bullish Bias</div>
-                </div>
+        function renderHero() {
+            const html = `
+                <div class="card p-4"><div class="text-xs all-caps text-2">NIFTY 50</div><div class="text-xl font-bold flash-bg">${DATA.indices.nifty.ltp.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</div><div class="text-sm font-medium text-bull">+${fmt(DATA.indices.nifty.chg)} (+${fmt(DATA.indices.nifty.pct)}%)</div><svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,20 Q10,25 20,15 T40,10 T60,18 T80,5 T100,2" fill="none" stroke="var(--bull-strong)" stroke-width="2"/></svg></div>
+                <div class="card p-4"><div class="text-xs all-caps text-2">BANKNIFTY</div><div class="text-xl font-bold flash-bg">${DATA.indices.banknifty.ltp.toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</div><div class="text-sm font-medium text-bull">+${fmt(DATA.indices.banknifty.chg)} (+${fmt(DATA.indices.banknifty.pct)}%)</div><svg class="mini-sparkline" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,25 Q10,20 20,25 T40,15 T60,5 T80,10 T100,5" fill="none" stroke="var(--bull-strong)" stroke-width="2"/></svg></div>
+                <div class="card p-4"><div class="text-xs all-caps text-2">Market Breadth</div><div class="text-xl font-bold">67% Bullish</div><div class="breadth-bar"><div class="breadth-green" style="width:67%"></div><div class="breadth-red" style="width:33%"></div></div><div class="text-xs text-2 mt-2">Adv: 1,234 | Dec: 567</div></div>
+                <div class="card p-4"><div class="text-xs all-caps text-2">India VIX</div><div class="text-xl font-bold text-bull">${DATA.indices.vix.toFixed(2)} ▼</div><div class="text-sm text-2 mt-1">Volatility Index</div></div>
+                <div class="card p-4"><div class="text-xs all-caps text-2">Put Call Ratio</div><div class="text-xl font-bold text-bull">${DATA.indices.pcr.toFixed(2)}</div><div class="text-sm text-2 mt-1">Bullish Bias</div></div>
             `;
-            document.getElementById('top-nifty-val').innerText = CONFIG.indices.nifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2});
-            document.getElementById('top-nifty-chg').innerText = `+${fmt(CONFIG.indices.nifty.pct)}%`;
-            document.getElementById('top-nifty-chg').className = 'text-xs text-green';
-            document.getElementById('top-banknifty-val').innerText = CONFIG.indices.banknifty.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2});
-            document.getElementById('top-banknifty-chg').innerText = `+${fmt(CONFIG.indices.banknifty.pct)}%`;
-            document.getElementById('top-banknifty-chg').className = 'text-xs text-green';
-        };
+            document.getElementById('hero-stats').innerHTML = html;
+        }
 
-        // Sector Scope
-        const renderSectorScope = () => {
-            const hg = document.getElementById('heatmap');
-            let maxC = Math.max(...CONFIG.sectors.map(s => Math.abs(s.change)));
-            hg.innerHTML = CONFIG.sectors.map((s, i) => {
-                let h = 60 + (Math.abs(s.change)*15);
+        function renderSector() {
+            let maxC = Math.max(...DATA.sectors.map(s => Math.abs(s.change)));
+            document.getElementById('heatmap').innerHTML = DATA.sectors.map((s, i) => {
+                let h = Math.max(60, Math.min(120, 60 + Math.abs(s.change)*15));
                 let bg, bc, tc;
-                if(s.change > 1.5) { bg = 'rgba(34,197,94,0.25)'; bc = '#22c55e'; tc = '#22c55e'; }
-                else if(s.change > 0) { bg = 'rgba(134,239,172,0.15)'; bc = '#86efac'; tc = '#86efac'; }
-                else if(s.change < -1.5) { bg = 'rgba(239,68,68,0.25)'; bc = '#ef4444'; tc = '#ef4444'; }
-                else { bg = 'rgba(252,165,165,0.15)'; bc = '#fca5a5'; tc = '#fca5a5'; }
-                return `<div class="heat-tile ${i===0?'active':''}" style="min-height:${h}px; background:${bg}; border:1px solid ${bc}; color:${tc}">
-                    <div class="heat-name">${s.name}</div>
-                    <div class="heat-val">${sign(s.change)}${fmt(s.change)}%</div>
+                if(s.change > 2) { bg = 'rgba(34,197,94,0.2)'; bc = 'var(--bull-strong)'; tc = bc; }
+                else if(s.change > 0.5) { bg = 'rgba(134,239,172,0.12)'; bc = 'var(--bull-mild)'; tc = bc; }
+                else if(s.change > -0.5) { bg = 'rgba(148,163,184,0.08)'; bc = 'var(--text-3)'; tc = 'var(--text-2)'; }
+                else if(s.change > -2) { bg = 'rgba(252,165,165,0.12)'; bc = 'var(--bear-mild)'; tc = bc; }
+                else { bg = 'rgba(239,68,68,0.2)'; bc = 'var(--bear-strong)'; tc = bc; }
+                return `<div class="heat-tile ${i===0?'active':''}" style="height:${h}px; background:${bg}; border-color:${bc}; color:${tc}">
+                    <div class="font-medium text-sm">${s.name}</div><div class="font-bold text-md">${sgn(s.change)}${fmt(s.change)}%</div>
                 </div>`;
             }).join('');
 
-            const ri = document.getElementById('rot-in');
-            const ro = document.getElementById('rot-out');
-            ri.innerHTML = CONFIG.sectors.filter(s=>s.change>0).sort((a,b)=>b.change-a.change).map(s=>
-                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(s.change/maxC)*100}%; background:var(--green-strong)"></div></div><div class="text-green">+${fmt(s.change)}%</div></div>`
+            document.getElementById('rot-in').innerHTML = DATA.sectors.filter(s=>s.change>0).sort((a,b)=>b.change-a.change).slice(0,4).map(s=>
+                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(s.change/maxC)*100}%; background:var(--bull-strong)"></div></div><div class="text-bull">+${fmt(s.change)}%</div></div>`
             ).join('');
-            ro.innerHTML = CONFIG.sectors.filter(s=>s.change<0).sort((a,b)=>a.change-b.change).map(s=>
-                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(Math.abs(s.change)/maxC)*100}%; background:var(--red-strong)"></div></div><div class="text-red">${fmt(s.change)}%</div></div>`
+            document.getElementById('rot-out').innerHTML = DATA.sectors.filter(s=>s.change<0).sort((a,b)=>a.change-b.change).slice(0,3).map(s=>
+                `<div class="rot-row"><div style="width:50px">${s.name}</div><div class="rot-bar-wrap"><div class="rot-bar" style="width:${(Math.abs(s.change)/maxC)*100}%; background:var(--bear-strong)"></div></div><div class="text-bear">${fmt(s.change)}%</div></div>`
             ).join('');
 
-            const dd = document.getElementById('drill-down');
-            const topSecs = [...CONFIG.sectors].sort((a,b)=>b.change-a.change).slice(0,3);
-            dd.innerHTML = topSecs.map(s => `
+            document.getElementById('drill-down').innerHTML = [DATA.sectors[0], DATA.sectors[1], DATA.sectors[DATA.sectors.length-1]].map(s => `
                 <div class="card p-4">
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="font-bold text-md text-white">${s.name}</div>
-                        <div class="badge ${s.change>0?'badge-green':'badge-red'}">${s.change>0?'Bullish':'Bearish'}</div>
-                    </div>
-                    <div class="text-xs text-muted mb-2 all-caps">Top Movers</div>
-                    ${s.stocks.map(st => `<div class="stock-row"><span class="font-semibold">${st.s}</span><span class="${col(st.c)}">${sign(st.c)}${st.c}%</span></div>`).join('')}
+                    <div class="flex justify-between items-center mb-2"><div class="font-bold text-md text-1">${s.name}</div><div class="badge ${s.change>0?'badge-bull':'badge-bear'}">${s.change>0?'Bullish':'Bearish'}</div></div>
+                    <div class="text-xs text-2 mb-2 all-caps">Top Movers</div>
+                    ${s.stocks.map(st => `<div class="stock-row"><span class="font-semibold">${st.s}</span><span class="${col(st.c)}">${sgn(st.c)}${fmt(st.c)}%</span></div>`).join('')}
+                    <div class="text-xs text-2 mt-2">Adv: ${s.adv} Dec: ${s.dec} | Vol: 2.3x avg</div>
                 </div>
             `).join('');
-        };
+        }
 
-        // F&O Scanner
-        const renderScanner = () => {
-            const bul = document.getElementById('fno-bull');
-            const bea = document.getElementById('fno-bear');
-            bul.innerHTML = CONFIG.watchlist.filter(w=>w.chg>0).map(w=>`
+        function renderFnO() {
+            document.getElementById('fno-bull').innerHTML = DATA.fnoBull.map(w=>`
                 <div class="scan-card bull">
-                    <div class="flex justify-between font-bold text-white mb-1"><span>${w.s}</span><span class="text-green">+${fmt(w.chg)}%</span></div>
-                    <div class="text-xs text-muted">Near Day High | Vol: ${w.vol}</div>
-                    <div class="momentum-bar"><div style="width:${w.range}%; height:100%; background:var(--green-strong)"></div></div>
+                    <div class="flex justify-between font-bold text-1 mb-1"><span>${w.s}</span><span class="text-bull">+${fmt(w.c)}%</span></div>
+                    <div class="text-xs text-2">Near Day High | Vol: 2.4x</div>
+                    <div class="momentum-bar"><div style="width:${w.r}%; height:100%; background:var(--bull-strong)"></div></div>
+                    <div class="flex gap-1 mt-2"><span class="badge badge-outline">F&O</span><span class="badge badge-outline">Vol Surge</span></div>
                 </div>
             `).join('');
-            bea.innerHTML = CONFIG.watchlist.filter(w=>w.chg<0).map(w=>`
+            document.getElementById('fno-bear').innerHTML = DATA.fnoBear.map(w=>`
                 <div class="scan-card bear">
-                    <div class="flex justify-between font-bold text-white mb-1"><span>${w.s}</span><span class="text-red">${fmt(w.chg)}%</span></div>
-                    <div class="text-xs text-muted">Near Day Low | Vol: ${w.vol}</div>
-                    <div class="momentum-bar"><div style="width:${w.range}%; height:100%; background:var(--red-strong)"></div></div>
+                    <div class="flex justify-between font-bold text-1 mb-1"><span>${w.s}</span><span class="text-bear">${fmt(w.c)}%</span></div>
+                    <div class="text-xs text-2">Near Day Low | Vol: 1.8x</div>
+                    <div class="momentum-bar"><div style="width:${w.r}%; height:100%; background:var(--bear-strong)"></div></div>
+                    <div class="flex gap-1 mt-2"><span class="badge badge-outline">High OI</span><span class="badge badge-outline">Breakdown</span></div>
                 </div>
             `).join('');
-        };
+        }
 
-        // Option Chain
-        const renderOptions = () => {
-            const tb = document.querySelector('#option-chain tbody');
+        function renderOptions() {
             let html = '';
-            let atm = 22450;
-            for(let i=22200; i<=22700; i+=50) {
-                let isAtm = Math.abs(i - atm) < 50;
-                let ceOI = (Math.random()*50).toFixed(1);
-                let peOI = (Math.random()*50).toFixed(1);
+            for(let i=22000; i<=22900; i+=50) {
+                let isAtm = i === 22450;
+                let ceOI = (Math.random()*40+5).toFixed(1);
+                let peOI = (Math.random()*40+5).toFixed(1);
                 html += `<tr class="${isAtm?'atm-row':''}">
-                    <td>${ceOI}M <div class="oi-bar" style="width:${ceOI}px; background:var(--red-mild)"></div></td>
-                    <td class="${Math.random()>0.5?'text-green':'text-red'}">${(Math.random()*5).toFixed(1)}%</td>
+                    <td>${ceOI}M <div class="oi-bar" style="width:${ceOI}px; background:var(--bear-mild)"></div></td>
+                    <td class="${Math.random()>0.5?'text-bull':'text-bear'}">${(Math.random()*5).toFixed(1)}%</td>
                     <td>${(Math.random()*200).toFixed(1)}</td>
                     <td class="strike-col">${i}</td>
                     <td>${(Math.random()*200).toFixed(1)}</td>
-                    <td class="${Math.random()>0.5?'text-green':'text-red'}">${(Math.random()*5).toFixed(1)}%</td>
-                    <td><div class="oi-bar" style="width:${peOI}px; background:var(--green-mild)"></div> ${peOI}M</td>
+                    <td class="${Math.random()>0.5?'text-bull':'text-bear'}">${(Math.random()*5).toFixed(1)}%</td>
+                    <td><div class="oi-bar" style="width:${peOI}px; background:var(--bull-mild)"></div> ${peOI}M</td>
                 </tr>`;
             }
-            tb.innerHTML = html;
-        };
+            document.querySelector('#option-chain tbody').innerHTML = html;
+        }
 
-        // Global Markets
-        const renderGlobals = () => {
-            const g = document.getElementById('global-markets');
-            g.innerHTML = CONFIG.globals.map(m => `
-                <div class="card p-4 global-card">
-                    <div>
-                        <div class="font-medium text-white mb-1">${m.name}</div>
-                        <div class="text-lg font-bold">${m.val}</div>
+        function renderAI() {
+            const setups = [
+                {s:"SUNPHARMA", t:"Bullish Breakout", e:1850, sl:1820, t1:1900, t2:1950, p:78, c:"var(--bull-strong)", tg:"F&O Confirmed, Sector Leader"},
+                {s:"TATAMOTORS", t:"Bullish Momentum", e:920, sl:895, t1:960, t2:995, p:71, c:"var(--accent-cyan)", tg:"FII Backed, High OI"},
+                {s:"DLF", t:"Short Setup", e:820, sl:845, t1:790, t2:765, p:65, c:"var(--bear-strong)", tg:"Sector Weak, OI Build"}
+            ];
+            document.getElementById('ai-setups').innerHTML = setups.map((s,i) => `
+                <div class="card setup-card" style="border-top-color:${s.c}">
+                    <div class="badge mb-3" style="background:rgba(255,255,255,0.1); color:${s.c}">${s.t}</div>
+                    <div class="text-lg font-bold text-1 mb-1">${s.s}</div>
+                    <div class="text-xs text-2 mb-4">${s.tg}</div>
+                    <div class="grid" style="grid-template-columns:1fr 1fr; gap:8px; font-size:13px; margin-bottom:16px;">
+                        <div>Entry: <span class="text-1">₹${s.e}</span></div><div>SL: <span class="text-bear">₹${s.sl}</span></div>
+                        <div>T1: <span class="text-bull">₹${s.t1}</span></div><div>T2: <span class="text-bull">₹${s.t2}</span></div>
                     </div>
-                    <div class="text-right">
-                        <div class="font-bold ${col(m.chg)} mb-1">${sign(m.chg)}${m.chg}%</div>
-                        <svg class="mini-sparkline" style="width:60px; height:20px" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 Q20,${m.chg>0?5:25} 50,15 T100,${m.chg>0?5:25}" fill="none" stroke="var(${m.chg>0?'--green-strong':'--red-strong'})" stroke-width="2"/></svg>
+                    <div class="flex justify-between items-center" style="border-top:1px solid var(--border-dim); padding-top:12px;">
+                        <span class="text-xs text-2">Win Prob.</span>
+                        <div class="circular-progress" style="background: conic-gradient(${s.c} ${s.p}%, transparent 0);"><span style="position:relative; z-index:2;">${s.p}%</span></div>
                     </div>
                 </div>
             `).join('');
-        };
+        }
 
-        // Watchlist
-        const renderWatchlist = () => {
-            const t = document.getElementById('wl-tbody');
-            t.innerHTML = CONFIG.watchlist.map(w => `
-                <tr>
-                    <td class="font-bold text-white">${w.s}</td>
-                    <td>${w.ltp.toLocaleString('en-IN', {maximumFractionDigits:2, minimumFractionDigits:2})}</td>
-                    <td class="${col(w.chg)}">${sign(w.chg)}${fmt(w.chg)}%</td>
-                    <td><div class="badge ${w.chg>0?'badge-green':'badge-red'}">${w.chg>0?'Bullish':'Bearish'}</div></td>
-                    <td>${w.vol}</td>
-                    <td><div class="momentum-bar" style="width:100px; background:var(--bg-elevated)"><div style="width:${w.range}%; height:100%; background:var(--accent-cyan)"></div></div></td>
-                </tr>
+        function renderGlobals() {
+            document.getElementById('global-markets').innerHTML = DATA.globals.map(m => `
+                <div class="card p-4 global-card">
+                    <div>
+                        <div class="font-medium text-1 mb-1">${m.f} ${m.n}</div>
+                        <div class="text-lg font-bold">${m.v.toLocaleString()}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold ${col(m.c)} mb-1">${sgn(m.c)}${fmt(m.c)}%</div>
+                        <svg class="mini-sparkline" style="width:50px; height:20px" viewBox="0 0 100 30" preserveAspectRatio="none"><path d="M0,15 Q20,${m.c>0?5:25} 50,15 T100,${m.c>0?5:25}" fill="none" stroke="var(${m.c>0?'--bull-strong':'--bear-strong'})" stroke-width="2"/></svg>
+                    </div>
+                </div>
             `).join('');
-        };
+        }
 
-        // Simulation Loop (Updates every 1 second)
+        function renderWatchlist() {
+            document.getElementById('wl-tbody').innerHTML = DATA.wl.map(w => {
+                let rangePct = ((w.p - w.l) / (w.h - w.l)) * 100;
+                return `<tr>
+                    <td>☆</td><td class="font-bold text-1">${w.s}</td><td>${w.p}</td>
+                    <td class="${col(w.c)}">${sgn(w.c)}${fmt(w.c)}</td>
+                    <td class="${col(w.c)}">${sgn(w.c)}${fmt((w.c/w.p)*100)}%</td>
+                    <td>${w.h}</td><td>${w.l}</td><td>${w.v}</td>
+                    <td><div class="momentum-bar" style="width:100px"><div style="width:${rangePct}%; height:100%; background:var(--accent-cyan)"></div></div></td>
+                    <td style="cursor:pointer">❌</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderAlgos() {
+            document.getElementById('algo-grid').innerHTML = DATA.algos.map(a => `
+                <div class="card algo-card p-5">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="font-bold text-md text-1">${a.n}</div>
+                            <span class="badge ${a.a?'badge-bull':'badge-outline'}">${a.a?'Active':'Paused'}</span>
+                        </div>
+                        <div class="badge badge-purple mb-2">${a.t}</div>
+                        <div class="text-xs text-2 mb-4">${a.d}</div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-sm mb-4 pb-4" style="border-bottom:1px solid var(--border-dim)">
+                            <div><div class="text-2 text-xs">Win Rate</div><div class="font-bold text-bull">${a.w}%</div></div>
+                            <div><div class="text-2 text-xs">Avg Ret</div><div class="font-bold text-bull">+${a.r}%</div></div>
+                            <div><div class="text-2 text-xs">Max DD</div><div class="font-bold text-bear">${a.dd}%</div></div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn-primary flex-1">Deploy</button>
+                            <button class="btn-outline flex-1">Backtest</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Init
+        renderHeader(); renderHero(); renderSector(); renderFnO(); renderOptions(); renderAI(); renderGlobals(); renderWatchlist(); renderAlgos();
+
+        // Simulation Loops
         setInterval(() => {
-            // Randomly tick indices
-            CONFIG.indices.nifty.ltp += (Math.random() - 0.5) * 3;
-            CONFIG.indices.nifty.change += (Math.random() - 0.5) * 2;
-            CONFIG.indices.nifty.pct = (CONFIG.indices.nifty.change / (CONFIG.indices.nifty.ltp - CONFIG.indices.nifty.change)) * 100;
-
-            CONFIG.indices.banknifty.ltp += (Math.random() - 0.5) * 8;
-            CONFIG.indices.banknifty.change += (Math.random() - 0.5) * 5;
-            CONFIG.indices.banknifty.pct = (CONFIG.indices.banknifty.change / (CONFIG.indices.banknifty.ltp - CONFIG.indices.banknifty.change)) * 100;
-
-            // Randomly tick sectors
-            CONFIG.sectors.forEach(s => {
-                s.change += (Math.random() - 0.5) * 0.1;
-            });
-
-            // Randomly tick globals
-            CONFIG.globals.forEach(g => {
-                const numVal = parseFloat(g.val.replace(/,/g, '').replace('$', ''));
-                const tick = (Math.random() - 0.5) * 2;
-                g.chg += (Math.random() - 0.5) * 0.05;
-                if(g.val.includes('$')) {
-                    g.val = '$' + (numVal + tick).toLocaleString('en-US', {maximumFractionDigits:2});
-                } else {
-                    g.val = (numVal + tick).toLocaleString('en-US', {maximumFractionDigits:2});
-                }
-            });
-
-            // Re-render components with new data
-            renderHero();
-            renderSectorScope();
-            renderGlobals();
-            renderTicker();
+            DATA.indices.nifty.ltp += (Math.random()-0.5)*3;
+            DATA.indices.banknifty.ltp += (Math.random()-0.5)*8;
             
-            // Add flash effect to hero values
             ['top-nifty-val', 'top-banknifty-val'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) {
-                    el.classList.remove('text-green', 'text-red');
-                    el.classList.add(Math.random() > 0.5 ? 'text-green' : 'text-red');
-                    setTimeout(() => el.classList.remove('text-green', 'text-red'), 300);
+                el.classList.remove('flash-bg');
+                void el.offsetWidth;
+                el.classList.add('flash-bg');
+            });
+            renderHeader();
+        }, 3000);
+
+        setInterval(() => {
+            DATA.sectors.forEach(s => s.change += (Math.random()-0.5)*0.2);
+            DATA.globals.forEach(g => g.c += (Math.random()-0.5)*0.1);
+            renderHero(); renderSector(); renderGlobals();
+        }, 5000);
+
+        // Clock & Expiry
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-IN') + ' IST';
+        }, 1000);
+        document.getElementById('expiry').innerText = "2d 4h";
+
+        // Scroll Spy & Intersections
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if(e.isIntersecting) {
+                    e.target.style.opacity = 1;
+                    e.target.style.transform = 'translateY(0)';
+                    
+                    // Update Nav
+                    const id = e.target.id;
+                    document.querySelectorAll('.nav-item').forEach(n => {
+                        n.classList.toggle('active', n.getAttribute('onclick').includes(id));
+                    });
                 }
             });
-            
-            // Trigger background flash on NIFTY hero card
-            const heroNifty = document.getElementById('hero-nifty-val');
-            if(heroNifty) {
-                heroNifty.classList.remove('flash-bg');
-                void heroNifty.offsetWidth; // trigger reflow
-                heroNifty.classList.add('flash-bg');
-            }
-        }, 1000);
+        }, { threshold: 0.3 });
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
 
         // Theme Toggle
         document.getElementById('theme-btn').addEventListener('click', () => {
             const html = document.documentElement;
             html.dataset.theme = html.dataset.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('tf_theme', html.dataset.theme);
         });
-
-        // Nav Scroll spy
-        document.querySelectorAll('.nav-item').forEach(el => {
-            el.addEventListener('click', (e) => {
-                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-                e.currentTarget.classList.add('active');
-            });
-        });
-
-        // Init
-        renderTicker();
-        renderHero();
-        renderSectorScope();
-        renderScanner();
-        renderOptions();
-        renderGlobals();
-        renderWatchlist();
-
-        // Intersection Observer for fade-in
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if(entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        });
-        document.querySelectorAll('.section-container').forEach(s => observer.observe(s));
+        if(localStorage.getItem('tf_theme') === 'light') document.documentElement.dataset.theme = 'light';
     </script>
 </body>
 </html>
