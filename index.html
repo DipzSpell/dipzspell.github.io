@@ -100,10 +100,49 @@ nav {
   display: flex; align-items: center; gap: 7px;
   border-bottom: 1px solid var(--border);
 }
-.dot { width:12px; height:12px; border-radius:50%; }
+.dot {
+  width:12px; height:12px; border-radius:50%;
+  cursor:pointer; position:relative;
+  transition: filter .15s, transform .15s;
+  flex-shrink:0;
+}
+.dot:hover { filter:brightness(1.25); transform:scale(1.15); }
+.dot::after {
+  content: attr(data-tip);
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  background:#1a1a2a; color:#ccc; font-size:10px;
+  padding:3px 7px; border-radius:4px; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity .15s;
+  font-family:'JetBrains Mono',monospace; border:1px solid #333;
+  z-index:99;
+}
+.dot:hover::after { opacity:1; }
 .dot.r { background:#ff5f57; }
 .dot.y { background:#febc2e; }
 .dot.g { background:#28c840; }
+
+/* terminal states */
+.terminal { transition: all .35s cubic-bezier(.4,0,.2,1); }
+.terminal.minimized .term-body,
+.terminal.minimized .term-btns { display:none; }
+.terminal.closed { opacity:0; transform:scale(0.95); pointer-events:none; }
+.terminal.fullscreen {
+  position:fixed; inset:0; z-index:999;
+  border-radius:0 !important; margin:0;
+  max-width:100vw; width:100vw; height:100vh;
+  display:flex; flex-direction:column;
+}
+.terminal.fullscreen .term-body { flex:1; overflow-y:auto; font-size:16px; line-height:2.2; }
+.restart-btn {
+  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+  background:var(--bg2); border:1px solid rgba(0,255,136,.3);
+  color:var(--green); padding:12px 28px; border-radius:6px;
+  font-family:'JetBrains Mono',monospace; font-size:13px;
+  cursor:pointer; transition:all .2s; z-index:10;
+  display:none;
+}
+.restart-btn:hover { background:rgba(0,255,136,.1); }
+.hero-wrap { position:relative; }
 .term-name {
   font-family:'JetBrains Mono',monospace;
   font-size:11px; color:var(--muted); margin-left:8px;
@@ -317,19 +356,20 @@ footer span { color:var(--green); }
 <section class="hero">
   <canvas id="mx"></canvas>
   <div class="hero-wrap">
-    <div class="terminal">
+    <div class="terminal" id="term-win">
       <div class="term-bar">
-        <span class="dot r"></span>
-        <span class="dot y"></span>
-        <span class="dot g"></span>
-        <span class="term-name">dipzspell@portfolio ~ bash</span>
+        <span class="dot r" id="dot-r" data-tip="Close"></span>
+        <span class="dot y" id="dot-y" data-tip="Minimize"></span>
+        <span class="dot g" id="dot-g" data-tip="Fullscreen"></span>
+        <span class="term-name" id="term-title">dipzspell@portfolio ~ bash</span>
       </div>
       <div class="term-body" id="tb"></div>
-      <div class="term-btns">
+      <div class="term-btns" id="term-btns-wrap">
         <a href="#projects" class="btn-g">view_projects()</a>
         <a href="https://github.com/DipzSpell" target="_blank" class="btn-c">github --open ↗</a>
       </div>
     </div>
+    <button class="restart-btn" id="restart-btn" onclick="restartTerminal()">❯ terminal --restart</button>
   </div>
 </section>
 
@@ -605,7 +645,65 @@ function addLine(){
 }
 setTimeout(addLine, 900);
 
-/* ── SCROLL REVEAL ── */
+/* ── DOT CONTROLS ── */
+const termWin  = document.getElementById('term-win');
+const dotR     = document.getElementById('dot-r');
+const dotY     = document.getElementById('dot-y');
+const dotG     = document.getElementById('dot-g');
+const restartBtn = document.getElementById('restart-btn');
+const termTitle  = document.getElementById('term-title');
+
+let isMinimized = false;
+let isFullscreen = false;
+
+// 🔴 RED — close terminal, show restart button
+dotR.addEventListener('click', () => {
+  termWin.classList.add('closed');
+  restartBtn.style.display = 'block';
+  termTitle.textContent = 'dipzspell@portfolio ~ bash';
+});
+
+function restartTerminal() {
+  termWin.classList.remove('closed','minimized','fullscreen');
+  restartBtn.style.display = 'none';
+  isMinimized = false;
+  isFullscreen = false;
+  termTitle.textContent = 'dipzspell@portfolio ~ bash';
+  // replay typewriter
+  const tb2 = document.getElementById('tb');
+  tb2.innerHTML = '';
+  li = 0;
+  setTimeout(addLine, 300);
+}
+
+// 🟡 YELLOW — minimize/restore
+dotY.addEventListener('click', () => {
+  isMinimized = !isMinimized;
+  termWin.classList.toggle('minimized', isMinimized);
+  termTitle.textContent = isMinimized
+    ? 'dipzspell@portfolio ~ bash  [minimized]'
+    : 'dipzspell@portfolio ~ bash';
+});
+
+// 🟢 GREEN — fullscreen/restore
+dotG.addEventListener('click', () => {
+  isFullscreen = !isFullscreen;
+  termWin.classList.toggle('fullscreen', isFullscreen);
+  document.body.style.overflow = isFullscreen ? 'hidden' : '';
+  termTitle.textContent = isFullscreen
+    ? 'dipzspell@portfolio ~ bash  [fullscreen — click 🟢 to exit]'
+    : 'dipzspell@portfolio ~ bash';
+});
+
+// ESC exits fullscreen
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && isFullscreen){
+    isFullscreen = false;
+    termWin.classList.remove('fullscreen');
+    document.body.style.overflow = '';
+    termTitle.textContent = 'dipzspell@portfolio ~ bash';
+  }
+});
 const obs = new IntersectionObserver(es => {
   es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
 }, { threshold: 0.1 });
