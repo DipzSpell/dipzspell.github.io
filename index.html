@@ -1,654 +1,553 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradeFinder NSE Intelligence</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-base: #080b0f;
-            --bg-surface: #0e1117;
-            --bg-elevated: #141820;
-            --bg-overlay: #1c2130;
-            --border-dim: #1e2535;
-            --border-bright: #2d3a52;
-            --accent: #3b82f6;
-            --accent-cyan: #06b6d4;
-            --accent-purple: #8b5cf6;
-            --bull-strong: #22c55e;
-            --bull-mild: #86efac;
-            --bear-strong: #ef4444;
-            --bear-mild: #fca5a5;
-            --neutral: #94a3b8;
-            --text-1: #f1f5f9;
-            --text-2: #94a3b8;
-            --text-3: #4a5568;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DipzSpell | Developer & Trader</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg2: #111118;
+  --bg3: #16161f;
+  --green: #00ff88;
+  --cyan: #00d4ff;
+  --orange: #ff6b35;
+  --purple: #a78bfa;
+  --text: #e2e2e8;
+  --muted: #6b6b8a;
+  --border: #1e1e2d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green); border-radius: 2px; }
+::selection { background: rgba(0,255,136,0.2); color: var(--green); }
 
-        [data-theme="light"] {
-            --bg-base: #f8fafc;
-            --bg-surface: #ffffff;
-            --bg-elevated: #f1f5f9;
-            --bg-overlay: #e2e8f0;
-            --text-1: #0f172a;
-            --text-2: #475569;
-            --text-3: #94a3b8;
-            --border-dim: #e2e8f0;
-            --border-bright: #cbd5e1;
-        }
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 48px;
+  background: rgba(10,10,15,0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0,255,136,0.08);
+}
+.logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px; font-weight: 700; color: var(--text);
+  text-decoration: none; letter-spacing: 1px;
+}
+.logo span { color: var(--green); }
+.nav-links { display: flex; gap: 28px; list-style: none; }
+.nav-links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px; color: var(--muted); text-decoration: none;
+  letter-spacing: 1.5px; transition: color .2s;
+}
+.nav-links a:hover { color: var(--green); }
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+  display: inline-block; margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(0,255,136,0); }
+}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg-base); color: var(--text-1); font-size: 13px; line-height: 1.5; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
-        a { color: inherit; text-decoration: none; }
-        button { cursor: pointer; border: none; outline: none; font-family: inherit; transition: all 0.18s ease; background: transparent; color: inherit; }
-        input, select { font-family: inherit; background: var(--bg-elevated); border: 1px solid var(--border-dim); color: var(--text-1); padding: 8px 12px; border-radius: 6px; outline: none; transition: border-color 0.18s; }
-        input:focus, select:focus { border-color: var(--accent); }
+/* ── HERO ── */
+.hero {
+  position: relative; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+#mx { position: absolute; top:0; left:0; width:100%; height:100%; opacity: .12; }
 
-        /* Typography */
-        .text-xs { font-size: 11px; }
-        .text-sm { font-size: 13px; }
-        .text-md { font-size: 15px; }
-        .text-lg { font-size: 20px; }
-        .text-xl { font-size: 28px; }
-        .font-normal { font-weight: 400; }
-        .font-medium { font-weight: 500; }
-        .font-semibold { font-weight: 600; }
-        .font-bold { font-weight: 700; }
-        .text-1 { color: var(--text-1); }
-        .text-2 { color: var(--text-2); }
-        .text-3 { color: var(--text-3); }
-        .text-bull { color: var(--bull-strong); }
-        .text-bear { color: var(--bear-strong); }
-        .text-cyan { color: var(--accent-cyan); }
-        .all-caps { text-transform: uppercase; letter-spacing: 0.06em; }
-        
-        /* Layout Utilities */
-        .flex { display: flex; }
-        .flex-col { display: flex; flex-direction: column; }
-        .items-center { align-items: center; }
-        .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .gap-1 { gap: 4px; } .gap-2 { gap: 8px; } .gap-3 { gap: 12px; } .gap-4 { gap: 16px; } .gap-5 { gap: 20px; } .gap-6 { gap: 24px; }
-        .p-4 { padding: 16px; } .p-5 { padding: 20px; }
-        .mt-6 { margin-top: 24px; } .mb-2 { margin-bottom: 8px; } .mb-4 { margin-bottom: 16px; }
-        .grid { display: grid; }
-        .w-full { width: 100%; }
-        
-        /* Components */
-        .card { background: var(--bg-surface); border: 1px solid var(--border-dim); border-radius: 10px; transition: all 0.18s ease; }
-        .card:hover { border-color: var(--border-bright); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
-        .badge { padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; display: inline-block; }
-        .badge-bull { background: rgba(34,197,94,0.15); color: var(--bull-strong); border: 1px solid var(--bull-strong); }
-        .badge-bear { background: rgba(239,68,68,0.15); color: var(--bear-strong); border: 1px solid var(--bear-strong); }
-        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple); }
-        .badge-outline { border: 1px solid var(--border-dim); color: var(--text-2); }
-        .btn-primary { background: var(--accent); color: #fff; padding: 8px 16px; border-radius: 6px; font-weight: 600; }
-        .btn-outline { border: 1px solid var(--border-dim); padding: 8px 16px; border-radius: 6px; font-weight: 600; color: var(--text-2); }
-        .btn-outline:hover { background: var(--bg-elevated); color: var(--text-1); }
+/* scanline overlay */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent, transparent 2px,
+    rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px
+  );
+  pointer-events: none;
+}
+.hero-wrap {
+  position: relative; z-index: 2;
+  width: 100%; max-width: 820px; padding: 0 24px;
+}
+.terminal {
+  background: rgba(16,16,24,0.97);
+  border: 1px solid rgba(0,255,136,0.25);
+  border-radius: 10px;
+  box-shadow: 0 0 80px rgba(0,255,136,0.07), 0 0 160px rgba(0,212,255,0.04);
+  overflow: hidden;
+}
+.term-bar {
+  background: var(--bg2);
+  padding: 11px 16px;
+  display: flex; align-items: center; gap: 7px;
+  border-bottom: 1px solid var(--border);
+}
+.dot { width:12px; height:12px; border-radius:50%; }
+.dot.r { background:#ff5f57; }
+.dot.y { background:#febc2e; }
+.dot.g { background:#28c840; }
+.term-name {
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--muted); margin-left:8px;
+}
+.term-body {
+  padding: 22px 24px 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13.5px; line-height: 2;
+  min-height: 200px;
+}
+.tl { display:flex; align-items:center; gap:6px; }
+.tp { color:var(--green); }
+.tc { color:var(--cyan); }
+.to { color:var(--text); }
+.to.g { color:var(--green); }
+.to.m { color:var(--muted); font-size:12px; }
+.to.p { color:var(--purple); }
+.cur {
+  display:inline-block; width:8px; height:15px;
+  background:var(--green); vertical-align:middle;
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.term-btns {
+  display:flex; gap:12px; padding:18px 24px 22px;
+  font-family:'JetBrains Mono',monospace;
+}
+.btn-g {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 22px; background:var(--green);
+  color:#0a0a0f; border:none; border-radius:5px;
+  font-family:'JetBrains Mono',monospace; font-size:12px; font-weight:700;
+  letter-spacing:.5px; cursor:pointer; text-decoration:none;
+  transition: all .2s;
+}
+.btn-g:hover { background:#00cc6e; transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,255,136,.25); }
+.btn-c {
+  display:inline-flex; align-items:center; gap:8px;
+  padding:9px 22px; background:transparent;
+  color:var(--cyan); border:1px solid rgba(0,212,255,.4);
+  border-radius:5px; font-family:'JetBrains Mono',monospace;
+  font-size:12px; font-weight:600; letter-spacing:.5px;
+  cursor:pointer; text-decoration:none; transition:all .2s;
+}
+.btn-c:hover { background:rgba(0,212,255,.08); transform:translateY(-1px); }
 
-        /* Animations */
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.7); } 70% { box-shadow: 0 0 0 6px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
-        @keyframes priceFlash { 0% { background: transparent; } 30% { background: rgba(34,197,94,0.15); } 100% { background: transparent; } }
-        @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-        @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shimmer { from { background-position: -200% 0; } to { background-position: 200% 0; } }
+/* ── SECTIONS ── */
+.sec {
+  max-width: 1080px; margin: 0 auto;
+  padding: 100px 40px;
+}
+.s-eye {
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px; color:var(--green); letter-spacing:3px;
+  text-transform:uppercase; margin-bottom:6px;
+}
+.s-eye::before { content:'// '; color:var(--muted); }
+.s-title {
+  font-size:38px; font-weight:700; color:var(--text);
+  letter-spacing:-1px; margin-bottom:52px; line-height:1.1;
+}
+.s-title em { color:var(--green); font-style:normal; }
 
-        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bull-strong); animation: pulse 2s infinite; }
-        .flash-bg { animation: priceFlash 0.6s ease-out; }
-        .skeleton { background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-elevated) 50%, var(--bg-surface) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
-        .fade-in { animation: fadeSlideUp 0.6s ease-out forwards; opacity: 0; }
+/* ── ABOUT ── */
+.about-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:start; }
+.about-p { color:var(--muted); line-height:1.85; font-size:15px; margin-bottom:14px; }
+.about-p b { color:var(--text); font-weight:600; }
+.stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.stat {
+  background:var(--bg2); border:1px solid var(--border);
+  border-left:3px solid var(--green);
+  border-radius:6px; padding:18px;
+  transition: border-color .2s, transform .2s;
+}
+.stat:hover { border-left-color:var(--cyan); transform:translateY(-2px); }
+.stat-n { font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; color:var(--green); }
+.stat-l { font-size:12px; color:var(--muted); margin-top:3px; letter-spacing:.5px; }
 
-        @media (prefers-reduced-motion: reduce) {
-            * { animation: none !important; transition: none !important; }
-        }
+/* ── SKILLS ── */
+.skills-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+.sk-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:8px; padding:22px;
+  transition: border-color .2s;
+}
+.sk-card:hover { border-color:rgba(0,255,136,.25); }
+.sk-head {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:var(--cyan); letter-spacing:2px; margin-bottom:14px;
+}
+.sk-head::before { content:'// '; color:var(--muted); }
+.tags { display:flex; flex-wrap:wrap; gap:7px; }
+.tag {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  padding:4px 10px; border-radius:3px;
+  background:rgba(0,255,136,.06); color:var(--green);
+  border:1px solid rgba(0,255,136,.18);
+}
+.tag.c { background:rgba(0,212,255,.06); color:var(--cyan); border-color:rgba(0,212,255,.18); }
+.tag.o { background:rgba(255,107,53,.06); color:var(--orange); border-color:rgba(255,107,53,.18); }
+.tag.p { background:rgba(167,139,250,.06); color:var(--purple); border-color:rgba(167,139,250,.18); }
+.sk-wide { grid-column: span 2; }
 
-        /* Topbar & Sidebar */
-        #topbar { position: fixed; top: 0; width: 100%; height: 56px; background: var(--bg-base); border-bottom: 1px solid var(--border-dim); z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; }
-        #sidebar { position: fixed; left: 0; top: 56px; width: 220px; height: calc(100vh - 56px); background: var(--bg-surface); border-right: 1px solid var(--border-dim); overflow-y: auto; display: flex; flex-direction: column; z-index: 900; transition: transform 0.3s; }
-        #main-content { margin-left: 220px; margin-top: 56px; min-height: calc(100vh - 56px); padding-bottom: 40px; }
+/* ── PROJECTS ── */
+.proj-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.proj-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:9px; overflow:hidden;
+  transition: border-color .3s, transform .3s;
+}
+.proj-card:hover { border-color:rgba(0,255,136,.35); transform:translateY(-4px); }
+.proj-card:hover .proj-dot { animation:none; box-shadow:0 0 8px var(--green); }
+.proj-top {
+  background:rgba(0,255,136,.04); padding:11px 16px;
+  border-bottom:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:var(--muted); display:flex; align-items:center; gap:8px;
+}
+.proj-dot { width:8px; height:8px; border-radius:50%; background:var(--green); }
+.proj-body { padding:20px; }
+.proj-name { font-size:17px; font-weight:700; color:var(--text); margin-bottom:7px; }
+.proj-desc { font-size:13px; color:var(--muted); line-height:1.75; margin-bottom:14px; }
+.proj-link {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:var(--green); text-decoration:none;
+  display:inline-flex; align-items:center; gap:4px;
+}
+.proj-link:hover { text-decoration:underline; }
 
-        .logo-text { font-size: 20px; font-weight: 700; color: #fff; }
-        .logo-text span { color: var(--accent); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-2); font-weight: 500; border-left: 3px solid transparent; cursor: pointer; }
-        .nav-item:hover { background: var(--bg-elevated); color: var(--text-1); }
-        .nav-item.active { border-left-color: var(--accent); background: var(--bg-elevated); color: var(--text-1); }
-        .nav-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-        
-        .pro-card { margin: 20px; padding: 16px; border-radius: 8px; border: 1px solid var(--accent); background: linear-gradient(180deg, rgba(59,130,246,0.1), transparent); text-align: center; }
-        .pro-btn { width: 100%; padding: 8px; margin-top: 12px; border-radius: 6px; background: var(--accent); color: #fff; font-weight: 600; font-size: 11px; }
+/* ── CONTACT ── */
+.contact-inner { max-width:580px; }
+.contact-inner p { color:var(--muted); font-size:15px; line-height:1.85; margin-bottom:32px; }
+.contact-links { display:flex; gap:14px; flex-wrap:wrap; }
 
-        /* Ticker */
-        .ticker-wrap { width: 100%; height: 32px; background: var(--bg-surface); border-bottom: 1px solid var(--border-dim); overflow: hidden; display: flex; align-items: center; white-space: nowrap; }
-        .ticker-inner { display: inline-block; animation: ticker 60s linear infinite; font-size: 11px; font-weight: 600; }
-        .ticker-wrap:hover .ticker-inner { animation-play-state: paused; }
-        .ticker-item { display: inline-flex; align-items: center; gap: 8px; padding: 0 16px; border-right: 1px solid var(--border-dim); }
+/* ── FOOTER ── */
+footer {
+  text-align:center; padding:40px;
+  border-top:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted);
+}
+footer span { color:var(--green); }
 
-        /* Sections */
-        .section-container { padding: 24px; max-width: 1400px; margin: 0 auto; }
-        .section-header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid var(--border-dim); margin-bottom: 20px; }
-        .section-title { font-size: 16px; font-weight: 600; color: var(--text-1); display: flex; align-items: center; gap: 8px; }
-        .section-title::before { content: ''; display: block; width: 4px; height: 16px; background: var(--accent); border-radius: 2px; }
+/* ── REVEAL ── */
+.rev { opacity:0; transform:translateY(24px); transition:opacity .65s ease, transform .65s ease; }
+.rev.in { opacity:1; transform:none; }
 
-        /* Hero Stats */
-        .hero-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
-        .mini-sparkline { height: 30px; width: 100%; margin-top: 8px; }
-        .breadth-bar { width: 100%; height: 6px; border-radius: 3px; display: flex; overflow: hidden; margin-top: 8px; }
-        .breadth-green { background: var(--bull-strong); }
-        .breadth-red { background: var(--bear-strong); }
+/* ── DIVIDERS ── */
+.hr { border:none; border-top:1px solid var(--border); }
 
-        /* Heatmap & Rotation */
-        .sector-grid { display: grid; grid-template-columns: 60% 40%; gap: 24px; }
-        .heatmap-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .heat-tile { border-radius: 8px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; transition: all 0.18s; border: 1px solid; }
-        .heat-tile:hover { transform: scale(1.03); opacity: 0.8; z-index: 10; }
-        .heat-tile.active { box-shadow: 0 0 0 2px var(--text-1); }
-        .rot-section { margin-bottom: 16px; }
-        .rot-header { font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; margin-bottom: 8px; display: inline-block; }
-        .rot-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
-        .rot-bar-wrap { flex-grow: 1; height: 6px; background: var(--bg-elevated); border-radius: 3px; overflow: hidden; }
-        .rot-bar { height: 100%; border-radius: 3px; }
-        
-        /* Drill-down */
-        .drill-down { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
-        .stock-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border-dim); }
-        .stock-row:last-child { border-bottom: none; }
-        
-        /* AI Insight */
-        .ai-insight { background: rgba(59,130,246,0.06); border-left: 3px solid var(--accent); border-radius: 8px; padding: 16px; display: flex; gap: 16px; align-items: center; margin-top: 24px; }
-
-        /* F&O Scanner */
-        .scanner-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .scan-card { background: var(--bg-surface); border: 1px solid var(--border-dim); border-left: 3px solid; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
-        .scan-card.bull { border-left-color: var(--bull-strong); }
-        .scan-card.bear { border-left-color: var(--bear-strong); }
-        .momentum-bar { height: 4px; width: 100%; background: var(--bg-elevated); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-
-        /* Option Chain */
-        .option-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-        .max-pain-gauge { height: 8px; background: linear-gradient(90deg, var(--bull-mild), var(--neutral), var(--bear-mild)); border-radius: 4px; position: relative; margin: 16px 0; }
-        .pain-marker { position: absolute; top: -6px; width: 4px; height: 20px; background: var(--text-1); border-radius: 2px; transform: translateX(-50%); box-shadow: 0 0 4px #000; }
-        table { width: 100%; border-collapse: collapse; text-align: right; }
-        th, td { padding: 10px 12px; border-bottom: 1px solid var(--border-dim); font-size: 13px; }
-        th { color: var(--text-2); font-weight: 600; text-transform: uppercase; font-size: 11px; cursor: pointer; }
-        .strike-col { text-align: center; font-weight: 700; background: var(--bg-elevated); }
-        .atm-row { background: rgba(234,179,8,0.1); border: 1px solid rgba(234,179,8,0.3); }
-        .oi-bar { height: 4px; border-radius: 2px; display: inline-block; vertical-align: middle; margin-left: 8px; }
-
-        /* Institutional Flow */
-        .inst-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .flow-chart { height: 120px; width: 100%; margin-top: 16px; }
-
-        /* AI Alpha */
-        .ai-header { text-align: center; margin-bottom: 24px; }
-        .btn-ai { background: linear-gradient(135deg, var(--accent), var(--accent-purple)); color: #fff; padding: 12px 32px; border-radius: 8px; font-weight: 700; font-size: 15px; display: inline-block; border: 1px solid var(--accent-purple); }
-        .setup-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .setup-card { position: relative; padding: 20px; border-top: 3px solid var(--accent-purple); }
-        .circular-progress { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; position: relative; }
-        .circular-progress::before { content: ''; position: absolute; inset: 5px; border-radius: 50%; background: var(--bg-surface); z-index: 1; }
-
-        /* Global Markets */
-        .global-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .global-card { display: flex; justify-content: space-between; align-items: center; }
-
-        /* News & Sentiment */
-        .news-layout { display: grid; grid-template-columns: 70% 30%; gap: 24px; }
-        .news-item { padding: 16px 0; border-bottom: 1px solid var(--border-dim); }
-        .news-item:hover .text-md { color: var(--accent); }
-
-        /* Algo Strategies */
-        .algo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .algo-card { display: flex; flex-direction: column; justify-content: space-between; min-height: 200px; }
-
-        /* Blog, Comm, About, Contact */
-        .bca-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
-        .blog-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-        /* Footer */
-        footer { background: var(--bg-elevated); border-top: 1px solid var(--border-dim); padding: 48px 24px 24px; margin-top: 48px; }
-        .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 2fr; gap: 32px; max-width: 1400px; margin: 0 auto; }
-        
-        /* Mobile Hamburger */
-        .hamburger { display: none; background: none; border: none; color: var(--text-1); font-size: 24px; cursor: pointer; }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .hero-stats { grid-template-columns: repeat(3, 1fr); }
-            .sector-grid, .news-layout, .bca-grid { grid-template-columns: 1fr; }
-            .global-grid, .setup-grid, .algo-grid { grid-template-columns: repeat(2, 1fr); }
-            .drill-down { grid-template-columns: 1fr; }
-        }
-        @media (max-width: 768px) {
-            #sidebar { transform: translateX(-100%); z-index: 1001; }
-            #sidebar.open { transform: translateX(0); }
-            #main-content { margin-left: 0; }
-            .hamburger { display: block; }
-            .topbar-center { display: none; }
-            .hero-stats { grid-template-columns: 1fr 1fr; }
-            .heatmap-grid { grid-template-columns: 1fr 1fr; }
-            .scanner-grid, .inst-grid, .global-grid, .setup-grid, .algo-grid, .option-stats, .blog-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .table-wrap { overflow-x: auto; }
-            .table-wrap table td:first-child, .table-wrap table th:first-child { position: sticky; left: 0; background: var(--bg-surface); z-index: 2; }
-        }
-    </style>
+/* ── MOBILE ── */
+@media(max-width:768px){
+  nav { padding:14px 20px; }
+  .nav-links { gap:16px; }
+  .sec { padding:80px 20px; }
+  .about-grid, .proj-grid { grid-template-columns:1fr; }
+  .skills-grid { grid-template-columns:1fr; }
+  .sk-wide { grid-column: span 1; }
+  .s-title { font-size:28px; }
+  .stat-grid { grid-template-columns:1fr 1fr; }
+}
+</style>
 </head>
 <body>
 
-    <!-- TOPBAR -->
-    <header id="topbar">
-        <div class="flex items-center gap-4">
-            <button class="hamburger" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-            <div>
-                <div class="logo-text">Trade<span>Finder</span></div>
-                <div class="text-xs text-2">NSE Intelligence Platform</div>
-            </div>
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#">&lt;<span>DipzSpell</span>/&gt;</a>
+  <ul class="nav-links">
+    <li><a href="#about"><span class="nav-dot"></span>~/about</a></li>
+    <li><a href="#skills">~/skills</a></li>
+    <li><a href="#projects">~/projects</a></li>
+    <li><a href="#contact">~/contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas id="mx"></canvas>
+  <div class="hero-wrap">
+    <div class="terminal">
+      <div class="term-bar">
+        <span class="dot r"></span>
+        <span class="dot y"></span>
+        <span class="dot g"></span>
+        <span class="term-name">dipzspell@portfolio ~ bash</span>
+      </div>
+      <div class="term-body" id="tb"></div>
+      <div class="term-btns">
+        <a href="#projects" class="btn-g">view_projects()</a>
+        <a href="https://github.com/DipzSpell" target="_blank" class="btn-c">github --open ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="sec" id="about">
+  <p class="s-eye rev">about_me</p>
+  <h2 class="s-title rev">Who am <em>I?</em></h2>
+  <div class="about-grid">
+    <div>
+      <p class="about-p rev">I'm <b>Dipanshu Gupta</b>, a self-taught developer from <b>Mumbai, India</b> who codes, trades, and builds — often all three at the same time.</p>
+      <p class="about-p rev">My work lives at the intersection of <b>AI, web development, and financial markets</b>. I build tools that solve real problems — whether that's tracking NSE options in real-time or helping people track their own life goals.</p>
+      <p class="about-p rev">Currently exploring the <b>B.E. CSE/IT</b> path while shipping side projects that actually matter to me. Trader by day, coder by night — or honestly, both by both.</p>
+    </div>
+    <div class="stat-grid rev">
+      <div class="stat"><div class="stat-n">4+</div><div class="stat-l">Live Projects</div></div>
+      <div class="stat"><div class="stat-n">2yr+</div><div class="stat-l">Self-taught</div></div>
+      <div class="stat"><div class="stat-n">F&amp;O</div><div class="stat-l">Active NSE Trader</div></div>
+      <div class="stat"><div class="stat-n">MUM</div><div class="stat-l">Mumbai, India</div></div>
+    </div>
+  </div>
+</section>
+<hr class="hr">
+
+<!-- SKILLS -->
+<section class="sec" id="skills">
+  <p class="s-eye rev">tech_stack</p>
+  <h2 class="s-title rev">What I <em>build with</em></h2>
+  <div class="skills-grid">
+    <div class="sk-card rev">
+      <div class="sk-head">FRONTEND</div>
+      <div class="tags">
+        <span class="tag">React</span>
+        <span class="tag">Vite</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">TypeScript</span>
+        <span class="tag">TailwindCSS</span>
+        <span class="tag">HTML / CSS</span>
+      </div>
+    </div>
+    <div class="sk-card rev">
+      <div class="sk-head">BACKEND &amp; DB</div>
+      <div class="tags">
+        <span class="tag c">Python</span>
+        <span class="tag c">FastAPI</span>
+        <span class="tag c">Firebase</span>
+        <span class="tag c">Node.js</span>
+        <span class="tag c">REST APIs</span>
+      </div>
+    </div>
+    <div class="sk-card rev">
+      <div class="sk-head">AI &amp; TRADING</div>
+      <div class="tags">
+        <span class="tag o">OpenCV</span>
+        <span class="tag o">AI APIs</span>
+        <span class="tag o">NSE / F&amp;O</span>
+        <span class="tag o">Options TA</span>
+        <span class="tag o">Algo Logic</span>
+      </div>
+    </div>
+    <div class="sk-card rev">
+      <div class="sk-head">TOOLS &amp; INFRA</div>
+      <div class="tags">
+        <span class="tag">Git / GitHub</span>
+        <span class="tag">Linux</span>
+        <span class="tag">PWA</span>
+        <span class="tag">Netlify</span>
+        <span class="tag">ESP32</span>
+        <span class="tag">Termux</span>
+      </div>
+    </div>
+    <div class="sk-card sk-wide rev">
+      <div class="sk-head">CURRENTLY LEARNING</div>
+      <div class="tags">
+        <span class="tag p">Algo Trading</span>
+        <span class="tag p">ML / Deep Learning</span>
+        <span class="tag p">WebSockets</span>
+        <span class="tag p">Docker</span>
+        <span class="tag p">Quant Finance</span>
+        <span class="tag p">System Design</span>
+      </div>
+    </div>
+  </div>
+</section>
+<hr class="hr">
+
+<!-- PROJECTS -->
+<section class="sec" id="projects">
+  <p class="s-eye rev">projects</p>
+  <h2 class="s-title rev">Things I've <em>built</em></h2>
+  <div class="proj-grid">
+
+    <div class="proj-card rev">
+      <div class="proj-top">
+        <span class="proj-dot"></span>
+        TradeVision.tsx
+      </div>
+      <div class="proj-body">
+        <div class="proj-name">TradeVision</div>
+        <p class="proj-desc">Real-time Indian stock market intelligence platform. Options Apex, Market Pulse, Sector Scope — built for serious NSE traders who want clean data fast.</p>
+        <div class="tags" style="margin-bottom:14px">
+          <span class="tag">React</span><span class="tag">Vite</span>
+          <span class="tag c">FastAPI</span><span class="tag o">NSE API</span>
         </div>
-        
-        <div class="topbar-center flex gap-6">
-            <div class="flex-col">
-                <span class="text-xs text-2 all-caps">NIFTY 50</span>
-                <div class="flex items-center gap-2"><span class="font-bold text-md flash-bg" id="top-nifty-val">--</span> <span class="text-xs text-bull" id="top-nifty-chg">--</span></div>
-            </div>
-            <div class="flex-col">
-                <span class="text-xs text-2 all-caps">BANKNIFTY</span>
-                <div class="flex items-center gap-2"><span class="font-bold text-md flash-bg" id="top-banknifty-val">--</span> <span class="text-xs text-bull" id="top-banknifty-chg">--</span></div>
-            </div>
+        <span class="proj-link">🔒 In Active Development</span>
+      </div>
+    </div>
+
+    <div class="proj-card rev">
+      <div class="proj-top">
+        <span class="proj-dot" style="background:var(--purple)"></span>
+        LifeTracker.jsx
+      </div>
+      <div class="proj-body">
+        <div class="proj-name">LifeTracker (Udaan) ✈</div>
+        <p class="proj-desc">Personal life-tracking PWA — habits, fitness, mood, sleep, todos, all in one place. Gamified points system makes self-improvement feel like leveling up.</p>
+        <div class="tags" style="margin-bottom:14px">
+          <span class="tag">React</span><span class="tag">Vite</span>
+          <span class="tag c">Firebase</span><span class="tag">PWA</span>
         </div>
+        <a href="https://lifenotebook.netlify.app" target="_blank" class="proj-link">→ lifenotebook.netlify.app</a>
+      </div>
+    </div>
 
-        <div class="flex items-center gap-4 text-sm font-semibold text-2">
-            <div class="flex items-center gap-2"><div class="live-dot"></div> Market Open</div>
-            <div id="clock">--:--:-- IST</div>
-            <div class="text-cyan">Expiry: <span id="expiry">--</span></div>
-            <button id="theme-btn" title="Toggle Theme"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill="none" stroke="currentColor" stroke-width="2"/></svg></button>
+    <div class="proj-card rev">
+      <div class="proj-top">
+        <span class="proj-dot" style="background:var(--cyan)"></span>
+        wifi_radar.py
+      </div>
+      <div class="proj-body">
+        <div class="proj-name">Wi-Fi Radar</div>
+        <p class="proj-desc">Python-based indoor Wi-Fi positioning and signal mapping system. Extending with ESP32 microcontrollers and Android Termux for mobile scanning.</p>
+        <div class="tags" style="margin-bottom:14px">
+          <span class="tag c">Python</span>
+          <span class="tag o">ESP32</span><span class="tag o">Termux</span><span class="tag">RSSI</span>
         </div>
-    </header>
+        <span class="proj-link">🔬 Research Project</span>
+      </div>
+    </div>
 
-    <!-- SIDEBAR -->
-    <nav id="sidebar">
-        <div class="flex-col" style="flex-grow: 1; padding: 16px 0;" id="nav-menu">
-            <!-- Icons injected via JS for brevity -->
+    <div class="proj-card rev">
+      <div class="proj-top">
+        <span class="proj-dot" style="background:var(--orange)"></span>
+        trading_journal.tsx
+      </div>
+      <div class="proj-body">
+        <div class="proj-name">Trading Journal</div>
+        <p class="proj-desc">Personal F&amp;O trade tracker with entry/exit logging, P&amp;L analysis, and pattern recognition — built from scratch for NSE derivatives trading.</p>
+        <div class="tags" style="margin-bottom:14px">
+          <span class="tag">React</span>
+          <span class="tag c">Firebase</span>
+          <span class="tag o">F&amp;O</span><span class="tag o">NSE</span>
         </div>
-        <div class="pro-card">
-            <div class="font-bold text-md text-1 mb-1">Upgrade to PRO</div>
-            <div class="text-xs text-2">Real-time data & alerts</div>
-            <button class="pro-btn">UPGRADE</button>
-        </div>
-    </nav>
+        <a href="https://lifenotebook.vercel.app" target="_blank" class="proj-link">→ lifenotebook.vercel.app</a>
+      </div>
+    </div>
 
-    <!-- MAIN CONTENT -->
-    <main id="main-content">
-        <!-- TICKER TAPE -->
-        <div class="ticker-wrap">
-            <div class="ticker-inner" id="ticker-content"></div>
-        </div>
+  </div>
+</section>
+<hr class="hr">
 
-        <div class="section-container">
-            <!-- HERO STATS -->
-            <div class="hero-stats fade-in" id="hero-stats"></div>
-            
-            <!-- SECTION 1: SECTOR SCOPE -->
-            <section id="sec-sector" class="mt-6 fade-in">
-                <div class="section-header">
-                    <div class="section-title">Sector Scope</div>
-                    <div class="flex gap-2">
-                        <button class="badge badge-bull">Today</button>
-                        <button class="badge badge-outline">5D</button>
-                        <button class="badge badge-outline">1M</button>
-                    </div>
-                </div>
-                
-                <div class="sector-grid">
-                    <div class="card p-5">
-                        <div class="heatmap-grid" id="heatmap"></div>
-                        <div class="flex justify-between text-xs text-2 mt-4">
-                            <span>Strong Bearish &lt;-2%</span><span>Mild Bearish</span><span>Neutral</span><span>Mild Bullish</span><span>Strong Bullish &gt;2%</span>
-                        </div>
-                    </div>
-                    
-                    <div class="card p-5">
-                        <div class="text-xs all-caps text-2 mb-3">Capital Rotation</div>
-                        <div class="rot-section">
-                            <div class="rot-header" style="background:rgba(34,197,94,0.1); color:var(--bull-strong)">INFLOW</div>
-                            <div id="rot-in"></div>
-                        </div>
-                        <div class="rot-section">
-                            <div class="rot-header" style="background:rgba(239,68,68,0.1); color:var(--bear-strong)">OUTFLOW</div>
-                            <div id="rot-out"></div>
-                        </div>
-                        <div class="mt-4"><span class="badge badge-outline">Rotation Signal: Defensive</span></div>
-                    </div>
-                </div>
+<!-- CONTACT -->
+<section class="sec" id="contact">
+  <p class="s-eye rev">contact</p>
+  <h2 class="s-title rev">Let's <em>connect</em></h2>
+  <div class="contact-inner rev">
+    <p>Building something interesting? Want to collab on a trading tool or AI project? Or just want to talk markets — my DMs are open. Mumbai-based, internet-native.</p>
+    <div class="contact-links">
+      <a href="https://github.com/DipzSpell" target="_blank" class="btn-g">GitHub ↗</a>
+      <a href="https://dipzspell.github.io" target="_blank" class="btn-c">Portfolio ↗</a>
+    </div>
+  </div>
+</section>
 
-                <div class="drill-down" id="drill-down"></div>
+<footer>
+  built by &lt;<span>DipzSpell</span>/&gt; &nbsp;·&nbsp; Mumbai, India 🇮🇳 &nbsp;·&nbsp; always shipping
+</footer>
 
-                <div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px;">
-                    <div class="card p-4 text-center"><div class="text-xl font-bold text-bull">5</div><div class="text-xs text-2">Bullish Sectors</div></div>
-                    <div class="card p-4 text-center"><div class="text-xl font-bold text-bear">3</div><div class="text-xs text-2">Bearish Sectors</div></div>
-                    <div class="card p-4 text-center"><div class="text-lg font-bold text-1">Pharma</div><div class="text-xs text-bull">+2.4%</div></div>
-                    <div class="card p-4 flex items-center justify-center gap-4"><div class="text-lg font-bold text-1">62%</div><div class="text-xs text-2">Market Breadth</div></div>
-                </div>
+<script>
+/* ── MATRIX RAIN (NSE tickers + code) ── */
+const cv = document.getElementById('mx');
+const cx = cv.getContext('2d');
+const chars = 'RELIANCETCSINFYBANKNIFTYNIFTYHDFCWIPROAXISBANKSBIconstasyncawaitimportexportfunctionreturnclassdefprint₹NaN010110';
+let cols, drops;
+function resize(){
+  cv.width = window.innerWidth;
+  cv.height = window.innerHeight;
+  cols = Math.floor(cv.width / 18);
+  drops = Array(cols).fill(0).map(() => Math.random() * -50);
+}
+resize();
+window.addEventListener('resize', resize);
+setInterval(() => {
+  cx.fillStyle = 'rgba(10,10,15,0.055)';
+  cx.fillRect(0,0,cv.width,cv.height);
+  cx.font = '13px JetBrains Mono, monospace';
+  for(let i=0; i<cols; i++){
+    const c = chars[Math.floor(Math.random()*chars.length)];
+    const y = drops[i] * 18;
+    if(y < 30) { cx.fillStyle='#ffffff'; }
+    else if(Math.random()>.97){ cx.fillStyle='#00d4ff'; }
+    else { cx.fillStyle='#00ff88'; }
+    cx.fillText(c, i*18, y);
+    if(y > cv.height && Math.random()>.975) drops[i] = 0;
+    drops[i] += 1;
+  }
+}, 42);
 
-                <div class="ai-insight">
-                    <svg viewBox="0 0 24 24" width="24" height="24" stroke="var(--accent-cyan)" fill="none" stroke-width="2"><path d="M9 21h6M12 2v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
-                    <div>
-                        <div class="text-xs font-bold text-cyan all-caps mb-1">AI Sector Insight</div>
-                        <div class="text-sm font-medium">Money rotating INTO defensives (risk-off). Traders seeking safety in Pharma and IT.</div>
-                    </div>
-                </div>
-            </section>
+/* ── TERMINAL TYPEWRITER ── */
+const tb = document.getElementById('tb');
+const lines = [
+  {k:'cmd', p:'❯', c:'whoami'},
+  {k:'out', t:'DipzSpell  //  Dipanshu Gupta', cl:'g'},
+  {k:'out', t:'Mumbai, India  ·  building since always', cl:'m'},
+  {k:'sp'},
+  {k:'cmd', p:'❯', c:'cat roles.txt'},
+  {k:'out', t:'→  Full Stack Developer', cl:''},
+  {k:'out', t:'→  F&O Trader (NSE / Options)', cl:''},
+  {k:'out', t:'→  AI & Automation Builder', cl:'p'},
+  {k:'sp'},
+  {k:'cmd', p:'❯', c:'git log --oneline -1'},
+  {k:'out', t:'a1f3c9e  always shipping, never stopping ✓', cl:'g'},
+];
+let li = 0;
+function addLine(){
+  if(li >= lines.length){
+    const d = document.createElement('div');
+    d.className='tl';
+    d.innerHTML='<span class="tp">❯</span>&nbsp;<span class="cur"></span>';
+    tb.appendChild(d);
+    return;
+  }
+  const ln = lines[li];
+  const d = document.createElement('div');
+  d.className='tl';
+  if(ln.k==='cmd'){
+    d.innerHTML=`<span class="tp">${ln.p}</span>&nbsp;<span class="tc">${ln.c}</span>`;
+  } else if(ln.k==='sp'){
+    d.innerHTML='&nbsp;';
+  } else {
+    d.innerHTML=`<span class="to ${ln.cl}">&nbsp;&nbsp;${ln.t}</span>`;
+  }
+  tb.appendChild(d);
+  li++;
+  setTimeout(addLine, ln.k==='cmd' ? 420 : ln.k==='sp' ? 80 : 160);
+}
+setTimeout(addLine, 900);
 
-            <!-- SECTION 2: F&O SCANNER -->
-            <section id="sec-fno" class="mt-6 fade-in">
-                <div class="section-header">
-                    <div class="section-title">F&O Breakout Scanner</div>
-                    <div class="flex gap-2">
-                        <select><option>Nifty 50</option><option>All F&O</option></select>
-                        <select><option>Sort: Volume</option><option>Sort: % Change</option></select>
-                    </div>
-                </div>
-                <div class="scanner-grid">
-                    <div>
-                        <div class="flex items-center gap-2 mb-3"><span class="badge badge-bull">Bullish Breakouts</span><div class="live-dot"></div><span class="badge badge-outline">5</span></div>
-                        <div id="fno-bull"></div>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2 mb-3"><span class="badge badge-bear">Bearish Breakdowns</span><div class="live-dot" style="background:var(--bear-strong)"></div><span class="badge badge-outline">5</span></div>
-                        <div id="fno-bear"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: OPTION CHAIN -->
-            <section id="sec-options" class="mt-6 fade-in">
-                <div class="section-header">
-                    <div class="section-title">Option Chain Analyzer</div>
-                    <div class="flex gap-2">
-                        <button class="badge badge-purple">NIFTY</button>
-                        <button class="badge badge-outline">BANKNIFTY</button>
-                        <select><option>Weekly (Current)</option><option>Monthly</option></select>
-                        <button class="btn-primary" style="padding: 4px 12px">Load Live Data</button>
-                    </div>
-                </div>
-                
-                <div class="card p-5 mb-5">
-                    <div class="flex justify-between text-sm font-semibold mb-2">
-                        <span>Max Pain: <span class="text-1">22,400</span></span>
-                        <span class="text-2">Current: 22,450</span>
-                        <span class="text-bear">Bias: Below Max Pain (Bearish)</span>
-                    </div>
-                    <div class="max-pain-gauge"><div class="pain-marker" style="left: 45%;"></div></div>
-                </div>
-
-                <div class="option-stats">
-                    <div class="card p-4"><div class="text-xs all-caps text-2">Total Put OI (Support)</div><div class="text-xl font-bold text-bull mt-1">45.2M</div></div>
-                    <div class="card p-4"><div class="text-xs all-caps text-2">Total Call OI (Resistance)</div><div class="text-xl font-bold text-bear mt-1">38.7M</div></div>
-                    <div class="card p-4"><div class="text-xs all-caps text-2">Put Call Ratio</div><div class="text-xl font-bold text-bull mt-1">1.16 <span class="text-sm font-medium">Bullish</span></div></div>
-                </div>
-
-                <div class="card table-wrap">
-                    <table id="option-chain">
-                        <thead><tr><th>CE OI</th><th>CE Chg</th><th>CE LTP</th><th class="strike-col">STRIKE</th><th>PE LTP</th><th>PE Chg</th><th>PE OI</th></tr></thead>
-                        <tbody><!-- JS Inject --></tbody>
-                    </table>
-                </div>
-                <!-- Mini grouped bar chart placeholder -->
-                <div class="card p-4 mt-4" style="height: 150px; display:flex; align-items:flex-end; justify-content:space-around; padding-top:40px;">
-                    <!-- SVG bars would be here, representing OI -->
-                    <div style="width:100%; text-align:center; color:var(--text-2)">[OI Bar Chart Visualization]</div>
-                </div>
-            </section>
-
-            <!-- SECTION 4: INSTITUTIONAL FLOW -->
-            <section id="sec-inst" class="mt-6 fade-in">
-                <div class="section-header">
-                    <div class="section-title">Institutional Flow (FII/DII)</div>
-                    <span class="badge badge-purple">SEBI Data</span>
-                </div>
-                <div class="inst-grid">
-                    <div class="card p-5">
-                        <div class="font-semibold text-md mb-4">🌐 FII / Foreign Investors</div>
-                        <div class="flex justify-between items-end mb-2">
-                            <div><div class="text-xs text-2">Net Today</div><div class="text-xl font-bold text-bull">+₹530 Cr</div></div>
-                            <span class="badge badge-bull">NET BUYER</span>
-                        </div>
-                        <div class="text-xs text-2 mb-4">Buy: ₹8,420 Cr | Sell: ₹7,890 Cr</div>
-                        <svg class="flow-chart" viewBox="0 0 100 30" preserveAspectRatio="none">
-                            <rect x="0" y="10" width="10" height="20" fill="var(--bull-strong)"/>
-                            <rect x="15" y="20" width="10" height="10" fill="var(--bear-strong)"/>
-                            <rect x="30" y="5" width="10" height="25" fill="var(--bull-strong)"/>
-                            <rect x="45" y="15" width="10" height="15" fill="var(--bull-strong)"/>
-                            <rect x="60" y="18" width="10" height="12" fill="var(--bear-strong)"/>
-                            <rect x="75" y="8" width="10" height="22" fill="var(--bull-strong)"/>
-                            <rect x="90" y="12" width="10" height="18" fill="var(--bull-strong)"/>
-                        </svg>
-                    </div>
-                    <div class="card p-5">
-                        <div class="font-semibold text-md mb-4">🏛️ DII / Domestic Investors</div>
-                        <div class="flex justify-between items-end mb-2">
-                            <div><div class="text-xs text-2">Net Today</div><div class="text-xl font-bold text-bull">+₹230 Cr</div></div>
-                            <span class="badge badge-bull">NET BUYER</span>
-                        </div>
-                        <div class="text-xs text-2 mb-4">Buy: ₹5,210 Cr | Sell: ₹4,980 Cr</div>
-                        <svg class="flow-chart" viewBox="0 0 100 30" preserveAspectRatio="none">
-                            <rect x="0" y="15" width="10" height="15" fill="var(--bull-strong)"/>
-                            <rect x="15" y="18" width="10" height="12" fill="var(--bull-strong)"/>
-                            <rect x="30" y="8" width="10" height="22" fill="var(--bull-strong)"/>
-                            <rect x="45" y="22" width="10" height="8" fill="var(--bear-strong)"/>
-                            <rect x="60" y="12" width="10" height="18" fill="var(--bull-strong)"/>
-                            <rect x="75" y="18" width="10" height="12" fill="var(--bull-strong)"/>
-                            <rect x="90" y="10" width="10" height="20" fill="var(--bull-strong)"/>
-                        </svg>
-                    </div>
-                </div>
-                <div class="card p-4 mt-4 text-center text-sm font-medium">
-                    Smart Money Signal: Both FII & DII net buyers — Institutional accumulation phase. <span class="text-bull">Bullish for medium term.</span>
-                </div>
-            </section>
-
-            <!-- SECTION 5: AI ALPHA ENGINE -->
-            <section id="sec-ai" class="mt-6 card p-5 fade-in" style="border-top: 4px solid var(--accent-purple); background: linear-gradient(180deg, rgba(139,92,246,0.05) 0%, var(--bg-surface) 100%);">
-                <div class="ai-header">
-                    <div class="text-xl font-bold mb-1"><span class="text-1">TradeFinder</span> <span style="color:var(--accent-purple)">ALPHA ENGINE</span></div>
-                    <div class="text-sm text-2 mb-4">Analyzing 500+ data points across F&O, sectors & institutional footprint</div>
-                    <button class="btn-ai">Run AI Scan</button>
-                </div>
-                <div class="setup-grid" id="ai-setups">
-                    <!-- JS Inject -->
-                </div>
-                <div class="mt-6 pt-4" style="border-top: 1px solid var(--border-dim)">
-                    <details>
-                        <summary class="font-semibold cursor-pointer text-accent">View AI Reasoning Logic</summary>
-                        <ul class="text-2 text-sm mt-2 ml-4" style="line-height:2">
-                            <li>Searches for high relative volume (2x+ average) in F&O stocks.</li>
-                            <li>Checks Option Chain for heavy put writing (support) or call writing (resistance).</li>
-                            <li>Correlates with sector rotation (buying leading sectors, shorting laggards).</li>
-                            <li>Calculates probabilities based on historical breakout success rates.</li>
-                        </ul>
-                    </details>
-                </div>
-            </section>
-
-            <!-- SECTION 6: GLOBAL MARKETS -->
-            <section id="sec-global" class="mt-6 fade-in">
-                <div class="section-header">
-                    <div class="section-title">Global Markets</div>
-                    <div class="text-xs text-2">SGX Nifty at 22,480 — suggesting flat-to-positive open.</div>
-                </div>
-                <div class="global-grid" id="global-markets"></div>
-            </section>
-
-            <!-- SECTION 7: NEWS & SENTIMENT -->
-            <section id="sec-news" class="mt-6 fade-in">
-                <div class="section-header"><div class="section-title">News & Sentiment</div></div>
-                <div class="news-layout">
-                    <div class="card p-5">
-                        <div class="flex gap-2 mb-4 overflow-x-auto pb-2">
-                            <span class="badge badge-bull">All</span><span class="badge badge-outline">Market</span><span class="badge badge-outline">FII/DII</span>
-                        </div>
-                        <div id="news-feed">
-                            <div class="news-item">
-                                <div class="text-xs text-2 mb-1">Reuters • 15m ago</div>
-                                <div class="font-bold text-md mb-1 cursor-pointer">RBI keeps repo rate unchanged at 6.5%, maintains 'withdrawal of accommodation' stance</div>
-                                <div class="flex gap-2 mt-2"><span class="badge badge-outline">Economy</span><span class="badge badge-purple">NEUTRAL</span></div>
-                            </div>
-                            <div class="news-item">
-                                <div class="text-xs text-2 mb-1">Bloomberg • 42m ago</div>
-                                <div class="font-bold text-md mb-1 cursor-pointer">TCS Q4 Results: Net profit rises 9% YoY, beats street estimates</div>
-                                <div class="flex gap-2 mt-2"><span class="badge badge-outline">TCS</span><span class="badge badge-bull">BULLISH</span></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card p-5">
-                        <div class="font-semibold mb-4">Overall Sentiment</div>
-                        <div style="position:relative; width:150px; height:150px; margin: 0 auto;">
-                            <!-- CSS Donut approximation -->
-                            <div style="width:100%; height:100%; border-radius:50%; background:conic-gradient(var(--bull-strong) 64%, var(--neutral) 0 78%, var(--bear-strong) 0); display:flex; align-items:center; justify-content:center;">
-                                <div style="width:110px; height:110px; border-radius:50%; background:var(--bg-surface); display:flex; flex-direction:column; align-items:center; justify-content:center;">
-                                    <div class="font-bold text-lg text-bull">64%</div><div class="text-xs">Bullish</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-6">
-                            <div class="text-xs all-caps text-2 mb-2">Trending</div>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="badge badge-outline">#Elections (12k)</span>
-                                <span class="badge badge-outline">#RateCut (8k)</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 8: WATCHLIST -->
-            <section id="sec-watchlist" class="mt-6 fade-in">
-                <div class="section-header">
-                    <div class="section-title">Watchlist</div>
-                    <div class="flex gap-2">
-                        <input type="text" placeholder="Search symbol..." style="width:150px; padding:4px 8px;">
-                        <button class="btn-primary" style="padding: 4px 12px">Add</button>
-                    </div>
-                </div>
-                <div class="card table-wrap">
-                    <table id="wl-table">
-                        <thead><tr><th>☆</th><th>Symbol</th><th>LTP</th><th>Change</th><th>% Chg</th><th>High</th><th>Low</th><th>Volume</th><th>52W Range</th><th>Act</th></tr></thead>
-                        <tbody id="wl-tbody"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- SECTION 9: ALGO STRATEGIES -->
-            <section id="sec-algo" class="mt-6 fade-in">
-                <div class="section-header"><div class="section-title">Algo Strategies</div></div>
-                <div class="algo-grid" id="algo-grid"></div>
-            </section>
-
-            <!-- SECTION 10: RESOURCES (BLOG/COMMUNITY/ABOUT/CONTACT) -->
-            <section id="sec-resources" class="mt-6 fade-in">
-                <div class="section-header"><div class="section-title">Resources & Community</div></div>
-                
-                <div class="bca-grid">
-                    <!-- Blog -->
-                    <div class="card p-5">
-                        <div class="font-semibold text-md mb-4 flex items-center gap-2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4h16v15a2 2 0 0 1-2 2H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg> Latest from Blog</div>
-                        <div class="blog-grid">
-                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
-                                <div class="text-xs text-accent mb-1">Education · 5m read</div>
-                                <div class="font-semibold text-sm mb-2">Mastering Option Greeks</div>
-                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
-                            </div>
-                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
-                                <div class="text-xs text-accent mb-1">Market Prep · 3m read</div>
-                                <div class="font-semibold text-sm mb-2">Trading the Election Volatility</div>
-                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
-                            </div>
-                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
-                                <div class="text-xs text-accent mb-1">Strategy · 8m read</div>
-                                <div class="font-semibold text-sm mb-2">Mean Reversion Systems</div>
-                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
-                            </div>
-                            <div class="p-3 bg-elevated rounded" style="border-radius:6px; background:var(--bg-elevated)">
-                                <div class="text-xs text-accent mb-1">Tech · 4m read</div>
-                                <div class="font-semibold text-sm mb-2">API Rate Limits Explained</div>
-                                <a href="#" class="text-xs text-2 hover-white">Read Article →</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Community & About -->
-                    <div class="flex-col gap-4">
-                        <div class="card p-5 flex justify-between items-center">
-                            <div>
-                                <div class="font-semibold text-md mb-1">Join the Community</div>
-                                <div class="text-xs text-2">10K+ Traders active daily</div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button class="btn-outline">Discord</button>
-                                <button class="btn-primary">Telegram</button>
-                            </div>
-                        </div>
-                        <div class="card p-5">
-                            <div class="font-semibold text-md mb-2">About TradeFinder</div>
-                            <p class="text-sm text-2 mb-4">We democratize institutional-grade analytics for the modern retail trader, processing over 500K+ data points per second with 99.9% uptime.</p>
-                            <div class="flex justify-between text-xs font-semibold">
-                                <div><span class="text-1">10K+</span> Users</div>
-                                <div><span class="text-1">500K+</span> Data Points</div>
-                                <div><span class="text-bull">99.9%</span> Uptime</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Contact -->
-                <div class="card p-5 text-center">
-                    <div class="font-semibold text-md mb-2">Need Help?</div>
-                    <p class="text-sm text-2 mb-4">Contact our support team at support@tradefinder.app or fill out the form below.</p>
-                    <div class="flex gap-4 justify-center flex-wrap">
-                        <input type="text" placeholder="Name" style="width: 200px;">
-                        <input type="email" placeholder="Email" style="width: 200px;">
-                        <button class="btn-primary">Send Message</button>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <footer>
-            <div class="footer-grid">
-                <div>
-                    <div class="logo-text mb-2">Trade<span>Finder</span></div>
-                    <p class="text-2 text-sm mb-4">World-class NSE Intelligence Platform for the modern retail trader.</p>
-                    <div class="flex gap-4 text-2">
-                        <!-- Social placeholders -->
-                        <span>Twitter</span><span>Discord</span><span>YouTube</span>
-                    </div>
-                </div>
-                <div>
-                    <div class="font-semibold text-1 mb-2">Platform</div>
-                    <ul class="text-2 text-sm" style="list-style:none; line-height:2;">
-                        <li><a href="#sec-sector">Sector Scope</a></li>
-                        <li><a href="#sec-fno">F&O Scanner</a></li>
-                        <li><a href="#sec-ai">AI Engine</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="font-semibold text-1 mb-2">Resources</div>
-                    <ul class="text-2 text-sm" style="list-style:none; line-height:2;">
-                        <li><a href="#">API Docs</a></li>
-                        <li><a href="#">Pricing</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <div class="font-semibold text-1 mb-2">Disclaimer</div>
-                    <p class="text-xs text-2">Trading involves significant risk of loss and is not suitable for all investors. Data provided is simulated and delayed for educational purposes only. TradeFinder is not a registered investment advisor.</p>
-                </div>
-            </div>
-            <div class="text-center text-xs text-2 mt-6 pt-6 border-dim" style="border-top: 1px solid var(--border-dim)">
-                © 2026 DipzSpell · TradeFinder · Educational purposes only · Not financial advice
-            </div>
-        </footer>
-    </main>
-
-    <script src="script.js"></script>
+/* ── SCROLL REVEAL ── */
+const obs = new IntersectionObserver(es => {
+  es.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.rev').forEach(el => obs.observe(el));
+</script>
 </body>
 </html>
