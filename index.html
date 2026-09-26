@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DipzSpell | Developer & Builder</title>
+<meta name="description" content="Dipanshu Gupta (DipzSpell) — self-taught developer and B.Tech CSE (Data Science) student building AI, web and real-time fintech tools.">
+<meta name="author" content="Dipanshu Gupta">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dipzspell.github.io/">
+<meta property="og:title" content="DipzSpell | Developer & Builder">
+<meta property="og:description" content="Self-taught developer building AI, web and real-time fintech tools — TradeVision, LifeNotebook, PathFinder.">
+<meta property="og:site_name" content="DipzSpell">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:site" content="@DipzSpell">
+<meta name="twitter:title" content="DipzSpell | Developer & Builder">
+<meta name="twitter:description" content="Self-taught developer building AI, web and real-time fintech tools.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -272,6 +283,32 @@ nav {
 }
 .proj-link:hover { text-decoration:underline; }
 
+.proj-links { display:flex; flex-wrap:wrap; gap:6px 16px; align-items:center; }
+
+/* ── ACHIEVEMENTS ── */
+.ach-grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
+.ach-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-left:3px solid var(--orange);
+  border-radius:8px; padding:22px;
+  transition: border-color .2s, transform .2s;
+}
+.ach-card:hover { border-color:rgba(255,107,53,.4); transform:translateY(-3px); }
+.ach-card.c { border-left-color:var(--cyan); }
+.ach-card.c:hover { border-color:rgba(0,212,255,.4); }
+.ach-meta {
+  font-family:'JetBrains Mono',monospace; font-size:11px;
+  color:var(--muted); letter-spacing:1px; margin-bottom:8px;
+}
+.ach-title { font-size:17px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.ach-desc { font-size:13px; color:var(--muted); line-height:1.75; margin-bottom:12px; }
+.ach-thumb {
+  display:block; margin-bottom:14px; border-radius:6px; overflow:hidden;
+  border:1px solid var(--border); aspect-ratio:1400/990; background:var(--bg3);
+}
+.ach-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s; }
+.ach-thumb:hover img { transform:scale(1.03); }
+
 /* ── CONTACT ── */
 .contact-inner { max-width:580px; }
 .contact-inner p { color:var(--muted); font-size:15px; line-height:1.85; margin-bottom:32px; }
@@ -340,7 +377,7 @@ footer span { color:var(--green); }
   nav { padding:14px 20px; }
   .nav-links { gap:16px; }
   .sec { padding:80px 20px; }
-  .about-grid, .proj-grid { grid-template-columns:1fr; }
+  .about-grid, .proj-grid, .ach-grid { grid-template-columns:1fr; }
   .skills-grid { grid-template-columns:1fr; }
   .sk-wide { grid-column: span 1; }
   .s-title { font-size:28px; }
@@ -390,10 +427,10 @@ footer span { color:var(--green); }
     <div>
       <p class="about-p rev">I'm <b>Dipanshu Gupta</b>, a self-taught developer from <b>Mumbai, India</b> who codes, builds, and ships — usually all at the same time.</p>
       <p class="about-p rev">My work lives at the intersection of <b>AI, web development, and real-time data systems</b>. I build tools that solve real problems — whether that's a live market intelligence platform or an app that helps you track your own life goals.</p>
-      <p class="about-p rev">Currently on the <b>B.E. Data Science</b> path while shipping side projects that actually matter to me. Student by day, builder by night — or honestly, both by both.</p>
+      <p class="about-p rev">Currently pursuing <b>B.Tech CSE (Data Science)</b> while shipping side projects that actually matter to me. Student by day, builder by night — or honestly, both by both.</p>
     </div>
     <div class="stat-grid rev">
-      <div class="stat"><div class="stat-n">4+</div><div class="stat-l">Live Projects</div></div>
+      <div class="stat"><div class="stat-n">4+</div><div class="stat-l">Projects Built</div></div>
       <div class="stat"><div class="stat-n">2yr+</div><div class="stat-l">Self-taught</div></div>
       <div class="stat"><div class="stat-n">DS</div><div class="stat-l">Data Science Student</div></div>
       <div class="stat"><div class="stat-n">MUM</div><div class="stat-l">Mumbai, India</div></div>
@@ -498,7 +535,10 @@ footer span { color:var(--green); }
           <span class="tag">React</span><span class="tag">Vite</span>
           <span class="tag c">Supabase</span><span class="tag">Capacitor</span>
         </div>
-        <a href="https://lnbook.vercel.app" target="_blank" class="proj-link">→ lnbook.vercel.app</a>
+        <div class="proj-links">
+          <a href="https://lnbook.vercel.app" target="_blank" rel="noopener" class="proj-link">→ lnbook.vercel.app</a>
+          <a href="https://github.com/DipzSpell/LifeNotebook" target="_blank" rel="noopener" class="proj-link">source ↗</a>
+        </div>
       </div>
     </div>
 
@@ -531,11 +571,48 @@ footer span { color:var(--green); }
           <span class="tag">Tailwind</span>
           <span class="tag o">Gemini API</span><span class="tag">Vercel</span>
         </div>
-        <span class="proj-link" style="margin-right:14px">🏆 Hackathon Build</span>
-        <a href="https://pathfinder-rouge-beta.vercel.app" target="_blank" rel="noopener" class="proj-link">→ pathfinder-rouge-beta.vercel.app</a>
+        <div class="proj-links">
+          <span class="proj-link">🏆 Hackathon Build</span>
+          <a href="https://pathfinder-rouge-beta.vercel.app" target="_blank" rel="noopener" class="proj-link">→ live demo</a>
+          <a href="https://github.com/DipzSpell/PathFinder" target="_blank" rel="noopener" class="proj-link">source ↗</a>
+        </div>
       </div>
     </div>
 
+  </div>
+</section>
+<hr class="hr">
+
+<!-- ACHIEVEMENTS -->
+<section class="sec" id="achievements">
+  <p class="s-eye rev">achievements</p>
+  <h2 class="s-title rev">Wins &amp; <em>hackathons</em></h2>
+  <div class="ach-grid">
+    <div class="ach-card rev">
+      <div class="ach-meta">GLOBAL FINTECH FEST · 2026</div>
+      <div class="ach-title">SBI Hackathon — Shortlisted</div>
+      <a href="certificates/sbi-hackathon-gff-2026.jpg" target="_blank" rel="noopener" class="ach-thumb">
+        <img src="certificates/sbi-hackathon-gff-2026.jpg" alt="SBI Hackathon GFF 2026 certificate of appreciation" loading="lazy">
+      </a>
+      <p class="ach-desc">Shortlisted for the Idea Submission phase of the SBI Hackathon at Global Fintech Fest 2026, organised by PCI, NPCI and FCC.</p>
+      <div class="proj-links">
+        <span class="tag o">Fintech</span><span class="tag o">Banking</span>
+        <a href="certificates/sbi-hackathon-gff-2026.jpg" target="_blank" rel="noopener" class="proj-link">view certificate ↗</a>
+      </div>
+    </div>
+    <div class="ach-card c rev">
+      <div class="ach-meta">NYC CODEQUEST · 2026</div>
+      <div class="ach-title">NYC CodeQuest Hackathon</div>
+      <a href="certificates/nyc-codequest-2026.jpg" target="_blank" rel="noopener" class="ach-thumb">
+        <img src="certificates/nyc-codequest-2026.jpg" alt="NYC CodeQuest Hackathon participation certificate" loading="lazy">
+      </a>
+      <p class="ach-desc">Built PathFinder solo during the hackathon — an AI career-roadmap tool for Indian students, deployed live.</p>
+      <div class="proj-links">
+        <span class="tag c">Participant</span>
+        <a href="#projects" class="proj-link">→ see PathFinder</a>
+        <a href="certificates/nyc-codequest-2026.jpg" target="_blank" rel="noopener" class="proj-link">view certificate ↗</a>
+      </div>
+    </div>
   </div>
 </section>
 <hr class="hr">
